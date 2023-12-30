@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="zero">0dp</dimen>
+    <dimen name="ten_padding">10dp</dimen>
+    <dimen name="twelve_padding">12dp</dimen>
+    <dimen name="padding_top">14dp</dimen>
+    <dimen name="base">16dp</dimen>
+    <dimen name="two_four">24dp</dimen>
+    <dimen name="padding_bottom">28dp</dimen>
+    <dimen name="logo_bottom">40dp</dimen>
+    <dimen name="header_stroke">56dp</dimen>
+    <dimen name="height_menu_string">61dp</dimen>
+    <dimen name="base_text">22sp</dimen>
+    <dimen name="setting_text">16sp</dimen>
+</resources>
