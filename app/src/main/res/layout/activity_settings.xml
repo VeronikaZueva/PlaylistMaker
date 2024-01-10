@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+    style="@style/BaseLinear"
     android:background="@color/white"
     android:paddingTop="@dimen/zero"
-    android:paddingBottom="@dimen/padding_bottom"
+    android:paddingLeft="@dimen/zero"
+    android:paddingRight="@dimen/zero"
     tools:context=".SettingsActivity"
     tools:ignore="Overdraw">
 
@@ -17,42 +16,28 @@
         android:layout_marginBottom="@dimen/two_four">
 
         <ImageButton android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:src="@drawable/back"
-            android:backgroundTint="@color/white"
+            android:contentDescription="@string/back_text"
+            style="@style/IconSetting"
+            android:layout_width="wrap_content"
+            android:background="@color/white"
             android:layout_gravity="center_vertical"
             android:padding="@dimen/base"
-            android:contentDescription="@string/back_text" />
+             />
 
         <TextView android:text="@string/setting_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="@dimen/padding_top"
-            android:layout_marginStart="@dimen/twelve_padding"
-            android:fontFamily="@font/yandex_medium"
-            android:textSize="@dimen/base_text"
-            android:textColor="@color/black"/>
+            android:paddingTop="@dimen/base"
+            android:textColor="@color/black"
+            style="@style/BaseTitle" />
 
     </LinearLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height_menu_string"
-        android:background="@color/white"
-        android:paddingStart="@dimen/base"
-        android:paddingEnd="@dimen/zero"
-        >
+    <FrameLayout style="@style/FrameSetting">
 
         <TextView android:text="@string/night_theme"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:fontFamily="@font/yandex_regular"
-            android:textSize="@dimen/setting_text"
-            android:textColor="@android:color/black"
-            android:gravity="center_vertical"
-            android:layout_gravity="start"
-            />
+            style="@style/TextSetting" />
 
         <Switch
             android:layout_width="@dimen/header_stroke"
@@ -64,92 +49,38 @@
 
     </FrameLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height_menu_string"
-        android:background="@color/white"
-        android:paddingStart="@dimen/base"
-        android:paddingEnd="@dimen/zero"
-        >
+    <FrameLayout style="@style/FrameSetting">
 
         <TextView android:text="@string/share"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:fontFamily="@font/yandex_regular"
-            android:textSize="@dimen/setting_text"
-            android:textColor="@android:color/black"
-            android:gravity="center_vertical"
-            android:layout_gravity="start"
-            />
+            style="@style/TextSetting" />
 
-        <ImageButton
-            android:layout_width="@dimen/header_stroke"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:background="@color/white"
+        <ImageButton android:src="@drawable/share"
             android:contentDescription="@string/share_text"
-            android:gravity="center_vertical"
-            android:src="@drawable/share"
+            style="@style/IconSetting"
             tools:ignore="ImageContrastCheck" />
 
     </FrameLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height_menu_string"
-        android:background="@color/white"
-        android:paddingStart="@dimen/base"
-        android:paddingEnd="@dimen/zero"
-        >
+    <FrameLayout  style="@style/FrameSetting">
 
         <TextView android:text="@string/support"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:fontFamily="@font/yandex_regular"
-            android:textSize="@dimen/setting_text"
-            android:textColor="@android:color/black"
-            android:gravity="center_vertical"
-            android:layout_gravity="start"
-            />
+            style="@style/TextSetting" />
 
-        <ImageButton
-            android:layout_width="@dimen/header_stroke"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:background="@color/white"
+        <ImageButton android:src="@drawable/support"
             android:contentDescription="@string/support_text"
-            android:gravity="center_vertical"
-            android:src="@drawable/support"
+            style="@style/IconSetting"
             tools:ignore="ImageContrastCheck" />
 
     </FrameLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height_menu_string"
-        android:background="@color/white"
-        android:paddingStart="@dimen/base"
-        android:paddingEnd="@dimen/zero"
-        >
+    <FrameLayout  style="@style/FrameSetting">
 
         <TextView android:text="@string/user_docs"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:fontFamily="@font/yandex_regular"
-            android:textSize="@dimen/setting_text"
-            android:textColor="@android:color/black"
-            android:gravity="center_vertical"
-            android:layout_gravity="start"
-            />
+            style="@style/TextSetting" />
 
-        <ImageButton
-            android:layout_width="@dimen/header_stroke"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:background="@color/white"
+        <ImageButton android:src="@drawable/send"
             android:contentDescription="@string/oferta"
-            android:gravity="center_vertical"
-            android:src="@drawable/send"
+            style="@style/IconSetting"
             tools:ignore="ImageContrastCheck" />
 
     </FrameLayout>
