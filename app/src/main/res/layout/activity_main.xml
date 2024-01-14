@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/BaseLinear"
-    android:background="@color/blue"
     tools:context=".MainActivity"
     tools:ignore="Overdraw">
 
@@ -12,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_marginBottom="@dimen/logo_bottom"
-        android:textColor="@color/white"
+        android:textColor="@color/accent"
         style="@style/BaseTitle"
         />
 

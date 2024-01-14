@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/BaseLinear"
-    android:background="@color/white"
     android:paddingTop="@dimen/zero"
     android:paddingLeft="@dimen/zero"
     android:paddingRight="@dimen/zero"
@@ -20,16 +19,16 @@
             android:contentDescription="@string/back_text"
             style="@style/IconSetting"
             android:layout_width="wrap_content"
-            android:background="@color/white"
             android:layout_gravity="center_vertical"
             android:padding="@dimen/base"
+            android:backgroundTint="@android:color/transparent"
+            android:theme="@style/Theme.TextPlaylistMaker"
              />
 
         <TextView android:text="@string/setting_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="@dimen/base"
-            android:textColor="@color/black"
             style="@style/BaseTitle" />
 
     </LinearLayout>
@@ -54,7 +53,8 @@
         <TextView android:text="@string/share"
             style="@style/TextSetting" />
 
-        <ImageButton android:src="@drawable/share"
+        <ImageButton android:id="@+id/share_button"
+            android:src="@drawable/share"
             android:contentDescription="@string/share_text"
             style="@style/IconSetting"
             tools:ignore="ImageContrastCheck" />
@@ -66,7 +66,8 @@
         <TextView android:text="@string/support"
             style="@style/TextSetting" />
 
-        <ImageButton android:src="@drawable/support"
+        <ImageButton android:id="@+id/send_button"
+            android:src="@drawable/support"
             android:contentDescription="@string/support_text"
             style="@style/IconSetting"
             tools:ignore="ImageContrastCheck" />
@@ -78,7 +79,8 @@
         <TextView android:text="@string/user_docs"
             style="@style/TextSetting" />
 
-        <ImageButton android:src="@drawable/send"
+        <ImageButton android:id="@+id/user_docs"
+            android:src="@drawable/send"
             android:contentDescription="@string/oferta"
             style="@style/IconSetting"
             tools:ignore="ImageContrastCheck" />
