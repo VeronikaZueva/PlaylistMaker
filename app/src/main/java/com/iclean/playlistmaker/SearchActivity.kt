@@ -12,6 +12,8 @@ import android.widget.ImageButton
 
 
 class SearchActivity : AppCompatActivity() {
+
+    //Отработка Activity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -22,17 +24,21 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
-        //Поле поиска
+        //Получение полей
         val searchInput = findViewById<EditText>(R.id.search_input)
         val clearButton = findViewById<ImageButton>(R.id.clear)
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
 
+        //Очистка данных
         clearButton.setOnClickListener {
             searchInput.setText("")
             inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)
             searchInput.clearFocus()
         }
 
+        searchInput.setText(searchText)
+
+        //Получение значений текстового поля, которые ввел Пользователь
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
@@ -51,7 +57,24 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         searchInput.addTextChangedListener(simpleTextWatcher)
+    }
 
+        //Сохранение данных
+    private var searchText : String = SEARCH_DEF
+
+    override fun onSaveInstanceState(outState:Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SEARCH_TEXT, searchText)
+    }
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        searchText = savedInstanceState.getString(SEARCH_TEXT, SEARCH_DEF)
+    }
+
+    //Константы
+    companion object {
+        const val SEARCH_TEXT = "SEARCH_TEXT"
+        const val SEARCH_DEF = ""
     }
 
 
