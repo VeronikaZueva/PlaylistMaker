@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="InputContainer">
+    <item name="android:background">@drawable/input_night</item>
+    </style>
     <style name="InputSearch">
-        <item name="android:background">@color/accent</item>
         <item name="android:textColor">@color/main</item>
+        <item name="android:textColorHint">@color/main</item>
         <item name="android:drawableStart">@drawable/search_hint_night</item>
     </style>
 </resources>

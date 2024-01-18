@@ -54,9 +54,12 @@
         <item name="android:paddingStart">@dimen/base</item>
         <item name="android:paddingEnd">@dimen/zero</item>
     </style>
+    <style name="InputContainer">
+        <item name="android:background">@drawable/input</item>
+    </style>
     <style name="InputSearch">
-        <item name="android:background">@color/light</item>
-        <item name="android:textColor">@color/gray</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorHint">@color/gray</item>
         <item name="android:drawableStart">@drawable/search_hint</item>
     </style>
 </resources>

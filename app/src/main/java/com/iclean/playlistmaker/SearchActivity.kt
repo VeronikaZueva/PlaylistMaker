@@ -12,8 +12,6 @@ import android.widget.ImageButton
 
 
 class SearchActivity : AppCompatActivity() {
-
-    //Отработка Activity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -21,24 +19,23 @@ class SearchActivity : AppCompatActivity() {
         //Вернуться домой
         val backButton = findViewById<ImageButton>(R.id.back_button)
         backButton.setOnClickListener {
-            finish()
+            this.finish()
         }
 
-        //Получение полей
+        //Поле поиска
         val searchInput = findViewById<EditText>(R.id.search_input)
         val clearButton = findViewById<ImageButton>(R.id.clear)
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
 
-        //Очистка данных
+        //Очищаем поле поиска
         clearButton.setOnClickListener {
             searchInput.setText("")
             inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)
             searchInput.clearFocus()
         }
-
         searchInput.setText(searchText)
 
-        //Получение значений текстового поля, которые ввел Пользователь
+        //Обработчик введенных значений
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
@@ -50,6 +47,7 @@ class SearchActivity : AppCompatActivity() {
                     clearButton.visibility = View.VISIBLE
                 }
                 else {clearButton.visibility = View.GONE}
+                searchText = p0.toString()
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -57,9 +55,10 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         searchInput.addTextChangedListener(simpleTextWatcher)
+
     }
 
-        //Сохранение данных
+    //Сохранение данных
     private var searchText : String = SEARCH_DEF
 
     override fun onSaveInstanceState(outState:Bundle) {
@@ -76,7 +75,6 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_DEF = ""
     }
-
 
 
 }

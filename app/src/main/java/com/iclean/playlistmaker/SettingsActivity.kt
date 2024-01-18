@@ -16,17 +16,16 @@ class SettingsActivity : AppCompatActivity() {
         //Возвращаемся домой
         val backButton = findViewById<ImageButton>(R.id.back_button)
         backButton.setOnClickListener {
-            finish()
+            this.finish()
         }
 
         //Поделиться приложением
         val shareButton = findViewById<ImageButton>(R.id.share_button)
         shareButton.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND)
-            val messageShare = getString(R.string.shareMessage)
 
             shareIntent.type = "text/plain"
-            shareIntent.putExtra(EXTRA_TEXT, messageShare)
+            shareIntent.putExtra(EXTRA_TEXT, resources.getString(R.string.shareMessage))
             startActivity(shareIntent)
         }
 
@@ -34,21 +33,17 @@ class SettingsActivity : AppCompatActivity() {
         val sendButton = findViewById<ImageButton>(R.id.send_button)
         sendButton.setOnClickListener {
             val sendIntent = Intent(Intent.ACTION_SENDTO)
-            val receiver = getString(R.string.receiver)
-            val subject = getString(R.string.subject)
-            val messageMail = getString(R.string.mail_text)
 
-            sendIntent.data= Uri.parse(receiver)
-            sendIntent.putExtra(EXTRA_SUBJECT, subject)
-            sendIntent.putExtra(EXTRA_TEXT, messageMail)
+            sendIntent.data= Uri.parse(resources.getString(R.string.receiver))
+            sendIntent.putExtra(EXTRA_SUBJECT, resources.getString(R.string.subject))
+            sendIntent.putExtra(EXTRA_TEXT, resources.getString(R.string.mail_text))
             startActivity(sendIntent)
         }
 
         //
         val userDocButton = findViewById<ImageButton>(R.id.user_docs)
         userDocButton.setOnClickListener {
-            val linkAddress = getString(R.string.link_address)
-            val docIntent = Intent(Intent.ACTION_VIEW, Uri.parse(linkAddress))
+            val docIntent = Intent(Intent.ACTION_VIEW, Uri.parse(resources.getString(R.string.link_address)))
             startActivity(docIntent)
         }
 
