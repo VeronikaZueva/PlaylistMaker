@@ -1,6 +1,9 @@
 package com.iclean.playlistmaker
 
 import android.content.Intent
+import android.content.Intent.EXTRA_SUBJECT
+import android.content.Intent.EXTRA_TEXT
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
@@ -13,8 +16,36 @@ class SettingsActivity : AppCompatActivity() {
         //Возвращаемся домой
         val backButton = findViewById<ImageButton>(R.id.back_button)
         backButton.setOnClickListener {
-            val backIntent = Intent(this, MainActivity::class.java)
-            startActivity(backIntent)
+            this.finish()
         }
+
+        //Поделиться приложением
+        val shareButton = findViewById<ImageButton>(R.id.share_button)
+        shareButton.setOnClickListener {
+            val shareIntent = Intent(Intent.ACTION_SEND)
+
+            shareIntent.type = "text/plain"
+            shareIntent.putExtra(EXTRA_TEXT, resources.getString(R.string.shareMessage))
+            startActivity(shareIntent)
+        }
+
+        //Написать в поддержку
+        val sendButton = findViewById<ImageButton>(R.id.send_button)
+        sendButton.setOnClickListener {
+            val sendIntent = Intent(Intent.ACTION_SENDTO)
+
+            sendIntent.data= Uri.parse(resources.getString(R.string.receiver))
+            sendIntent.putExtra(EXTRA_SUBJECT, resources.getString(R.string.subject))
+            sendIntent.putExtra(EXTRA_TEXT, resources.getString(R.string.mail_text))
+            startActivity(sendIntent)
+        }
+
+        //
+        val userDocButton = findViewById<ImageButton>(R.id.user_docs)
+        userDocButton.setOnClickListener {
+            val docIntent = Intent(Intent.ACTION_VIEW, Uri.parse(resources.getString(R.string.link_address)))
+            startActivity(docIntent)
+        }
+
     }
 }
