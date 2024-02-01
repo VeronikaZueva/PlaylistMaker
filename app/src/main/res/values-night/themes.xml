@@ -13,4 +13,7 @@
         <item name="android:tint">@color/accent</item>
         <item name="android:backgroundTint">@android:color/transparent</item>
     </style>
+    <style name="Theme.CardContainer" parent="Base.Theme.PlaylistMaker">
+        <item name="android:background">@color/main</item>
+    </style>
 </resources>

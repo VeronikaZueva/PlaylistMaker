@@ -17,4 +17,6 @@
     <string name="mail_text">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="link_address">https://yandex.ru/legal/practicum_offer/</string>
     <string name="clear_text">Очистить поле</string>
+    <string name="track_name">Имя трека</string>
+    <string name="user_test">Очень длинная строка, которая должна прерываться когда она достигнет края</string>
 </resources>
