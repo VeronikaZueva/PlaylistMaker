@@ -1,3 +1,5 @@
+@file:Suppress("SameParameterValue")
+
 package com.iclean.playlistmaker
 
 import android.content.Context
@@ -6,13 +8,21 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
 
 class SearchActivity : AppCompatActivity() {
+    //Задаем параметры Retrofit
+    /*private val itunesBaseUrl = "https://itunes.apple.com"
+    private val retrofit = Retrofit.Builder().baseUrl(itunesBaseUrl)
+        .addConverterFactory(GsonConverterFactory.create()).build()
+    private val itunesService = retrofit.create<ITunesApi>()*/
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -27,6 +37,12 @@ class SearchActivity : AppCompatActivity() {
         val searchInput = findViewById<EditText>(R.id.search_input)
         val clearButton = findViewById<ImageButton>(R.id.clear)
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        
+        //Retrofit
+        val tracks =  ArrayList<Track>()
+        val recyclerViewTrack = findViewById<RecyclerView>(R.id.reciclerViewTrack)
+        val trackAdapter = TrackAdapter(tracks)
+        recyclerViewTrack.adapter = trackAdapter
 
         //Очищаем поле поиска
         clearButton.setOnClickListener {
@@ -58,9 +74,17 @@ class SearchActivity : AppCompatActivity() {
         searchInput.addTextChangedListener(simpleTextWatcher)
 
         //Выводим список RecyclerView
-        val recyclerViewTrack = findViewById<RecyclerView>(R.id.reciclerViewTrack)
-        val trackAdapter = TrackAdapter(mockArrayList)
-        recyclerViewTrack.adapter = trackAdapter
+        searchInput.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if(searchInput.text.isNotEmpty()) {
+                    showMessage("Поиск прошел успешно")
+                } else {
+                    showMessage("Вы задали пустой поисквый запрос")
+                }
+            }
+            false
+        }
+
     }
 
     //Сохранение данных
@@ -75,6 +99,11 @@ class SearchActivity : AppCompatActivity() {
         searchText = savedInstanceState.getString(SEARCH_TEXT, SEARCH_DEF)
     }
 
+
+    private fun showMessage(text : String) {
+        Toast.makeText(applicationContext, text, Toast.LENGTH_LONG).show()
+    }
+
     //Константы
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
@@ -82,7 +111,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     //Создаем Mock-object для нашего тестового статического списка
-    private val mockArrayList : ArrayList<Track> = arrayListOf(
+    /*private val mockArrayList : ArrayList<Track> = arrayListOf(
         Track (
             "Smells Like Teen Spirit",
             "Nirvana",
@@ -114,6 +143,6 @@ class SearchActivity : AppCompatActivity() {
             "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg"
         )
     )
-
+*/
 
 }

@@ -55,6 +55,8 @@
             android:paddingEnd="@dimen/twelve_padding"
             android:textSize="@dimen/setting_text"
             android:background="@android:color/transparent"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
             style="@style/InputSearch"
             tools:ignore="DuplicateSpeakableTextCheck,RelativeOverlap,VisualLintTextFieldSize,TextContrastCheck" />
 
