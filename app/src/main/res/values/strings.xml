@@ -19,4 +19,8 @@
     <string name="clear_text">Очистить поле</string>
     <string name="track_name">Имя трека</string>
     <string name="user_test">Очень длинная строка, которая должна прерываться когда она достигнет края</string>
+    <string name="none_search">Ничего не нашлось</string>
+    <string name="none_internet">Проблемы со свзязью</string>
+    <string name="additional_status">Загрузка не удалась. Проверьте\nподключение к интернету</string>
+    <string name="update_text">Обновить</string>
 </resources>

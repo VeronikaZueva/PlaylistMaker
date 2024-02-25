@@ -1,3 +1,9 @@
 package com.iclean.playlistmaker
 
-data class TrackResponse (val resultCount : Int, val results : ArrayList<Track>)
+ class TrackResponse (val results : ArrayList<Track>) {
+     data class Track (val trackName: String,
+                 val artistName: String,
+                 val trackTimeMillis: String,
+                 val artworkUrl100: String)
+
+}
