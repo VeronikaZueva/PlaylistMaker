@@ -43,7 +43,10 @@
                 android:layout_height="match_parent">
 
                 <TextView android:id="@+id/artist_name"
-                    tools:text="@string/user_docs"
+                    tools:text="@string/user_test"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:maxEms="15"
                     style="@style/TrackShortInfoText"
                     tools:ignore="TextContrastCheck" />
 

@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,6 +18,12 @@ class SettingsActivity : AppCompatActivity() {
         val backButton = findViewById<ImageButton>(R.id.back_button)
         backButton.setOnClickListener {
             this.finish()
+        }
+
+        //Переключаем тему
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
         }
 
         //Поделиться приложением
@@ -40,7 +47,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(sendIntent)
         }
 
-        //
+        //Документация
         val userDocButton = findViewById<ImageButton>(R.id.user_docs)
         userDocButton.setOnClickListener {
             val docIntent = Intent(Intent.ACTION_VIEW, Uri.parse(resources.getString(R.string.link_address)))

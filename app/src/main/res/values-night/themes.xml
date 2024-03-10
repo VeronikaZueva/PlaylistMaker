@@ -1,5 +1,5 @@
 <resources>
-    <style name="Base.Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Base.Theme.PlaylistMaker" parent="Theme.MaterialComponents.NoActionBar">
         <item name="android:windowBackground">@color/main</item>
     </style>
     <style name="Theme.MainPlaylistMaker" parent="Base.Theme.PlaylistMaker">
