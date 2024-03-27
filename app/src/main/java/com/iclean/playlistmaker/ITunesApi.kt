@@ -2,9 +2,9 @@ package com.iclean.playlistmaker
 
 import retrofit2.Call
 import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ITunesApi {
-    @GET("/search?entity=song&country=ru&{term}")
-    fun searchTrack(@Path("term") term : String) : Call<TrackResponse>
+    @GET("/search?entity=song&country=ru")
+    fun searchTrack(@Query("term") text : String) : Call<TrackResponse>
 }

@@ -19,8 +19,17 @@
     <style name="PointIcon">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center_vertical</item>
         <item name="android:paddingHorizontal">@dimen/portion</item>
         <item name="android:src">@drawable/ellipse_night</item>
+    </style>
+    <style name="StatusText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginVertical">@dimen/base</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:textSize">@dimen/status_text</item>
     </style>
 </resources>
