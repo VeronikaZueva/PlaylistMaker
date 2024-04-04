@@ -3,13 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardElevation="@dimen/zero"
+    android:clickable="true"
     style="@style/FrameSetting">
 
-    <LinearLayout
+    <LinearLayout android:id="@+id/card_track"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:theme="@style/Theme.CardContainer">
+
+        <TextView android:id="@+id/track_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
     <ImageView android:id="@+id/poster"
         android:layout_height="45dp"

@@ -17,14 +17,26 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.ArrayList
 
 
 class SearchActivity : AppCompatActivity() {
+
+    //Константы
+    companion object {
+        val tracks = ArrayList<TrackResponse.Track>()
+        var historyTracks = ArrayList<TrackResponse.Track>(10)
+        const val SEARCH_TEXT = "SEARCH_TEXT"
+        const val SEARCH_DEF = ""
+        const val HISTORY_KEY = "history_key"
+    }
     //Задаем параметры Retrofit
     private val itunesBaseUrl = "https://itunes.apple.com"
     private val retrofit = Retrofit.Builder()
@@ -50,39 +62,111 @@ class SearchActivity : AppCompatActivity() {
         val inputMethodManager =
             getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
 
-        //Retrofit
-        val tracks = ArrayList<TrackResponse.Track>()
+
+        //RecyclerViews
+        val reciclerViewHistoryTrack = findViewById<RecyclerView>(R.id.reciclerViewHistoryTrack)
+        val historyAdapter = HistoryAdapter(historyTracks)
+        reciclerViewHistoryTrack.adapter = historyAdapter
+
+        //SharedPreferences and Gson
+        val sharedPref = getSharedPreferences(App.SETTING_PARAMS, MODE_PRIVATE)
+        val gson = Gson()
+        val fromJson = sharedPref.getString(HISTORY_KEY, null)
+        if(fromJson != null) {
+            val turnsType = object : TypeToken<ArrayList<TrackResponse.Track>>() {}.type
+            val prefList = gson.fromJson<ArrayList<TrackResponse.Track>>(fromJson, turnsType)
+            historyTracks.addAll(prefList)
+        }
+
+
         val recyclerViewTrack = findViewById<RecyclerView>(R.id.reciclerViewTrack)
         val trackAdapter = TrackAdapter(tracks)
         recyclerViewTrack.adapter = trackAdapter
 
-        //Plaveholders
+        //Добавляем трек в историю
+        trackAdapter.onItemClick = { trackItem ->
+            searchInput.clearFocus()
+
+            fun addTrack (trackItem : TrackResponse.Track) {
+                historyTracks.add(0, trackItem)
+                val json = gson.toJson(historyTracks)
+                sharedPref.edit().putString(HISTORY_KEY, json).apply()
+            }
+
+            if(historyTracks.contains(trackItem)) {
+                historyTracks.remove(trackItem)
+                addTrack(trackItem)
+            } else {
+                addTrack(trackItem)
+            }
+
+        }
+
+        //Placeholders и История поиска
         val hideBlock = findViewById<LinearLayout>(R.id.hide_block)
         val statusImage = findViewById<ImageView>(R.id.status_image)
         val statusText = findViewById<TextView>(R.id.status_text)
         val additionalText = findViewById<TextView>(R.id.additional_text)
         val updateButton = findViewById<MaterialButton>(R.id.update_button)
+        val historyBlock = findViewById<LinearLayout>(R.id.history_block)
+        val historyText = findViewById<TextView>(R.id.history_text)
+        val historyButton = findViewById<MaterialButton>(R.id.history_clear)
 
+
+        //Статусы
         fun showStatus(status: Status) {
             when (status) {
+                Status.NONE -> {
+                    hideBlock.isVisible = false
+                    additionalText.isVisible = false
+                    updateButton.isVisible = false
+                    historyText.isVisible = false
+                    historyButton.isVisible = false
+                    historyBlock.isVisible = false
+                    reciclerViewHistoryTrack.isVisible = false
+                }
+
                 Status.SEARCH -> {
                     hideBlock.isVisible = true
                     additionalText.isVisible = false
                     updateButton.isVisible = false
+                    historyText.isVisible = false
+                    historyButton.isVisible = false
                     statusImage.setImageResource(R.drawable.search_none)
                     statusText.setText(R.string.none_search)
+                    historyBlock.isVisible = false
+                    reciclerViewHistoryTrack.isVisible = false
                 }
 
                 Status.INTERNET -> {
                     hideBlock.isVisible = true
                     additionalText.isVisible = true
                     updateButton.isVisible = true
+                    historyText.isVisible = false
+                    historyButton.isVisible = false
                     statusImage.setImageResource(R.drawable.internet)
                     statusText.setText(R.string.none_internet)
+                    historyBlock.isVisible = false
+                    reciclerViewHistoryTrack.isVisible = false
+                }
+
+                Status.HISTORY -> {
+                    hideBlock.isVisible = false
+                    historyBlock.isVisible = true
+                    historyText.isVisible = true
+                    historyButton.isVisible = true
+                    reciclerViewHistoryTrack.isVisible = true
                 }
             }
         }
 
+        //Фокус
+        searchInput.setOnFocusChangeListener { _, _ ->
+            if (searchInput.hasFocus() && historyTracks.isNotEmpty()) {
+                historyAdapter.notifyDataSetChanged()
+                showStatus(Status.HISTORY)
+            }
+        }
 
         //Обработчик введенных значений
         val simpleTextWatcher = object : TextWatcher {
@@ -91,12 +175,24 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (!p0.isNullOrEmpty()) {
+
+                if (!p0.isNullOrEmpty())
+                {
                     p0.toString()
                     clearButton.visibility = View.VISIBLE
-                } else {
-                    clearButton.visibility = View.GONE
+                    showStatus(Status.NONE)
+
                 }
+                else  {
+                    if(searchInput.hasFocus() && historyTracks.isNotEmpty()) {
+                        historyAdapter.notifyDataSetChanged()
+                        showStatus(Status.HISTORY)
+                    }
+                    showStatus(Status.NONE)
+                    clearButton.visibility = View.GONE
+
+                }
+
                 searchText = p0.toString()
             }
 
@@ -157,7 +253,18 @@ class SearchActivity : AppCompatActivity() {
         //Обновляем запрос
         updateButton.setOnClickListener {
             createResult()
+
         }
+
+        //Удаление истории
+        historyButton.setOnClickListener {
+            historyTracks.clear()
+            sharedPref.edit().clear().apply()
+            historyAdapter.notifyDataSetChanged()
+            showStatus(Status.NONE)
+        }
+
+
     }
 
     //Сохранение данных
@@ -172,10 +279,7 @@ class SearchActivity : AppCompatActivity() {
         searchText = savedInstanceState.getString(SEARCH_TEXT, SEARCH_DEF)
     }
 
-    //Константы
-    companion object {
-        const val SEARCH_TEXT = "SEARCH_TEXT"
-        const val SEARCH_DEF = ""
-    }
+
+
 
 }

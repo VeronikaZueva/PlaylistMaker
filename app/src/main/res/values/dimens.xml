@@ -8,6 +8,7 @@
     <dimen name="base">16dp</dimen>
     <dimen name="two_four">24dp</dimen>
     <dimen name="padding_bottom">28dp</dimen>
+    <dimen name="button_height">36dp</dimen>
     <dimen name="logo_bottom">40dp</dimen>
     <dimen name="input_height">48dp</dimen>
     <dimen name="header_stroke">56dp</dimen>
@@ -15,6 +16,7 @@
     <dimen name="base_text">22sp</dimen>
     <dimen name="status_text">19sp</dimen>
     <dimen name="setting_text">16sp</dimen>
+    <dimen name="text_button">14sp</dimen>
     <dimen name="minimum_text">11sp</dimen>
     <dimen name="weight_400">400</dimen>
     <dimen name="weight_500">500</dimen>

@@ -16,4 +16,8 @@
     <style name="Theme.CardContainer" parent="Base.Theme.PlaylistMaker">
         <item name="android:background">@color/main</item>
     </style>
+    <style name="Theme.Switch" parent="Base.Theme.PlaylistMaker">
+        <item name="trackTint">@color/light</item>
+        <item name="thumbTint">@color/blue</item>
+    </style>
 </resources>

@@ -38,13 +38,13 @@
         <TextView android:text="@string/night_theme"
             style="@style/TextSetting" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/themeSwitcher"
+            android:layout_marginHorizontal="@dimen/base"
             android:layout_gravity="end"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:layout_marginHorizontal="@dimen/base"
+            android:theme="@style/Theme.Switch"
             />
 
     </FrameLayout>

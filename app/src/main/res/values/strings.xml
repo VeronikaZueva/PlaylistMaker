@@ -23,4 +23,6 @@
     <string name="none_internet">Проблемы со свзязью</string>
     <string name="additional_status">Загрузка не удалась. Проверьте\nподключение к интернету</string>
     <string name="update_text">Обновить</string>
+    <string name="search_history">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
 </resources>
