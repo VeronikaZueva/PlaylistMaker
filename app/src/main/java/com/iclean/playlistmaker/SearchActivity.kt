@@ -72,11 +72,13 @@ class SearchActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences(App.SETTING_PARAMS, MODE_PRIVATE)
         val gson = Gson()
         val fromJson = sharedPref.getString(HISTORY_KEY, null)
-        if(fromJson != null) {
-            val turnsType = object : TypeToken<ArrayList<TrackResponse.Track>>() {}.type
-            val prefList = gson.fromJson<ArrayList<TrackResponse.Track>>(fromJson, turnsType)
-            historyTracks.addAll(prefList)
-        }
+
+            if (fromJson != null) {
+                val turnsType = object : TypeToken<ArrayList<TrackResponse.Track>>() {}.type
+                val prefList = gson.fromJson<ArrayList<TrackResponse.Track>>(fromJson, turnsType)
+                historyTracks.clear()
+                historyTracks.addAll(prefList)
+            }
 
 
         val recyclerViewTrack = findViewById<RecyclerView>(R.id.reciclerViewTrack)
@@ -87,19 +89,14 @@ class SearchActivity : AppCompatActivity() {
         trackAdapter.onItemClick = { trackItem ->
             searchInput.clearFocus()
 
-            fun addTrack (trackItem : TrackResponse.Track) {
+            if(historyTracks.contains(trackItem)) {
+                    historyTracks.remove(trackItem)
+            }
                 historyTracks.add(0, trackItem)
                 val json = gson.toJson(historyTracks)
                 sharedPref.edit().putString(HISTORY_KEY, json).apply()
-            }
 
-            if(historyTracks.contains(trackItem)) {
-                historyTracks.remove(trackItem)
-                addTrack(trackItem)
-            } else {
-                addTrack(trackItem)
-            }
-
+            historyAdapter.notifyDataSetChanged()
         }
 
         //Placeholders и История поиска
