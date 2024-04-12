@@ -27,10 +27,8 @@ class SettingsActivity : AppCompatActivity() {
         themeSwitcher.isChecked = sharedPreferences.getBoolean(App.KEY_FOR_THEME, App.THEME_DEFAULT)
 
         themeSwitcher.setOnCheckedChangeListener { _, checked ->
-            (applicationContext as App).switchTheme(checked)
-            sharedPreferences.edit()
-                .putBoolean(App.KEY_FOR_THEME, checked)
-                .apply()
+            (application as App).switchTheme(checked)
+
         }
 
         //Поделиться приложением

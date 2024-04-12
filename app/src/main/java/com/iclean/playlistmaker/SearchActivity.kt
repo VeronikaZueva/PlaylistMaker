@@ -2,7 +2,6 @@ package com.iclean.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,14 +10,9 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,16 +21,21 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.ArrayList
 
 
-class SearchActivity : AppCompatActivity() {
+class SearchActivity :  AppCompatActivity() {
 
     //Константы
     companion object {
-        val tracks = ArrayList<TrackResponse.Track>()
-        var historyTracks = ArrayList<TrackResponse.Track>(10)
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_DEF = ""
-        const val HISTORY_KEY = "history_key"
+        const val COUNT_TRACK = 10
     }
+
+    val checkStatus = CheckStatus()
+    val tracks = ArrayList<TrackResponse.Track>()
+    var historyTracks = ArrayList<TrackResponse.Track>(COUNT_TRACK)
+    private val searchClass = SearchHistory()
+
+
     //Задаем параметры Retrofit
     private val itunesBaseUrl = "https://itunes.apple.com"
     private val retrofit = Retrofit.Builder()
@@ -64,104 +63,45 @@ class SearchActivity : AppCompatActivity() {
 
 
         //RecyclerViews
-        val reciclerViewHistoryTrack = findViewById<RecyclerView>(R.id.reciclerViewHistoryTrack)
+        checkStatus.reciclerViewHistoryTrack = findViewById(R.id.reciclerViewHistoryTrack)
         val historyAdapter = HistoryAdapter(historyTracks)
-        reciclerViewHistoryTrack.adapter = historyAdapter
-
-        //SharedPreferences and Gson
-        val sharedPref = getSharedPreferences(App.SETTING_PARAMS, MODE_PRIVATE)
-        val gson = Gson()
-        val fromJson = sharedPref.getString(HISTORY_KEY, null)
-
-            if (fromJson != null) {
-                val turnsType = object : TypeToken<ArrayList<TrackResponse.Track>>() {}.type
-                val prefList = gson.fromJson<ArrayList<TrackResponse.Track>>(fromJson, turnsType)
-                historyTracks.clear()
-                historyTracks.addAll(prefList)
-            }
-
-
+        checkStatus.reciclerViewHistoryTrack.adapter = historyAdapter
         val recyclerViewTrack = findViewById<RecyclerView>(R.id.reciclerViewTrack)
         val trackAdapter = TrackAdapter(tracks)
         recyclerViewTrack.adapter = trackAdapter
+
+        //SharedPreferences and Gson
+        searchClass.fromJson(historyTracks)
+
 
         //Добавляем трек в историю
         trackAdapter.onItemClick = { trackItem ->
             searchInput.clearFocus()
 
-            if(historyTracks.contains(trackItem)) {
-                    historyTracks.remove(trackItem)
-            }
-                historyTracks.add(0, trackItem)
-                val json = gson.toJson(historyTracks)
-                sharedPref.edit().putString(HISTORY_KEY, json).apply()
+            searchClass.addTrackInHistory(historyTracks, trackItem)
 
             historyAdapter.notifyDataSetChanged()
         }
 
         //Placeholders и История поиска
-        val hideBlock = findViewById<LinearLayout>(R.id.hide_block)
-        val statusImage = findViewById<ImageView>(R.id.status_image)
-        val statusText = findViewById<TextView>(R.id.status_text)
-        val additionalText = findViewById<TextView>(R.id.additional_text)
-        val updateButton = findViewById<MaterialButton>(R.id.update_button)
-        val historyBlock = findViewById<LinearLayout>(R.id.history_block)
-        val historyText = findViewById<TextView>(R.id.history_text)
-        val historyButton = findViewById<MaterialButton>(R.id.history_clear)
+        checkStatus.hideBlock = findViewById(R.id.hide_block)
+        checkStatus.statusImage = findViewById(R.id.status_image)
+        checkStatus.statusText = findViewById(R.id.status_text)
+        checkStatus.additionalText = findViewById(R.id.additional_text)
+        checkStatus.updateButton = findViewById(R.id.update_button)
+        checkStatus.historyBlock = findViewById(R.id.history_block)
+        checkStatus.historyText = findViewById(R.id.history_text)
+        checkStatus.historyButton = findViewById(R.id.history_clear)
 
 
         //Статусы
-        fun showStatus(status: Status) {
-            when (status) {
-                Status.NONE -> {
-                    hideBlock.isVisible = false
-                    additionalText.isVisible = false
-                    updateButton.isVisible = false
-                    historyText.isVisible = false
-                    historyButton.isVisible = false
-                    historyBlock.isVisible = false
-                    reciclerViewHistoryTrack.isVisible = false
-                }
 
-                Status.SEARCH -> {
-                    hideBlock.isVisible = true
-                    additionalText.isVisible = false
-                    updateButton.isVisible = false
-                    historyText.isVisible = false
-                    historyButton.isVisible = false
-                    statusImage.setImageResource(R.drawable.search_none)
-                    statusText.setText(R.string.none_search)
-                    historyBlock.isVisible = false
-                    reciclerViewHistoryTrack.isVisible = false
-                }
-
-                Status.INTERNET -> {
-                    hideBlock.isVisible = true
-                    additionalText.isVisible = true
-                    updateButton.isVisible = true
-                    historyText.isVisible = false
-                    historyButton.isVisible = false
-                    statusImage.setImageResource(R.drawable.internet)
-                    statusText.setText(R.string.none_internet)
-                    historyBlock.isVisible = false
-                    reciclerViewHistoryTrack.isVisible = false
-                }
-
-                Status.HISTORY -> {
-                    hideBlock.isVisible = false
-                    historyBlock.isVisible = true
-                    historyText.isVisible = true
-                    historyButton.isVisible = true
-                    reciclerViewHistoryTrack.isVisible = true
-                }
-            }
-        }
 
         //Фокус
         searchInput.setOnFocusChangeListener { _, _ ->
             if (searchInput.hasFocus() && historyTracks.isNotEmpty()) {
                 historyAdapter.notifyDataSetChanged()
-                showStatus(Status.HISTORY)
+                checkStatus.showStatus(Status.HISTORY)
             }
         }
 
@@ -177,15 +117,15 @@ class SearchActivity : AppCompatActivity() {
                 {
                     p0.toString()
                     clearButton.visibility = View.VISIBLE
-                    showStatus(Status.NONE)
+                    checkStatus.showStatus(Status.NONE)
 
                 }
                 else  {
                     if(searchInput.hasFocus() && historyTracks.isNotEmpty()) {
                         historyAdapter.notifyDataSetChanged()
-                        showStatus(Status.HISTORY)
+                        checkStatus.showStatus(Status.HISTORY)
                     }
-                    showStatus(Status.NONE)
+                    checkStatus.showStatus(Status.NONE)
                     clearButton.visibility = View.GONE
 
                 }
@@ -202,7 +142,7 @@ class SearchActivity : AppCompatActivity() {
         //Создаем запрос и выводим результат
         fun createResult() {
             tracks.clear()
-            hideBlock.isVisible = false
+            checkStatus.hideBlock.isVisible = false
         itunesService.searchTrack(searchInput.text.toString())
             .enqueue(object : Callback<TrackResponse> {
                 override fun onResponse(
@@ -214,15 +154,15 @@ class SearchActivity : AppCompatActivity() {
                         tracks.addAll(response.body()?.results!!)
                         trackAdapter.notifyDataSetChanged()
                         if (tracks.isEmpty()) {
-                            showStatus(Status.SEARCH)
+                            checkStatus.showStatus(Status.SEARCH)
                         }
                     } else {
-                        showStatus(Status.INTERNET)
+                        checkStatus.showStatus(Status.INTERNET)
                     }
                 }
 
                 override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                    showStatus(Status.INTERNET)
+                    checkStatus.showStatus(Status.INTERNET)
                 }
             })
     }
@@ -248,17 +188,16 @@ class SearchActivity : AppCompatActivity() {
         searchInput.setText(searchText)
 
         //Обновляем запрос
-        updateButton.setOnClickListener {
+        checkStatus.updateButton.setOnClickListener {
             createResult()
 
         }
 
         //Удаление истории
-        historyButton.setOnClickListener {
-            historyTracks.clear()
-            sharedPref.edit().clear().apply()
+        checkStatus.historyButton.setOnClickListener {
+            searchClass.clearHistory(historyTracks)
             historyAdapter.notifyDataSetChanged()
-            showStatus(Status.NONE)
+            checkStatus.showStatus(Status.NONE)
         }
 
 
