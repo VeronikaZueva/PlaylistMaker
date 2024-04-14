@@ -12,12 +12,14 @@ import java.util.Locale
 
 
 class TrackViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
+    private val trackId : TextView = itemView.findViewById(R.id.track_id)
     private val trackName : TextView = itemView.findViewById(R.id.track_name)
     private val artistName : TextView = itemView.findViewById(R.id.artist_name)
     private val trackUrl : ImageView = itemView.findViewById(R.id.poster)
     private val trackTime : TextView = itemView.findViewById(R.id.track_time)
 
     fun bind(model : TrackResponse.Track) {
+        trackId.text = model.trackId
         trackName.text = model.trackName
         artistName.text = model.artistName
         trackTime.text = SimpleDateFormat(
@@ -30,6 +32,11 @@ class TrackViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
             .placeholder(R.drawable.placeholder)
             .transform(RoundedCorners(dpToPx(itemView)))
             .into(trackUrl)
+
+        //отработка нажатия
+        itemView.setOnClickListener {
+                    addTrack(model)
+        }
     }
 
    private fun dpToPx(context: View): Int {
@@ -40,6 +47,8 @@ class TrackViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
            context.resources.displayMetrics).toInt()
    }
 
-
+    private fun addTrack(model: TrackResponse.Track): TrackResponse.Track {
+        return model
+    }
 
 }

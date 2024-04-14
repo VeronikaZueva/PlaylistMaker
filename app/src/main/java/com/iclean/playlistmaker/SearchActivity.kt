@@ -2,7 +2,6 @@ package com.iclean.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,20 +10,32 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.ArrayList
 
 
-class SearchActivity : AppCompatActivity() {
+class SearchActivity :  AppCompatActivity() {
+
+    //Константы
+    companion object {
+        const val SEARCH_TEXT = "SEARCH_TEXT"
+        const val SEARCH_DEF = ""
+        const val COUNT_TRACK = 10
+    }
+
+    val checkStatus = CheckStatus()
+    val tracks = ArrayList<TrackResponse.Track>()
+    var historyTracks = ArrayList<TrackResponse.Track>(COUNT_TRACK)
+    private val searchClass = SearchHistory()
+
+
     //Задаем параметры Retrofit
     private val itunesBaseUrl = "https://itunes.apple.com"
     private val retrofit = Retrofit.Builder()
@@ -50,39 +61,49 @@ class SearchActivity : AppCompatActivity() {
         val inputMethodManager =
             getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
 
-        //Retrofit
-        val tracks = ArrayList<TrackResponse.Track>()
+
+        //RecyclerViews
+        checkStatus.reciclerViewHistoryTrack = findViewById(R.id.reciclerViewHistoryTrack)
+        val historyAdapter = HistoryAdapter(historyTracks)
+        checkStatus.reciclerViewHistoryTrack.adapter = historyAdapter
         val recyclerViewTrack = findViewById<RecyclerView>(R.id.reciclerViewTrack)
         val trackAdapter = TrackAdapter(tracks)
         recyclerViewTrack.adapter = trackAdapter
 
-        //Plaveholders
-        val hideBlock = findViewById<LinearLayout>(R.id.hide_block)
-        val statusImage = findViewById<ImageView>(R.id.status_image)
-        val statusText = findViewById<TextView>(R.id.status_text)
-        val additionalText = findViewById<TextView>(R.id.additional_text)
-        val updateButton = findViewById<MaterialButton>(R.id.update_button)
+        //SharedPreferences and Gson
+        searchClass.fromJson(historyTracks)
 
-        fun showStatus(status: Status) {
-            when (status) {
-                Status.SEARCH -> {
-                    hideBlock.isVisible = true
-                    additionalText.isVisible = false
-                    updateButton.isVisible = false
-                    statusImage.setImageResource(R.drawable.search_none)
-                    statusText.setText(R.string.none_search)
-                }
 
-                Status.INTERNET -> {
-                    hideBlock.isVisible = true
-                    additionalText.isVisible = true
-                    updateButton.isVisible = true
-                    statusImage.setImageResource(R.drawable.internet)
-                    statusText.setText(R.string.none_internet)
-                }
-            }
+        //Добавляем трек в историю
+        trackAdapter.onItemClick = { trackItem ->
+            searchInput.clearFocus()
+
+            searchClass.addTrackInHistory(historyTracks, trackItem)
+
+            historyAdapter.notifyDataSetChanged()
         }
 
+        //Placeholders и История поиска
+        checkStatus.hideBlock = findViewById(R.id.hide_block)
+        checkStatus.statusImage = findViewById(R.id.status_image)
+        checkStatus.statusText = findViewById(R.id.status_text)
+        checkStatus.additionalText = findViewById(R.id.additional_text)
+        checkStatus.updateButton = findViewById(R.id.update_button)
+        checkStatus.historyBlock = findViewById(R.id.history_block)
+        checkStatus.historyText = findViewById(R.id.history_text)
+        checkStatus.historyButton = findViewById(R.id.history_clear)
+
+
+        //Статусы
+
+
+        //Фокус
+        searchInput.setOnFocusChangeListener { _, _ ->
+            if (searchInput.hasFocus() && historyTracks.isNotEmpty()) {
+                historyAdapter.notifyDataSetChanged()
+                checkStatus.showStatus(Status.HISTORY)
+            }
+        }
 
         //Обработчик введенных значений
         val simpleTextWatcher = object : TextWatcher {
@@ -91,12 +112,24 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (!p0.isNullOrEmpty()) {
+
+                if (!p0.isNullOrEmpty())
+                {
                     p0.toString()
                     clearButton.visibility = View.VISIBLE
-                } else {
-                    clearButton.visibility = View.GONE
+                    checkStatus.showStatus(Status.NONE)
+
                 }
+                else  {
+                    if(searchInput.hasFocus() && historyTracks.isNotEmpty()) {
+                        historyAdapter.notifyDataSetChanged()
+                        checkStatus.showStatus(Status.HISTORY)
+                    }
+                    checkStatus.showStatus(Status.NONE)
+                    clearButton.visibility = View.GONE
+
+                }
+
                 searchText = p0.toString()
             }
 
@@ -109,7 +142,7 @@ class SearchActivity : AppCompatActivity() {
         //Создаем запрос и выводим результат
         fun createResult() {
             tracks.clear()
-            hideBlock.isVisible = false
+            checkStatus.hideBlock.isVisible = false
         itunesService.searchTrack(searchInput.text.toString())
             .enqueue(object : Callback<TrackResponse> {
                 override fun onResponse(
@@ -121,15 +154,15 @@ class SearchActivity : AppCompatActivity() {
                         tracks.addAll(response.body()?.results!!)
                         trackAdapter.notifyDataSetChanged()
                         if (tracks.isEmpty()) {
-                            showStatus(Status.SEARCH)
+                            checkStatus.showStatus(Status.SEARCH)
                         }
                     } else {
-                        showStatus(Status.INTERNET)
+                        checkStatus.showStatus(Status.INTERNET)
                     }
                 }
 
                 override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                    showStatus(Status.INTERNET)
+                    checkStatus.showStatus(Status.INTERNET)
                 }
             })
     }
@@ -155,9 +188,19 @@ class SearchActivity : AppCompatActivity() {
         searchInput.setText(searchText)
 
         //Обновляем запрос
-        updateButton.setOnClickListener {
+        checkStatus.updateButton.setOnClickListener {
             createResult()
+
         }
+
+        //Удаление истории
+        checkStatus.historyButton.setOnClickListener {
+            searchClass.clearHistory(historyTracks)
+            historyAdapter.notifyDataSetChanged()
+            checkStatus.showStatus(Status.NONE)
+        }
+
+
     }
 
     //Сохранение данных
@@ -172,10 +215,7 @@ class SearchActivity : AppCompatActivity() {
         searchText = savedInstanceState.getString(SEARCH_TEXT, SEARCH_DEF)
     }
 
-    //Константы
-    companion object {
-        const val SEARCH_TEXT = "SEARCH_TEXT"
-        const val SEARCH_DEF = ""
-    }
+
+
 
 }

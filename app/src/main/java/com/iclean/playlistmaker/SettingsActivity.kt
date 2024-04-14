@@ -7,7 +7,8 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
-import com.google.android.material.switchmaterial.SwitchMaterial
+import androidx.appcompat.widget.SwitchCompat
+
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,9 +22,13 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         //Переключаем тему
-        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
-        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
-            (applicationContext as App).switchTheme(checked)
+        val sharedPreferences = getSharedPreferences(App.SETTING_PARAMS, MODE_PRIVATE)
+        val themeSwitcher = findViewById<SwitchCompat>(R.id.themeSwitcher)
+        themeSwitcher.isChecked = sharedPreferences.getBoolean(App.KEY_FOR_THEME, App.THEME_DEFAULT)
+
+        themeSwitcher.setOnCheckedChangeListener { _, checked ->
+            (application as App).switchTheme(checked)
+
         }
 
         //Поделиться приложением
