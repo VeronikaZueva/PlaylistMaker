@@ -24,7 +24,7 @@ class TrackViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         val trackImage = model.artworkUrl100
         val context = itemView.context
 
-        trackMethods.setImage(context, trackImage, trackUrl, placeholder)
+        trackMethods.setImage(context, trackImage, trackUrl, placeholder, 2.0f)
 
         //отработка нажатия
         itemView.setOnClickListener {

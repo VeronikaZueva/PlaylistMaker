@@ -29,21 +29,21 @@ open class TrackMethods   {
     }
 
     //Работа с обложкой изображения
-    fun setImage(itemView: Context, trackImage: String?, trackUrl: ImageView, placeholder:Int) {
+    fun setImage(itemView: Context, trackImage: String?, trackUrl: ImageView, placeholder:Int, dp: Float) {
         Glide.with(itemView)
             .load(trackImage)
             .placeholder(placeholder)
-            .transform(RoundedCorners(dpToPx(itemView)))
+            .transform(RoundedCorners(dpToPx(itemView, dp)))
             .into(trackUrl)
     }
 
     //Перевод значений в пиксели
-    private fun dpToPx(context: Context): Int {
-        val dp = 2.0f
+    private fun dpToPx(context: Context, dp: Float): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             dp,
             context.resources.displayMetrics).toInt()
+
     }
 
 

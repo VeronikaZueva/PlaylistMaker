@@ -69,7 +69,7 @@ class PlayerActivity : AppCompatActivity() {
             albumTrack.isVisible = false
         }
 
-        trackMethods.setImage(applicationContext, bigPoster, poster, placeholder)
+        trackMethods.setImage(applicationContext, bigPoster, poster, placeholder, 8.0f)
 
 
     }
