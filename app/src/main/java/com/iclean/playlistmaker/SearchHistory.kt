@@ -29,6 +29,9 @@ class SearchHistory {
             historyTracks.remove(trackItem)
         }
         historyTracks.add(0, trackItem)
+        if (historyTracks.size > 10) {
+            historyTracks.removeLast()
+        }
         val json = gson.toJson(historyTracks)
         sharedPreferences.edit().putString(HISTORY_KEY, json).apply()
     }

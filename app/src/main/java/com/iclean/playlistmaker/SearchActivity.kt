@@ -2,6 +2,7 @@ package com.iclean.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.util.ArrayList
 
 
@@ -34,20 +33,14 @@ class SearchActivity :  AppCompatActivity() {
     val tracks = ArrayList<TrackResponse.Track>()
     var historyTracks = ArrayList<TrackResponse.Track>(COUNT_TRACK)
     private val searchClass = SearchHistory()
+    private val trackMethods = TrackMethods()
 
-
-    //Задаем параметры Retrofit
-    private val itunesBaseUrl = "https://itunes.apple.com"
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(itunesBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val itunesService = retrofit.create(ITunesApi::class.java)
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
 
         //Вернуться домой
         val backButton = findViewById<ImageButton>(R.id.back_button)
@@ -64,10 +57,11 @@ class SearchActivity :  AppCompatActivity() {
 
         //RecyclerViews
         checkStatus.reciclerViewHistoryTrack = findViewById(R.id.reciclerViewHistoryTrack)
-        val historyAdapter = HistoryAdapter(historyTracks)
-        checkStatus.reciclerViewHistoryTrack.adapter = historyAdapter
         val recyclerViewTrack = findViewById<RecyclerView>(R.id.reciclerViewTrack)
+
+        val historyAdapter = TrackAdapter(historyTracks)
         val trackAdapter = TrackAdapter(tracks)
+
         recyclerViewTrack.adapter = trackAdapter
 
         //SharedPreferences and Gson
@@ -77,10 +71,18 @@ class SearchActivity :  AppCompatActivity() {
         //Добавляем трек в историю
         trackAdapter.onItemClick = { trackItem ->
             searchInput.clearFocus()
-
             searchClass.addTrackInHistory(historyTracks, trackItem)
-
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra("trackObject", trackItem)
+            startActivity(intent)
             historyAdapter.notifyDataSetChanged()
+        }
+
+        //Нажатие по треку в истории
+        historyAdapter.onItemClick = { trackItem ->
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra("trackObject", trackItem)
+            startActivity(intent)
         }
 
         //Placeholders и История поиска
@@ -94,12 +96,10 @@ class SearchActivity :  AppCompatActivity() {
         checkStatus.historyButton = findViewById(R.id.history_clear)
 
 
-        //Статусы
-
-
         //Фокус
         searchInput.setOnFocusChangeListener { _, _ ->
             if (searchInput.hasFocus() && historyTracks.isNotEmpty()) {
+                checkStatus.reciclerViewHistoryTrack.adapter = historyAdapter
                 historyAdapter.notifyDataSetChanged()
                 checkStatus.showStatus(Status.HISTORY)
             }
@@ -122,6 +122,7 @@ class SearchActivity :  AppCompatActivity() {
                 }
                 else  {
                     if(searchInput.hasFocus() && historyTracks.isNotEmpty()) {
+                        checkStatus.reciclerViewHistoryTrack.adapter = historyAdapter
                         historyAdapter.notifyDataSetChanged()
                         checkStatus.showStatus(Status.HISTORY)
                     }
@@ -143,28 +144,28 @@ class SearchActivity :  AppCompatActivity() {
         fun createResult() {
             tracks.clear()
             checkStatus.hideBlock.isVisible = false
-        itunesService.searchTrack(searchInput.text.toString())
-            .enqueue(object : Callback<TrackResponse> {
-                override fun onResponse(
-                    call: Call<TrackResponse>,
-                    response: Response<TrackResponse>
-                ) {
-                    if (response.code() == 200) {
-                        tracks.clear()
-                        tracks.addAll(response.body()?.results!!)
-                        trackAdapter.notifyDataSetChanged()
-                        if (tracks.isEmpty()) {
-                            checkStatus.showStatus(Status.SEARCH)
+            trackMethods.itunesService?.searchTrack(searchInput.text.toString())
+                ?.enqueue(object : Callback<TrackResponse> {
+                    override fun onResponse(
+                        call: Call<TrackResponse>,
+                        response: Response<TrackResponse>
+                    ) {
+                        if (response.code() == 200) {
+                            tracks.clear()
+                            tracks.addAll(response.body()?.results!!)
+                            trackAdapter.notifyDataSetChanged()
+                            if (tracks.isEmpty()) {
+                                checkStatus.showStatus(Status.SEARCH)
+                            }
+                        } else {
+                            checkStatus.showStatus(Status.INTERNET)
                         }
-                    } else {
+                    }
+
+                    override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
                         checkStatus.showStatus(Status.INTERNET)
                     }
-                }
-
-                override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                    checkStatus.showStatus(Status.INTERNET)
-                }
-            })
+                })
     }
 
         //Выводим список RecyclerView
@@ -214,8 +215,6 @@ class SearchActivity :  AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         searchText = savedInstanceState.getString(SEARCH_TEXT, SEARCH_DEF)
     }
-
-
 
 
 }

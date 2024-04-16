@@ -18,6 +18,9 @@
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
+            android:name=".PlayerActivity"
+            android:exported="false"/>
+        <activity
             android:name=".MediaActivity"
             android:exported="false"/>
         <activity
