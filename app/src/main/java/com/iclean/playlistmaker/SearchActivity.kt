@@ -123,7 +123,7 @@ class SearchActivity :  AppCompatActivity() {
                 }
                 else  {
                     if(searchInput.hasFocus() && historyTracks.isNotEmpty()) {
-                        //tracks.clear()
+                        tracks.clear()
                         checkStatus.reciclerViewHistoryTrack.adapter = historyAdapter
                         historyAdapter.notifyDataSetChanged()
                         checkStatus.showStatus(Status.HISTORY)
