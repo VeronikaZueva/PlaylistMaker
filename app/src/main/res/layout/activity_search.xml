@@ -73,6 +73,14 @@
         />
 </FrameLayout>
 
+    <ProgressBar android:id="@+id/progressBar"
+        android:layout_width="@dimen/progress"
+        android:layout_height="@dimen/progress"
+        android:layout_marginTop="@dimen/big_margin"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/blue"
+        android:visibility="gone"/>
+
 
     <LinearLayout android:id="@+id/hide_block"
         android:layout_width="match_parent"
@@ -82,6 +90,7 @@
         android:orientation="vertical"
         android:visibility="gone"
         tools:ignore="UseCompoundDrawables">
+
 
         <ImageView android:id="@+id/status_image"
             android:layout_width="wrap_content"

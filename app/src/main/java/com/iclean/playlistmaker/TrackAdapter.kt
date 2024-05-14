@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 
 class TrackAdapter (private val trackList : ArrayList<TrackResponse.Track>) : RecyclerView.Adapter<TrackViewHolder>() {
+
      var onItemClick : ((trackItem : TrackResponse.Track) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
