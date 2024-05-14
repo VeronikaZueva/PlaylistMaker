@@ -1,51 +1,36 @@
 package com.iclean.playlistmaker
 
-import android.util.TypedValue
+
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 
 class TrackViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
+    private val trackMethods = TrackMethods()
     private val trackId : TextView = itemView.findViewById(R.id.track_id)
     private val trackName : TextView = itemView.findViewById(R.id.track_name)
     private val artistName : TextView = itemView.findViewById(R.id.artist_name)
-    private val trackUrl : ImageView = itemView.findViewById(R.id.poster)
     private val trackTime : TextView = itemView.findViewById(R.id.track_time)
+    private val trackUrl : ImageView = itemView.findViewById(R.id.poster)
+    private val placeholder = R.drawable.placeholder
 
     fun bind(model : TrackResponse.Track) {
         trackId.text = model.trackId
         trackName.text = model.trackName
         artistName.text = model.artistName
-        trackTime.text = SimpleDateFormat(
-            "mm:ss",
-            Locale.getDefault())
-            .format(model.trackTimeMillis.toInt())
+        trackTime.text = trackMethods.dateFormatTrack(model.trackTimeMillis)
+        val trackImage = model.artworkUrl100
+        val context = itemView.context
 
-        Glide.with(itemView)
-            .load(model.artworkUrl100)
-            .placeholder(R.drawable.placeholder)
-            .transform(RoundedCorners(dpToPx(itemView)))
-            .into(trackUrl)
+        trackMethods.setImage(context, trackImage, trackUrl, placeholder, 2.0f)
 
         //отработка нажатия
         itemView.setOnClickListener {
                     addTrack(model)
         }
     }
-
-   private fun dpToPx(context: View): Int {
-       val dp = 2.0f
-       return TypedValue.applyDimension(
-           TypedValue.COMPLEX_UNIT_DIP,
-           dp,
-           context.resources.displayMetrics).toInt()
-   }
 
     private fun addTrack(model: TrackResponse.Track): TrackResponse.Track {
         return model
