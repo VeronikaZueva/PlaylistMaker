@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -15,6 +14,7 @@ import android.widget.ImageButton
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Call
 import retrofit2.Callback
@@ -117,14 +117,10 @@ class SearchActivity :  AppCompatActivity() {
         }
 
 
-
-        //Обработчик введенных значений
-        val simpleTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        //Работаем с TextWatcher
+        searchInput.addTextChangedListener(
+            beforeTextChanged = { _: CharSequence?, _: Int, _: Int, _: Int -> },
+            onTextChanged = { p0: CharSequence?, _: Int, _: Int, _: Int ->
                 searchText = p0.toString()
 
                 if (!p0.isNullOrEmpty())
@@ -137,27 +133,18 @@ class SearchActivity :  AppCompatActivity() {
                 else  {
                     if(searchInput.hasFocus() && historyTracks.isNotEmpty()) {
 
-                            tracks.clear()
-                            checkStatus.reciclerViewHistoryTrack.adapter = historyAdapter
-                            historyAdapter.notifyDataSetChanged()
-                            checkStatus.showStatus(Status.HISTORY)
+                        tracks.clear()
+                        checkStatus.reciclerViewHistoryTrack.adapter = historyAdapter
+                        historyAdapter.notifyDataSetChanged()
+                        checkStatus.showStatus(Status.HISTORY)
 
                     }
                     checkStatus.showStatus(Status.NONE)
                     clearButton.visibility = View.GONE
 
                 }
-
-
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-
-            }
-
-
-        }
-        searchInput.addTextChangedListener(simpleTextWatcher)
+        },
+            afterTextChanged = { _: Editable? -> })
 
         //Создаем запрос и выводим результат
          runnable = Runnable{
@@ -227,7 +214,7 @@ class SearchActivity :  AppCompatActivity() {
         return current
     }
 
-    fun searchDebounce() {
+    private fun searchDebounce() {
         handler.removeCallbacks(runnable)
         handler.postDelayed(runnable, CLICK_DEBOUNCE_DELAY)
     }
