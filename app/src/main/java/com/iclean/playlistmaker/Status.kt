@@ -6,6 +6,4 @@ enum class Status {
     SEARCH,
     INTERNET,
     HISTORY
-
-
 }

@@ -1,6 +1,7 @@
 package com.iclean.playlistmaker
 
 import android.content.Intent
+import android.content.Intent.EXTRA_EMAIL
 import android.content.Intent.EXTRA_SUBJECT
 import android.content.Intent.EXTRA_TEXT
 import android.net.Uri
@@ -44,11 +45,12 @@ class SettingsActivity : AppCompatActivity() {
         //Написать в поддержку
         val sendButton = findViewById<ImageButton>(R.id.send_button)
         sendButton.setOnClickListener {
-            val sendIntent = Intent(Intent.ACTION_SENDTO)
 
-            sendIntent.data= Uri.parse(resources.getString(R.string.receiver))
-            sendIntent.putExtra(EXTRA_SUBJECT, resources.getString(R.string.subject))
-            sendIntent.putExtra(EXTRA_TEXT, resources.getString(R.string.mail_text))
+            val sendIntent = Intent(Intent.ACTION_SENDTO)
+                sendIntent.data = Uri.parse("mailto:")
+                sendIntent.putExtra(EXTRA_EMAIL, resources.getString(R.string.receiver))
+                sendIntent.putExtra(EXTRA_SUBJECT, resources.getString(R.string.subject))
+                sendIntent.putExtra(EXTRA_TEXT, resources.getString(R.string.mail_text))
             startActivity(sendIntent)
         }
 

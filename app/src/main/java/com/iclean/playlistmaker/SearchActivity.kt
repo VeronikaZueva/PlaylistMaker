@@ -4,15 +4,17 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Call
 import retrofit2.Callback
@@ -27,14 +29,21 @@ class SearchActivity :  AppCompatActivity() {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_DEF = ""
         const val COUNT_TRACK = 10
+        private const val CLICK_DEBOUNCE_DELAY = 2000L
     }
 
     val checkStatus = CheckStatus()
     val tracks = ArrayList<TrackResponse.Track>()
-    var historyTracks = ArrayList<TrackResponse.Track>(COUNT_TRACK)
+    private var historyTracks = ArrayList<TrackResponse.Track>(COUNT_TRACK)
     private val searchClass = SearchHistory()
     private val trackMethods = TrackMethods()
+    private var isClickAllowed = true
+    private val handler = Handler(Looper.getMainLooper())
 
+    private lateinit var clearButton : ImageButton
+    private lateinit var searchInput : EditText
+    private lateinit var runnable : Runnable
+    private lateinit var progressBar: ProgressBar
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,8 +58,8 @@ class SearchActivity :  AppCompatActivity() {
         }
 
         //Поле поиска
-        val searchInput = findViewById<EditText>(R.id.search_input)
-        val clearButton = findViewById<ImageButton>(R.id.clear)
+        searchInput = findViewById(R.id.search_input)
+        clearButton = findViewById(R.id.clear)
         val inputMethodManager =
             getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
 
@@ -68,14 +77,14 @@ class SearchActivity :  AppCompatActivity() {
         searchClass.fromJson(historyTracks)
 
 
-        //Добавляем трек в историю
+        //Добавляем трек в историю и переходим на его просмотр
         trackAdapter.onItemClick = { trackItem ->
-            searchInput.clearFocus()
-            searchClass.addTrackInHistory(historyTracks, trackItem)
-            val intent = Intent(this, PlayerActivity::class.java)
-            intent.putExtra("trackObject", trackItem)
-            startActivity(intent)
-            historyAdapter.notifyDataSetChanged()
+            if(clickDebounce()) {
+                searchInput.clearFocus()
+                searchClass.addTrackInHistory(historyTracks, trackItem)
+                routerAudioPlayer(trackItem)
+                historyAdapter.notifyDataSetChanged()
+            }
         }
 
         //Нажатие по треку в истории
@@ -85,7 +94,7 @@ class SearchActivity :  AppCompatActivity() {
             startActivity(intent)
         }
 
-        //Placeholders и История поиска
+        //Скрытые слои
         checkStatus.hideBlock = findViewById(R.id.hide_block)
         checkStatus.statusImage = findViewById(R.id.status_image)
         checkStatus.statusText = findViewById(R.id.status_text)
@@ -94,6 +103,7 @@ class SearchActivity :  AppCompatActivity() {
         checkStatus.historyBlock = findViewById(R.id.history_block)
         checkStatus.historyText = findViewById(R.id.history_text)
         checkStatus.historyButton = findViewById(R.id.history_clear)
+        progressBar = findViewById(R.id.progressBar)
 
 
         //Фокус
@@ -106,46 +116,41 @@ class SearchActivity :  AppCompatActivity() {
             }
         }
 
-        //Обработчик введенных значений
-        val simpleTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        //Работаем с TextWatcher
+        searchInput.addTextChangedListener(
+            beforeTextChanged = { _: CharSequence?, _: Int, _: Int, _: Int -> },
+            onTextChanged = { p0: CharSequence?, _: Int, _: Int, _: Int ->
+                searchText = p0.toString()
 
                 if (!p0.isNullOrEmpty())
                 {
                     p0.toString()
                     clearButton.visibility = View.VISIBLE
                     checkStatus.showStatus(Status.NONE)
-
+                    searchDebounce()
                 }
                 else  {
                     if(searchInput.hasFocus() && historyTracks.isNotEmpty()) {
+
                         tracks.clear()
                         checkStatus.reciclerViewHistoryTrack.adapter = historyAdapter
                         historyAdapter.notifyDataSetChanged()
                         checkStatus.showStatus(Status.HISTORY)
+
                     }
                     checkStatus.showStatus(Status.NONE)
                     clearButton.visibility = View.GONE
 
                 }
-
-                searchText = p0.toString()
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-
-            }
-        }
-        searchInput.addTextChangedListener(simpleTextWatcher)
+        },
+            afterTextChanged = { _: Editable? -> })
 
         //Создаем запрос и выводим результат
-        fun createResult() {
+         runnable = Runnable{
             tracks.clear()
             checkStatus.hideBlock.isVisible = false
+            progressBar.visibility = View.VISIBLE
             trackMethods.itunesService?.searchTrack(searchInput.text.toString())
                 ?.enqueue(object : Callback<TrackResponse> {
                     override fun onResponse(
@@ -154,6 +159,7 @@ class SearchActivity :  AppCompatActivity() {
                     ) {
                         if (response.code() == 200) {
                             tracks.clear()
+                            progressBar.visibility = View.GONE
                             tracks.addAll(response.body()?.results!!)
                             trackAdapter.notifyDataSetChanged()
                             if (tracks.isEmpty()) {
@@ -165,20 +171,12 @@ class SearchActivity :  AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
+                        progressBar.visibility = View.GONE
                         checkStatus.showStatus(Status.INTERNET)
                     }
                 })
     }
 
-        //Выводим список RecyclerView
-        searchInput.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-
-                    createResult()
-
-            }
-            false
-        }
 
         //Очищаем поле поиска
         clearButton.setOnClickListener {
@@ -192,7 +190,7 @@ class SearchActivity :  AppCompatActivity() {
 
         //Обновляем запрос
         checkStatus.updateButton.setOnClickListener {
-            createResult()
+            searchDebounce()
 
         }
 
@@ -204,6 +202,29 @@ class SearchActivity :  AppCompatActivity() {
         }
 
 
+    }
+
+    //Задержки действий
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if(isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({isClickAllowed = true}, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(runnable)
+        handler.postDelayed(runnable, CLICK_DEBOUNCE_DELAY)
+    }
+
+
+    //Переход на экран Аудиоплеер
+    private fun routerAudioPlayer (trackItem : TrackResponse.Track) {
+        val intent = Intent(this, PlayerActivity::class.java)
+        intent.putExtra("trackObject", trackItem)
+        startActivity(intent)
     }
 
     //Сохранение данных
