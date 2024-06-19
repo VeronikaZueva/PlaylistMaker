@@ -1,13 +1,22 @@
-package com.iclean.playlistmaker.data.dto
+package com.iclean.playlistmaker.player.presentation.ui
 
 import android.content.Context
 import android.util.TypedValue
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class GlideTrack {
-    //Работа с обложкой изображения
+class TrackMethods  {
+
+    fun dateFormatTrack(model : String?) : String? {
+        return SimpleDateFormat(
+            "mm:ss",
+            Locale.getDefault())
+            .format(model?.toInt())
+    }
+
     fun setImage(itemView: Context, trackImage: String?, trackUrl: ImageView, placeholder:Int, dp: Float) {
         Glide.with(itemView)
             .load(trackImage)
@@ -24,4 +33,5 @@ class GlideTrack {
             context.resources.displayMetrics).toInt()
 
     }
+
 }
