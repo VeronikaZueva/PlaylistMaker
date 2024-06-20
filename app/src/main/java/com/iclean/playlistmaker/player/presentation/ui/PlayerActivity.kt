@@ -1,5 +1,6 @@
 package com.iclean.playlistmaker.player.presentation.ui
 
+
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,9 +12,9 @@ import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.player.presentation.presents.PlayerActivityPresents
 import androidx.core.view.isVisible
 import com.iclean.playlistmaker.TrackResponse
-import com.iclean.playlistmaker.data.repository.PlayerRepositoryImpl
-import com.iclean.playlistmaker.player.domain.impl.PlayerInteractorImpl
-import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
+import com.iclean.playlistmaker.data.models.MediaPlayerState
+import com.iclean.playlistmaker.player.Creator
+import com.iclean.playlistmaker.player.presentation.presents.PlayerController
 
 
 @Suppress("DEPRECATION")
@@ -21,18 +22,19 @@ class PlayerActivity : AppCompatActivity() {
 
     //Подключаем нужные обработчики к Activity
     private val presents = PlayerActivityPresents() //Получает данные
-    private val player = PlayerRepositoryImpl() //Обработчик переключателя
-    private val interactor = PlayerInteractorImpl(player) //Основное взаимодействие
     private val trackMethods = TrackMethods() //Общие методы
+    private val controller = PlayerController() //Состояния плеера
+    private val mediaPlayer by lazy {Creator.getPlayerInteractor()} //Основное взаимодействие
+
 
 
     //Определяем переменные, которые нам потребуются позже
     private var mainThread: Handler? = null
-    lateinit var timerTrack : TextView
+    private lateinit var timerTrack : TextView
     private lateinit var playButton : ImageButton
     private lateinit var url : String
     private var isEnable : Boolean = false
-    private lateinit var state : MediaPlayerState
+    private var isTimer : Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +63,6 @@ class PlayerActivity : AppCompatActivity() {
         playButton = findViewById(R.id.button_play)
 
 
-
         //Принимаем данные из Интента
         val data = intent.extras
         val trackItem = data?.getParcelable<TrackResponse.Track>(/* key = */ "trackObject")
@@ -76,23 +77,37 @@ class PlayerActivity : AppCompatActivity() {
         year.text = presents.getYearFormat(trackItem)
         genre.text = presents.getPrimaryGenreName(trackItem)
         countryTrack.text = presents.getCountry(trackItem)
+        val previewUrl = presents.getPreviewUrl(trackItem)
 
-        if(presents.getCollectionName(trackItem).isEmpty()) {
+        if (presents.getCollectionName(trackItem).isEmpty()) {
             album.isVisible = false
             albumTrack.isVisible = false
         }
 
         //Устанавливаем обложку
-        trackMethods.setImage(applicationContext, presents.getBigPoster(trackItem), poster, placeholder, 8.0f)
+        trackMethods.setImage(
+            applicationContext,
+            presents.getBigPoster(trackItem),
+            poster,
+            placeholder,
+            8.0f
+        )
 
         //Работаем с медиаплеером
-        state = interactor.preparePlayer(url)
+        mediaPlayer.preparePlayer(previewUrl)
+
 
         //Обработчик нажатия на кнопку play|pause
         playButton.setOnClickListener {
-            isEnable = interactor.playControl(state)
-            changeButton(isEnable)
-             createTimerControl()
+        isEnable = controller.playControl(getState())
+        if(isEnable) {
+            mediaPlayer.pausePlayer()
+            playButton.setImageResource(R.drawable.play)
+        } else {
+            mediaPlayer.startPlayer()
+            playButton.setImageResource(R.drawable.pause)
+        }
+        createTimerControl()
         }
 
 
@@ -107,14 +122,13 @@ class PlayerActivity : AppCompatActivity() {
    private fun createTimerTask() : Runnable {
         return object : Runnable {
             override fun run() {
-                when (state) {
-                    MediaPlayerState.STATE_PAUSED -> mainThread?.removeCallbacks(this)
-                    else -> {
-                        timerTrack.text = interactor.statusTimer(state).toString()
-
-                        mainThread?.postDelayed(this, PlayerActivityPresents.DELAY)
-                    }
+                isTimer = controller.timerControl(getState())
+                if(isTimer) {mainThread?.removeCallbacks(this)}
+                else {
+                    timerTrack.text = mediaPlayer.statusTimer(getState())
+                    mainThread?.postDelayed(this, PlayerActivityPresents.DELAY)
                 }
+
 
             }
         }
@@ -124,29 +138,22 @@ class PlayerActivity : AppCompatActivity() {
     //Ставим плеер на паузу, если пользователь свернул экран
     override fun onPause() {
         super.onPause()
-        player.pausePlayer()
-        changeButton(false)
+        mediaPlayer.pausePlayer()
+        playButton.setImageResource(R.drawable.play)
     }
+
     //Управляем воспроизведением, переопределяя onDestroy()
-    override fun onDestroy() {
-        super.onDestroy()
-        player.release()
-        mainThread?.removeCallbacksAndMessages(null)
-    }
+   override fun onDestroy() {
+    super.onDestroy()
+    mediaPlayer.release()
+    mainThread?.removeCallbacksAndMessages(null)
+   }
 
+   //Получение текущего статуса
+   fun getState() : MediaPlayerState {
+       return mediaPlayer.getPlayerState()
+   }
 
-
-    private fun changeButton(isEnableButton : Boolean) {
-       if(isEnableButton) {
-            playButton.setImageResource(R.drawable.pause)
-            state = interactor.startPlayer(isEnableButton)
-            isEnable = false
-        } else {
-            playButton.setImageResource(R.drawable.play)
-            state = interactor.pausePlayer(isEnableButton)
-            isEnable = true
-        }
-    }
 
 
 

@@ -1,7 +1,7 @@
-package com.iclean.playlistmaker.player.domain.impl
+package com.iclean.playlistmaker.player
 
 import com.iclean.playlistmaker.player.domain.repository.TrackMediaPlayerInterface
-import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
+import com.iclean.playlistmaker.data.models.MediaPlayerState
 
 class TrackMediaPlayerImpl : TrackMediaPlayerInterface {
 
@@ -10,13 +10,13 @@ class TrackMediaPlayerImpl : TrackMediaPlayerInterface {
     override fun defaultPlayerState() : MediaPlayerState {
         return MediaPlayerState.STATE_DEFAULT
     }
-    override fun preparePlayer(url : String) : MediaPlayerState {
+    override fun preparePlayer() : MediaPlayerState {
         return MediaPlayerState.STATE_PREPARED
     }
     override fun startPlayer() : MediaPlayerState {
        return MediaPlayerState.STATE_PLAYING
     }
-    override fun pausePlayer() : MediaPlayerState  {
+    override fun pausePlayer() : MediaPlayerState {
        return MediaPlayerState.STATE_PAUSED
     }
 

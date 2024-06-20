@@ -1,19 +1,21 @@
 @file:Suppress("UNREACHABLE_CODE")
 
 package com.iclean.playlistmaker.player.domain.repository
-import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
+import com.iclean.playlistmaker.data.models.MediaPlayerState
 
 interface PlayerRepository {
 
-    fun preparePlayer(url : String) : MediaPlayerState {
+    var state : MediaPlayerState
+
+    fun preparePlayer(previewUrl : String)  {
         return TODO("Provide the return value")
     }
 
-    fun startPlayer() : MediaPlayerState {
+    fun startPlayer()  {
         return TODO("Provide the return value")
     }
 
-    fun pausePlayer() : MediaPlayerState {
+    fun pausePlayer()  {
         return TODO("Provide the return value")
     }
 
@@ -24,12 +26,5 @@ interface PlayerRepository {
 
     fun release()
 
-    fun getDefaultState() : MediaPlayerState {
-        return TODO("Provide the return value")
-    }
-
-    fun getState(isEnable : Boolean) : MediaPlayerState {
-        return TODO("Provide the return value")
-    }
 
 }

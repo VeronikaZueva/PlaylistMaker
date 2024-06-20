@@ -34,6 +34,9 @@ class PlayerActivityPresents  {
         return trackItem?.country.toString()
     }
 
+    fun getPreviewUrl(trackItem: TrackResponse.Track?) : String {
+        return trackItem?.previewUrl.toString()
+    }
 
 
     //Преобразуем ссылку на изображение в полный формат

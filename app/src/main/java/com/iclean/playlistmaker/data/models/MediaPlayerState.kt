@@ -1,4 +1,4 @@
-package com.iclean.playlistmaker.player.domain.models
+package com.iclean.playlistmaker.data.models
 
 enum class MediaPlayerState {
     STATE_DEFAULT,
