@@ -1,6 +1,7 @@
 package com.iclean.playlistmaker.player.domain.interactor
 
 import com.iclean.playlistmaker.data.models.MediaPlayerState
+import com.iclean.playlistmaker.player.domain.OnMediaPlayerStateChangeListener
 
 
 interface PlayerInteractor {
@@ -12,6 +13,8 @@ interface PlayerInteractor {
     fun pausePlayer()
 
     fun release()
+
+    fun setOnChangeStateListener(onMediaPlayerStateChangeListener: OnMediaPlayerStateChangeListener)
 
     fun statusTimer(statePlayer : MediaPlayerState) : String?
 }

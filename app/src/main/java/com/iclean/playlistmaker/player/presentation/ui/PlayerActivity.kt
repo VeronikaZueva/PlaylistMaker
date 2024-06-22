@@ -14,6 +14,7 @@ import androidx.core.view.isVisible
 import com.iclean.playlistmaker.TrackResponse
 import com.iclean.playlistmaker.data.models.MediaPlayerState
 import com.iclean.playlistmaker.player.Creator
+import com.iclean.playlistmaker.player.domain.OnMediaPlayerStateChangeListener
 import com.iclean.playlistmaker.player.presentation.presents.PlayerController
 
 
@@ -33,8 +34,11 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var timerTrack : TextView
     private lateinit var playButton : ImageButton
     private lateinit var url : String
+
+    //Флаги для управления функционалом
     private var isEnable : Boolean = false
-    private var isTimer : Boolean = true
+    private var timer : Int = 0
+    private var isCompleted : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +74,7 @@ class PlayerActivity : AppCompatActivity() {
         //Присваиваем нужные значения блокам экрана
         titleTrack.text = presents.getTrackName(trackItem)
         artistTrackName.text = presents.getArtistName(trackItem)
-        timerTrack.text = trackMethods.dateFormatTrack(presents.getTrackTimeMillis(trackItem))
+        timerTrack.text = PlayerActivityPresents.TIMER
         timeTrack.text = trackMethods.dateFormatTrack(presents.getTrackTimeMillis(trackItem))
         url = presents.getArtworkUrl100(trackItem)
         album.text = presents.getCollectionName(trackItem)
@@ -94,6 +98,16 @@ class PlayerActivity : AppCompatActivity() {
         )
 
         //Работаем с медиаплеером
+        mediaPlayer.setOnChangeStateListener(
+            object : OnMediaPlayerStateChangeListener {
+            override fun onChange(state: MediaPlayerState) {
+                isCompleted = controller.completedControl(state)
+                if(isCompleted) {
+                    playButton.setImageResource(R.drawable.play)
+                    timerTrack.text = PlayerActivityPresents.TIMER
+                }
+            }
+        })
         mediaPlayer.preparePlayer(previewUrl)
 
 
@@ -122,13 +136,18 @@ class PlayerActivity : AppCompatActivity() {
    private fun createTimerTask() : Runnable {
         return object : Runnable {
             override fun run() {
-                isTimer = controller.timerControl(getState())
-                if(isTimer) {mainThread?.removeCallbacks(this)}
-                else {
-                    timerTrack.text = mediaPlayer.statusTimer(getState())
-                    mainThread?.postDelayed(this, PlayerActivityPresents.DELAY)
+                timer = controller.timerControl(getState())
+                when(timer) {
+                    0 -> {
+                        mainThread?.removeCallbacks(this)
+                        timerTrack.text = PlayerActivityPresents.TIMER
+                    }
+                    1 -> {
+                        timerTrack.text = mediaPlayer.statusTimer(getState())
+                        mainThread?.postDelayed(this, PlayerActivityPresents.DELAY)
+                    }
+                    2 -> mainThread?.removeCallbacks(this)
                 }
-
 
             }
         }

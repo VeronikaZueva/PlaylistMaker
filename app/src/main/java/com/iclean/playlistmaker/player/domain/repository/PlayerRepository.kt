@@ -2,6 +2,7 @@
 
 package com.iclean.playlistmaker.player.domain.repository
 import com.iclean.playlistmaker.data.models.MediaPlayerState
+import com.iclean.playlistmaker.player.domain.OnMediaPlayerStateChangeListener
 
 interface PlayerRepository {
 
@@ -26,5 +27,5 @@ interface PlayerRepository {
 
     fun release()
 
-
+    fun setOnStateChangeListener(onMediaPlayerStateChangeListener : OnMediaPlayerStateChangeListener)
 }

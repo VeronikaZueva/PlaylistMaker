@@ -3,6 +3,7 @@ package com.iclean.playlistmaker.player.domain.impl
 
 
 import com.iclean.playlistmaker.data.models.MediaPlayerState
+import com.iclean.playlistmaker.player.domain.OnMediaPlayerStateChangeListener
 import com.iclean.playlistmaker.player.domain.interactor.PlayerInteractor
 import com.iclean.playlistmaker.player.domain.repository.PlayerRepository
 
@@ -27,6 +28,10 @@ class PlayerInteractorImpl(private val player : PlayerRepository) : PlayerIntera
 
     override fun release() {
         player.release()
+    }
+
+    override fun setOnChangeStateListener(onMediaPlayerStateChangeListener: OnMediaPlayerStateChangeListener) {
+        player.setOnStateChangeListener(onMediaPlayerStateChangeListener)
     }
 
     override fun statusTimer(statePlayer : MediaPlayerState) : String? {

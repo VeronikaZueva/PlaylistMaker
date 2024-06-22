@@ -7,6 +7,7 @@ class PlayerActivityPresents  {
 
     companion object {
         const val DELAY = 300L
+        const val TIMER = "00:00"
     }
 
     fun getTrackName(trackItem : TrackResponse.Track?) : String {
