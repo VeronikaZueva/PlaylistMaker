@@ -41,13 +41,14 @@ class PlayerRepositoryImpl : PlayerRepository {
 
     override fun statusTimer(statePlayer : MediaPlayerState): String? {
         return when (statePlayer) {
-            MediaPlayerState.STATE_DEFAULT,
-            MediaPlayerState.STATE_PREPARED,
-            MediaPlayerState.STATE_COMPLETED -> impl.statusTimer()
-            else -> {
+            MediaPlayerState.STATE_PLAYING -> {
                 val current = mediaPlayer.currentPosition.toString()
                 trackMethods.dateFormatTrack(current)
             }
+            else -> {
+                impl.statusTimer()
+            }
+
         }
     }
 

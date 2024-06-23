@@ -13,11 +13,10 @@ class PlayerController {
            }
        }
     //Определяем значение флага для работы таймера
-        fun timerControl(state : MediaPlayerState) : Int {
+        fun timerControl(state : MediaPlayerState) : Boolean {
             return when (state) {
-                MediaPlayerState.STATE_PLAYING -> 1
-                MediaPlayerState.STATE_PAUSED -> 2
-                else -> 0
+                MediaPlayerState.STATE_PLAYING -> true
+                else -> false
             }
         }
     //Определяем значение флага - завершено ли воспроизведение

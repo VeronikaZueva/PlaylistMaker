@@ -37,8 +37,8 @@ class PlayerActivity : AppCompatActivity() {
 
     //Флаги для управления функционалом
     private var isEnable : Boolean = false
-    private var timer : Int = 0
-    private var isCompleted : Boolean = false
+    private var timer : Boolean = false
+   private var isCompleted : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +74,6 @@ class PlayerActivity : AppCompatActivity() {
         //Присваиваем нужные значения блокам экрана
         titleTrack.text = presents.getTrackName(trackItem)
         artistTrackName.text = presents.getArtistName(trackItem)
-        timerTrack.text = PlayerActivityPresents.TIMER
         timeTrack.text = trackMethods.dateFormatTrack(presents.getTrackTimeMillis(trackItem))
         url = presents.getArtworkUrl100(trackItem)
         album.text = presents.getCollectionName(trackItem)
@@ -104,7 +103,8 @@ class PlayerActivity : AppCompatActivity() {
                 isCompleted = controller.completedControl(state)
                 if(isCompleted) {
                     playButton.setImageResource(R.drawable.play)
-                    timerTrack.text = PlayerActivityPresents.TIMER
+                    mainThread?.removeCallbacksAndMessages(null)
+                    timerTrack.text = mediaPlayer.statusTimer(state)
                 }
             }
         })
@@ -137,16 +137,11 @@ class PlayerActivity : AppCompatActivity() {
         return object : Runnable {
             override fun run() {
                 timer = controller.timerControl(getState())
-                when(timer) {
-                    0 -> {
-                        mainThread?.removeCallbacks(this)
-                        timerTrack.text = PlayerActivityPresents.TIMER
-                    }
-                    1 -> {
-                        timerTrack.text = mediaPlayer.statusTimer(getState())
-                        mainThread?.postDelayed(this, PlayerActivityPresents.DELAY)
-                    }
-                    2 -> mainThread?.removeCallbacks(this)
+                if(timer) {
+                    timerTrack.text = mediaPlayer.statusTimer(getState())
+                    mainThread?.postDelayed(this, PlayerActivityPresents.DELAY)
+                }  else {
+                    mainThread?.removeCallbacks(this)
                 }
 
             }
