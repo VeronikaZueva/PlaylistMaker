@@ -1,13 +1,13 @@
 package com.iclean.playlistmaker.player.domain.interactor
 
-import com.iclean.playlistmaker.data.models.MediaPlayerState
+import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
 import com.iclean.playlistmaker.player.domain.OnMediaPlayerStateChangeListener
 
 
 interface PlayerInteractor {
 
     fun getPlayerState() : MediaPlayerState
-    fun preparePlayer(previewUrl : String)
+    fun preparePlayer(previewUrl: String?)
 
     fun startPlayer()
     fun pausePlayer()

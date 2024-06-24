@@ -1,9 +1,9 @@
-package com.iclean.playlistmaker.data.repository
+package com.iclean.playlistmaker.player.data.repository
 
 import android.media.MediaPlayer
 import com.iclean.playlistmaker.player.presentation.ui.TrackMethods
-import com.iclean.playlistmaker.player.TrackMediaPlayerImpl
-import com.iclean.playlistmaker.data.models.MediaPlayerState
+import com.iclean.playlistmaker.player.domain.TrackMediaPlayerImpl
+import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
 import com.iclean.playlistmaker.player.domain.OnMediaPlayerStateChangeListener
 import com.iclean.playlistmaker.player.domain.repository.PlayerRepository
 
@@ -18,7 +18,7 @@ class PlayerRepositoryImpl : PlayerRepository {
     override fun setOnStateChangeListener(onMediaPlayerStateChangeListener: OnMediaPlayerStateChangeListener) {
         this.onMediaPlayerStateChangeListener = onMediaPlayerStateChangeListener
     }
-    override fun preparePlayer(previewUrl : String) {
+    override fun preparePlayer(previewUrl: String?) {
         mediaPlayer.setDataSource(previewUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {

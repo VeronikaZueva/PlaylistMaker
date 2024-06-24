@@ -12,7 +12,7 @@ import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.player.presentation.presents.PlayerActivityPresents
 import androidx.core.view.isVisible
 import com.iclean.playlistmaker.TrackResponse
-import com.iclean.playlistmaker.data.models.MediaPlayerState
+import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
 import com.iclean.playlistmaker.player.Creator
 import com.iclean.playlistmaker.player.domain.OnMediaPlayerStateChangeListener
 import com.iclean.playlistmaker.player.presentation.presents.PlayerController
@@ -75,14 +75,14 @@ class PlayerActivity : AppCompatActivity() {
         titleTrack.text = presents.getTrackName(trackItem)
         artistTrackName.text = presents.getArtistName(trackItem)
         timeTrack.text = trackMethods.dateFormatTrack(presents.getTrackTimeMillis(trackItem))
-        url = presents.getArtworkUrl100(trackItem)
+        url = presents.getArtworkUrl100(trackItem)!!
         album.text = presents.getCollectionName(trackItem)
         year.text = presents.getYearFormat(trackItem)
         genre.text = presents.getPrimaryGenreName(trackItem)
         countryTrack.text = presents.getCountry(trackItem)
         val previewUrl = presents.getPreviewUrl(trackItem)
 
-        if (presents.getCollectionName(trackItem).isEmpty()) {
+        if (presents.getCollectionName(trackItem)!!.isEmpty()) {
             album.isVisible = false
             albumTrack.isVisible = false
         }

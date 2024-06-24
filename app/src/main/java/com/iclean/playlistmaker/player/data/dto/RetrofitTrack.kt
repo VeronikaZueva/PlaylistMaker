@@ -1,4 +1,4 @@
-package com.iclean.playlistmaker.data.dto
+package com.iclean.playlistmaker.player.data.dto
 
 import com.iclean.playlistmaker.ITunesApi
 import retrofit2.Retrofit

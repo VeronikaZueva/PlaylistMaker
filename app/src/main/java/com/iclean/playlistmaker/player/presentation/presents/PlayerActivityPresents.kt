@@ -9,42 +9,42 @@ class PlayerActivityPresents  {
         const val DELAY = 300L
     }
 
-    fun getTrackName(trackItem : TrackResponse.Track?) : String {
-        return trackItem?.trackName.toString()
+    fun getTrackName(trackItem : TrackResponse.Track?) : String? {
+        return trackItem?.trackName
     }
-    fun getArtistName(trackItem : TrackResponse.Track?) : String {
-        return trackItem?.artistName.toString()
+    fun getArtistName(trackItem : TrackResponse.Track?) : String? {
+        return trackItem?.artistName
     }
-    fun getTrackTimeMillis(trackItem : TrackResponse.Track?) : String {
-        return trackItem?.trackTimeMillis.toString()
+    fun getTrackTimeMillis(trackItem : TrackResponse.Track?) : String? {
+        return trackItem?.trackTimeMillis
     }
-    fun getArtworkUrl100(trackItem : TrackResponse.Track?) : String {
-        return trackItem?.artworkUrl100.toString()
+    fun getArtworkUrl100(trackItem : TrackResponse.Track?) : String? {
+        return trackItem?.artworkUrl100
     }
-    fun getCollectionName(trackItem : TrackResponse.Track?) : String {
-        return trackItem?.collectionName.toString()
+    fun getCollectionName(trackItem : TrackResponse.Track?) : String? {
+        return trackItem?.collectionName
     }
-    private fun getReleaseDate(trackItem : TrackResponse.Track?) : String {
-        return trackItem?.releaseDate.toString()
+    private fun getReleaseDate(trackItem : TrackResponse.Track?) : String? {
+        return trackItem?.releaseDate
     }
-    fun getPrimaryGenreName(trackItem : TrackResponse.Track?) : String {
-        return trackItem?.primaryGenreName.toString()
+    fun getPrimaryGenreName(trackItem : TrackResponse.Track?) : String? {
+        return trackItem?.primaryGenreName
     }
-    fun getCountry(trackItem : TrackResponse.Track?) : String {
-        return trackItem?.country.toString()
+    fun getCountry(trackItem : TrackResponse.Track?) : String? {
+        return trackItem?.country
     }
 
-    fun getPreviewUrl(trackItem: TrackResponse.Track?) : String {
-        return trackItem?.previewUrl.toString()
+    fun getPreviewUrl(trackItem: TrackResponse.Track?) : String? {
+        return trackItem?.previewUrl
     }
 
 
     //Преобразуем ссылку на изображение в полный формат
     fun getBigPoster(trackItem : TrackResponse.Track?) : String {
-        return getArtworkUrl100(trackItem).replaceAfterLast('/', "512x512bb.jpg")
+        return getArtworkUrl100(trackItem)!!.replaceAfterLast('/', "512x512bb.jpg")
     }
      fun getYearFormat(trackItem : TrackResponse.Track?) : String {
-        return getReleaseDate(trackItem).substring(0, 4)
+        return getReleaseDate(trackItem)!!.substring(0, 4)
     }
 
 

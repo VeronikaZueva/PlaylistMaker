@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
-import com.iclean.playlistmaker.data.dto.RetrofitTrack
+import com.iclean.playlistmaker.player.data.dto.RetrofitTrack
 import com.iclean.playlistmaker.player.presentation.ui.TrackMethods
 import com.iclean.playlistmaker.player.presentation.ui.PlayerActivity
 import retrofit2.Call

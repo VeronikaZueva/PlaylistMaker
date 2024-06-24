@@ -1,7 +1,7 @@
 package com.iclean.playlistmaker.player.presentation.presents
 
 
-import com.iclean.playlistmaker.data.models.MediaPlayerState
+import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
 
 
 class PlayerController {

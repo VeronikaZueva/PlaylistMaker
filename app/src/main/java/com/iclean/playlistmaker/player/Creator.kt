@@ -1,6 +1,6 @@
 package com.iclean.playlistmaker.player
 
-import com.iclean.playlistmaker.data.repository.PlayerRepositoryImpl
+import com.iclean.playlistmaker.player.data.repository.PlayerRepositoryImpl
 import com.iclean.playlistmaker.player.domain.impl.PlayerInteractorImpl
 import com.iclean.playlistmaker.player.domain.interactor.PlayerInteractor
 import com.iclean.playlistmaker.player.domain.repository.PlayerRepository
