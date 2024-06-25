@@ -16,6 +16,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
+import com.iclean.playlistmaker.player.data.dto.RetrofitTrack
+import com.iclean.playlistmaker.player.presentation.ui.TrackMethods
+import com.iclean.playlistmaker.player.presentation.ui.PlayerActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,7 +39,7 @@ class SearchActivity :  AppCompatActivity() {
     val tracks = ArrayList<TrackResponse.Track>()
     private var historyTracks = ArrayList<TrackResponse.Track>(COUNT_TRACK)
     private val searchClass = SearchHistory()
-    private val trackMethods = TrackMethods()
+    private val retrofit = RetrofitTrack()
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
 
@@ -151,7 +154,7 @@ class SearchActivity :  AppCompatActivity() {
             tracks.clear()
             checkStatus.hideBlock.isVisible = false
             progressBar.visibility = View.VISIBLE
-            trackMethods.itunesService?.searchTrack(searchInput.text.toString())
+            retrofit.responseDataRetrofit()?.searchTrack(searchInput.text.toString())
                 ?.enqueue(object : Callback<TrackResponse> {
                     override fun onResponse(
                         call: Call<TrackResponse>,
