@@ -1,30 +1,20 @@
 package com.iclean.playlistmaker
 
 import android.app.Application
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
+import com.iclean.playlistmaker.general.Creator
 
 
 class App : Application() {
 
-companion object {
-    const val SETTING_PARAMS = "settings_app"
-    const val KEY_FOR_THEME = "key_theme"
-    const val HISTORY_KEY = "history_key"
-    const val THEME_DEFAULT = false
-    lateinit var sharedPreferences : SharedPreferences
-}
-
-    private var darkTheme = THEME_DEFAULT
-
+    private var darkTheme : Boolean = false
 
     override fun onCreate() {
         super.onCreate()
-        //Достаем сохраненные настроки ShredPreferences
-        sharedPreferences = getSharedPreferences(SETTING_PARAMS, MODE_PRIVATE)
-        darkTheme = sharedPreferences.getBoolean(KEY_FOR_THEME, darkTheme)
+        Creator.app = this
+        val themeSwitcher = Creator.getSettingsInteractor()
+        darkTheme = themeSwitcher.switchTheme().darkTheme
         switchTheme(darkTheme)
-
     }
 
         //Меняем тему приложения
@@ -39,15 +29,7 @@ companion object {
                 }
 
             )
-            setValueThemeInShared(darkThemeEnabled)
         }
-
-    //Записываем изменение темы в SharedPreferences
-    private fun setValueThemeInShared(darkTheme : Boolean) {
-        sharedPreferences.edit()
-            .putBoolean(KEY_FOR_THEME, darkTheme)
-            .apply()
-    }
 
 
 

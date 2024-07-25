@@ -1,20 +1,21 @@
 package com.iclean.playlistmaker.player.domain.impl
 
 
-
-import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
-import com.iclean.playlistmaker.player.domain.OnMediaPlayerStateChangeListener
-import com.iclean.playlistmaker.player.domain.interactor.PlayerInteractor
-import com.iclean.playlistmaker.player.domain.repository.PlayerRepository
+import android.media.MediaPlayer
+import com.iclean.playlistmaker.player.domain.PlayerInteractor
+import com.iclean.playlistmaker.player.data.PlayerRepository
 
 
 class PlayerInteractorImpl(private val player : PlayerRepository) : PlayerInteractor {
 
-    override fun getPlayerState(): MediaPlayerState {
-        return player.state
+    override fun setOnPreparedListener(listener : MediaPlayer.OnPreparedListener) {
+        player.setOnPreparedListener(listener)
     }
-    override fun preparePlayer(previewUrl: String?)  {
-        player.preparePlayer(previewUrl)
+    override fun setOnCompletionListener(listener : MediaPlayer.OnCompletionListener) {
+        player.setOnCompletionListener(listener)
+    }
+    override fun preparePlayer()  {
+        player.preparePlayer()
     }
 
 
@@ -30,12 +31,8 @@ class PlayerInteractorImpl(private val player : PlayerRepository) : PlayerIntera
         player.release()
     }
 
-    override fun setOnChangeStateListener(onMediaPlayerStateChangeListener: OnMediaPlayerStateChangeListener) {
-        player.setOnStateChangeListener(onMediaPlayerStateChangeListener)
-    }
-
-    override fun statusTimer(statePlayer : MediaPlayerState) : String? {
-        return player.statusTimer(statePlayer)
+    override fun getCurrentPosition() : Int {
+        return player.getCurrentPosition()
     }
 
 
