@@ -38,10 +38,10 @@ object Creator {
         return SharingInteractorImpl(getSharingRepository(context))
     }
     //Для Медиаплеера
-    private fun getPlayerRepository(url: String?, runnable: Runnable) : PlayerRepository {
-        return PlayerRepositoryImpl(url!!, runnable)
+    private fun getPlayerRepository(url: String, runnable: Runnable) : PlayerRepository {
+        return PlayerRepositoryImpl(url, runnable)
     }
-    fun getPlayerInteractor(url: String?, runnable: Runnable) : PlayerInteractor {
+    fun getPlayerInteractor(url: String, runnable: Runnable) : PlayerInteractor {
         return PlayerInteractorImpl(getPlayerRepository(url, runnable))
     }
 

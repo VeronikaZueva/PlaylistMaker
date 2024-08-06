@@ -1,6 +1,8 @@
 package com.iclean.playlistmaker.player.data.repository
 
 import android.media.MediaPlayer
+import android.os.Handler
+import android.os.Looper
 import com.iclean.playlistmaker.player.data.PlayerRepository
 
 //Частично меняем функционал:
@@ -9,15 +11,17 @@ import com.iclean.playlistmaker.player.data.PlayerRepository
 //3. Функция StatusTimer относится к бизнес-логике и мы ее перенесем в domain.
 // Здесь же нам просто потребуется метод mediaPlayerа - получение текущей позиции
 
-class PlayerRepositoryImpl(private val previewUrl : String, runnable: Runnable) : PlayerRepository {
+class PlayerRepositoryImpl(private val previewUrl : String, private val runnable: Runnable) : PlayerRepository {
 
     private val mediaPlayer = MediaPlayer()
+    private val handler = Handler(Looper.getMainLooper())
 
+    //Медиаплеер
     override fun setOnPreparedListener(listener : MediaPlayer.OnPreparedListener) {
-        setOnPreparedListener(listener)
+        mediaPlayer.setOnPreparedListener(listener)
     }
     override fun setOnCompletionListener(listener : MediaPlayer.OnCompletionListener) {
-        setOnCompletionListener(listener)
+        mediaPlayer.setOnCompletionListener(listener)
     }
     override fun preparePlayer() {
         mediaPlayer.setDataSource(previewUrl)
@@ -37,5 +41,17 @@ class PlayerRepositoryImpl(private val previewUrl : String, runnable: Runnable) 
         return mediaPlayer.currentPosition
     }
 
+    //Handler
+    override fun postTimerDelay(delay: Long) {
+        handler.postDelayed(runnable, delay)
+    }
+
+    override fun removeCallback() {
+        handler.removeCallbacks(runnable)
+    }
+
+    override fun removeCallbacksAndMessages() {
+        handler.removeCallbacksAndMessages(runnable)
+    }
 
 }

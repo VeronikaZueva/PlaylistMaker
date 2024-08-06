@@ -23,7 +23,7 @@ class SearchRepositoryImpl(sharedPreferences: SharedPreferences, private val net
         return when(response.stateResponse) {
             -1 -> StateType.Error(-1)
             200 -> {
-                StateType.Success((response as Response).result.map {
+                StateType.Success((response as Response).results.map {
                     Track(it.trackId,
                         it.trackName,
                         it.artistName,

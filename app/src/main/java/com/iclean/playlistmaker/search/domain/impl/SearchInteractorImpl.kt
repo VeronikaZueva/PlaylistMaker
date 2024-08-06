@@ -14,9 +14,9 @@ class SearchInteractorImpl(private val repository: SearchRepository) : SearchInt
         //механизм поиска будем осуществляться через вызов метода поиска в дата слое
         //Для этого получим состояние ответа
         executor.execute{
-            when (val stateType = repository.search(expression)) {
+            when(val stateType = repository.search(expression)) {
                 is StateType.Success -> {consumer.consume(stateType.data, null)}
-                is StateType.Error -> {consumer.consume(null, stateType.code)}
+                else -> {consumer.consume(null, stateType.code)}
             }
         }
     }

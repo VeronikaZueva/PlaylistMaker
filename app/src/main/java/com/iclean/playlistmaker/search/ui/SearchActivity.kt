@@ -47,6 +47,7 @@ class SearchActivity :  AppCompatActivity() {
     val checkStatus = CheckStatus()
 
 
+
     //Открываем стандартно метод onCreate, меняется лишь добавление binding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,6 +104,9 @@ class SearchActivity :  AppCompatActivity() {
         checkStatus.historyButton = binding.historyClear
         progressBar = binding.progressBar
 
+        //Задаем начальное значение статуса
+        checkStatus.showStatus(Status.NONE)
+
         //ВОТ ЗДЕСЬ ГЛАВНЫЙ ОБРАБОТЧИК
         viewModel.getResult().observe(this) {
             //Работаем с LiveData
@@ -134,7 +138,7 @@ class SearchActivity :  AppCompatActivity() {
         }
 
         //Очищаем историю
-        checkStatus.historyBlock.setOnClickListener {
+        checkStatus.historyButton.setOnClickListener {
             viewModel.clearHistory()
             binding.reciclerViewTrack.visibility = View.GONE
             checkStatus.hideBlock.visibility = View.GONE

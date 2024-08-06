@@ -21,9 +21,8 @@ class PlayerActivity : AppCompatActivity() {
     //Подключаем нужные обработчики к Activity
     private val trackMethods = TrackMethods() //Общие методы
 
-    //Данные, которые будут перезаписаны позже
-    private lateinit var previewUrl : String
-    private lateinit var collectionName : String
+    //Определяем переменные, которые пригодятся позже
+    private var timeFormat : String? = ""
 
     companion object {
         const val nullTime = "00:00"
@@ -47,8 +46,22 @@ class PlayerActivity : AppCompatActivity() {
             this.finish()
         }
 
+        //УСТАНАВЛИВАЕМ ДАННЫЕ В ПЛЕЕР
+        viewModel.getTrack(intent).observe(this) {
+            //Достаем основные переменные - подготавливаем время в нужном формате
+            val timeNoFormat = it.time.toString()
+            timeFormat = trackMethods.dateFormatTrack(timeNoFormat)
+            //Устанавливаем поля для трека
+            val track = it.track
+            setDataForView(track)
+            //Устанавливаем обложку
+            setPoster(track.artworkUrl100)
+            //Выводим альбом, только если информация передана
+            showCollection(track.collectionName)
+        }
+
         //Прописываем метода подготовки плеера
-        viewModel.pausePlayer()
+        viewModel.preparePlayer()
 
         viewModel.setOnPreparedListener {
             binding.buttonPlay.isEnabled = true
@@ -60,17 +73,6 @@ class PlayerActivity : AppCompatActivity() {
             binding.timer.text = nullTime
         }
 
-        //ОСНОВНОЙ ОБРАБОТЧИК
-        viewModel.getTrack(intent).observe(this) {
-            //Достаем основные переменные - это сам трэк и время для обработки
-            val time = it.time.toString()
-            val track = it.track
-            trackMethods.dateFormatTrack(time)
-            setDataForView(track)
-            setPoster(previewUrl)
-            showCollection(collectionName)
-        }
-
 
         //Управляем нажатиями кнопок: play|pause
         binding.buttonPlay.setOnClickListener {
@@ -78,39 +80,28 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
     //КОНЕЦ МЕТОДА onCreate
-    //Сразу определяем переменные binding
-    private val titleTrack = binding.titleTrack
-    private val artistTrackName = binding.artistName
-    private val timeTrack = binding.time
-    private val albumTrack = binding.albumTrack
-    private val album = binding.album
-    private val year = binding.year
-    private val genre = binding.genre
-    private val countryTrack = binding.country
-    private val poster = binding.poster
-    private val placeholder = R.drawable.album
-    private val playButton = binding.buttonPlay
-    private lateinit var url : String
 
+
+    //МЕТОДЫ ФУНКЦИОНАЛА УРОВНЯ UI
     //Присваиваем нужные значения блокам экрана
     private fun setDataForView(track : Track) {
-        titleTrack.text = track.trackName
-        artistTrackName.text = track.artistName
-        timeTrack.text = trackMethods.dateFormatTrack(track.trackTimeMillis)
-        url = track.artworkUrl100!!
-        year.text = track.releaseDate!!.substring(0, 4)
-        genre.text = track.primaryGenreName
-        countryTrack.text = track.country
-        previewUrl = track.previewUrl!!
+        binding.titleTrack.text = track.trackName
+        binding.artistName.text = track.artistName
+        binding.year.text = track.releaseDate.substring(0, 4)
+        binding.genre.text = track.primaryGenreName
+        binding.country.text = track.country
+        binding.timer.text = timeFormat
+        val timeMillis = track.trackTimeMillis
+        binding.time.text = trackMethods.dateFormatTrack(timeMillis)
     }
 
     //Управляем видимостью названия альбома
     private fun showCollection(collection : String) {
         if (collection.isEmpty()) {
-            album.isVisible = false
-            albumTrack.isVisible = false
+            binding.album.isVisible = false
+            binding.albumTrack.isVisible = false
         } else {
-            album.text = collection
+            binding.album.text = collection
         }
     }
 
@@ -119,8 +110,8 @@ class PlayerActivity : AppCompatActivity() {
         trackMethods.setImage(
             applicationContext,
             url.replaceAfterLast('/', "512x512bb.jpg"),
-            poster,
-            placeholder,
+            binding.poster,
+            R.drawable.album,
             8.0f
         )
     }
@@ -128,16 +119,16 @@ class PlayerActivity : AppCompatActivity() {
 
     //Переключаем кнопку
     private fun buttonCheck() {
-        if(viewModel.buttonCheck()) setImagePause()
-        else setImagePlay()
+        if(viewModel.buttonCheck()) setImagePlay()
+        else setImagePause()
     }
 
     private fun setImagePause() {
-        playButton.setImageResource(R.drawable.pause)
+        binding.buttonPlay.setImageResource(R.drawable.pause)
     }
 
     private fun setImagePlay() {
-        playButton.setImageResource(R.drawable.play)
+        binding.buttonPlay.setImageResource(R.drawable.play)
     }
 
     //Переопределяем системные методы

@@ -5,4 +5,4 @@ import com.iclean.playlistmaker.search.data.models.TrackDto
 
 //Класс, определяющий формат ответа
 //На выход принимаем количество найденных результатов и лист треков
-class Response(val count : Int, val result : List<TrackDto>) : ResposeCode()
+class Response(val resultCount : Int, val results : List<TrackDto>) : ResposeCode()

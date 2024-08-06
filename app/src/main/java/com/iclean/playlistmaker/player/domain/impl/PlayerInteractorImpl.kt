@@ -7,7 +7,7 @@ import com.iclean.playlistmaker.player.data.PlayerRepository
 
 
 class PlayerInteractorImpl(private val player : PlayerRepository) : PlayerInteractor {
-
+    //Медиаплеер
     override fun setOnPreparedListener(listener : MediaPlayer.OnPreparedListener) {
         player.setOnPreparedListener(listener)
     }
@@ -35,6 +35,17 @@ class PlayerInteractorImpl(private val player : PlayerRepository) : PlayerIntera
         return player.getCurrentPosition()
     }
 
+    //Handler
+    override fun postTimerDelay(delay : Long) {
+        player.postTimerDelay(delay)
+    }
 
+    override fun removeCallback() {
+        player.removeCallback()
+    }
+
+    override fun removeCallbacksAndMessages() {
+        player.removeCallbacksAndMessages()
+    }
 
 }
