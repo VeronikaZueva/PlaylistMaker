@@ -72,8 +72,8 @@ class SearchActivity :  AppCompatActivity() {
         //Кликнуть на трек - добавляем трек в историю и переходим на его просмотр
         val trackClick = object : TrackClick {
             override fun getTrack(track: Track) {
+                checkStatus.showStatus(Status.NONE)
                 if (clickDebounce()) {
-                    binding.searchInput.clearFocus()
                     viewModel.save(track)
                     //Сохранили трек и переходим к нему через Intent
                     val intent = Intent(this@SearchActivity, PlayerActivity::class.java)
@@ -131,23 +131,22 @@ class SearchActivity :  AppCompatActivity() {
                     checkStatus.showStatus(Status.NONE)
                 } else {
                     checkStatus.showStatus(Status.HISTORY)
+                    binding.reciclerViewHistoryTrack.adapter = historyAdapter
                 }
-                binding.reciclerViewHistoryTrack.adapter = historyAdapter
-                checkStatus.showStatus(Status.HISTORY)
+
             }
         }
 
         //Очищаем историю
         checkStatus.historyButton.setOnClickListener {
             viewModel.clearHistory()
-            binding.reciclerViewTrack.visibility = View.GONE
-            checkStatus.hideBlock.visibility = View.GONE
+            checkStatus.showStatus(Status.NONE)
         }
 
         //Фокус - показываем историю Поиска, когда поле Поиска в фокусе - РАБОТАЕТ
         binding.searchInput.setOnFocusChangeListener { _, _ ->
             viewModel.load()
-            checkStatus.showStatus((Status.HISTORY))
+            checkStatus.showStatus(Status.HISTORY)
          }
 
         //Очищаем поле поиска - РАБОТАЕТ

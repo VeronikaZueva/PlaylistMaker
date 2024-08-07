@@ -40,7 +40,7 @@ class History(private val sharePref: SharedPreferences) {
         }
         //Если треков больше 10
         if (listShare.size > COUNT_TRACK) {
-            listShare.removeLast()
+            listShare.removeAt(0)
         }
         //Добавляем в историю
         val json = Gson().toJson(listShare)
