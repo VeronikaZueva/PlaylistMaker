@@ -1,12 +1,11 @@
-package com.iclean.playlistmaker.player.data
-import android.media.MediaPlayer
+package com.iclean.playlistmaker.player.domain
 
 interface PlayerRepository {
 
     fun preparePlayer()
 
-    fun setOnPreparedListener(listener : MediaPlayer.OnPreparedListener)
-    fun setOnCompletionListener(listener : MediaPlayer.OnCompletionListener)
+    fun setOnPreparedListener()
+    fun setOnCompletionListener()
 
     fun startPlayer()
     fun pausePlayer()

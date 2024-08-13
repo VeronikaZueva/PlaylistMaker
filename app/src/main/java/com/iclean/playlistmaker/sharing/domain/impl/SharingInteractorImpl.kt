@@ -2,7 +2,7 @@ package com.iclean.playlistmaker.sharing.domain.impl
 
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.general.Creator
-import com.iclean.playlistmaker.sharing.data.SharingRepository
+import com.iclean.playlistmaker.sharing.domain.SharingRepository
 import com.iclean.playlistmaker.sharing.domain.SharingInteractor
 
 class SharingInteractorImpl(private val repository : SharingRepository) : SharingInteractor {

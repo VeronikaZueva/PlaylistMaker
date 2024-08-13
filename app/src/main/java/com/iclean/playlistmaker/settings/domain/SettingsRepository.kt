@@ -1,4 +1,4 @@
-package com.iclean.playlistmaker.settings.data
+package com.iclean.playlistmaker.settings.domain
 
 import com.iclean.playlistmaker.settings.domain.model.ThemeSetting
 

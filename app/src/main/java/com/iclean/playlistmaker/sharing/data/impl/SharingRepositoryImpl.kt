@@ -3,7 +3,7 @@ package com.iclean.playlistmaker.sharing.data.impl
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.iclean.playlistmaker.sharing.data.SharingRepository
+import com.iclean.playlistmaker.sharing.domain.SharingRepository
 
 class SharingRepositoryImpl(private val context: Context) : SharingRepository {
     override fun shareApp(link : String) {

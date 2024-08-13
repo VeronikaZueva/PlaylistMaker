@@ -3,6 +3,7 @@ package com.iclean.playlistmaker.search.data.dto
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.iclean.playlistmaker.search.domain.HistoryInt
 import com.iclean.playlistmaker.search.domain.models.Track
 
 
@@ -11,7 +12,7 @@ import com.iclean.playlistmaker.search.domain.models.Track
 //С историей у нас есть только 3 действия: загрузка истории поиска, сохранение трека в истории, очистка истории поиска
 //В конструкторе загружаем историю поиска, сохраненную в SharedPreferences
 
-class History(private val sharePref: SharedPreferences) {
+class History(private val sharePref: SharedPreferences) : HistoryInt {
     //Переносим из Activity константы макисмального количества треков в истории, а также ключа SharedPreferences дл истории поиска
     companion object {
         const val COUNT_TRACK = 10
@@ -24,11 +25,11 @@ class History(private val sharePref: SharedPreferences) {
     class Token : TypeToken<ArrayList<Track>>()
     private val listShare : ArrayList<Track> = if(gson == Gson().toJson(null)) ArrayList() else Gson().fromJson(gson, Token().type)
 
-    fun load(): List<Track> {
+    override fun load(): List<Track> {
         return listShare.reversed()
     }
 
-    fun save(trackItem: Track) {
+    override fun save(trackItem: Track) {
         //Получаем ID трека для проверка
         val trackID = trackItem.trackId
         //Если трек уже есть в истории
@@ -47,7 +48,7 @@ class History(private val sharePref: SharedPreferences) {
         sharePref.edit().putString(HISTORY_KEY, json).apply()
     }
 
-    fun clearHistory() {
+    override fun clearHistory() {
         listShare.clear()
         sharePref.edit().clear().apply()
     }

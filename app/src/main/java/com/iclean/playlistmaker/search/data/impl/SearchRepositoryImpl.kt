@@ -2,7 +2,7 @@ package com.iclean.playlistmaker.search.data.impl
 
 import android.content.SharedPreferences
 import com.iclean.playlistmaker.search.data.NetworkClient
-import com.iclean.playlistmaker.search.data.SearchRepository
+import com.iclean.playlistmaker.search.domain.SearchRepository
 import com.iclean.playlistmaker.search.data.dto.History
 import com.iclean.playlistmaker.search.data.dto.Request
 import com.iclean.playlistmaker.search.data.dto.Response
@@ -14,7 +14,8 @@ import com.iclean.playlistmaker.search.domain.models.Track
 //Мы не знаем, какая библиотека используется, а потому, будем взаимодействовать с ней через класс NetWorkClient, который и будет возвращать нам ответы
 //Так как NetworkClient берет на себя основную работу по взаимодействию с сервером, то создадим его объект в параметрах конструктора данного класса
 //Также работаем в данном классе с историей
-class SearchRepositoryImpl(sharedPreferences: SharedPreferences, private val networkClient: NetworkClient) : SearchRepository {
+class SearchRepositoryImpl(sharedPreferences: SharedPreferences, private val networkClient: NetworkClient) :
+    SearchRepository {
 
     private val history = History(sharedPreferences)
     override fun search(expression: String) : StateType<List<Track>> {

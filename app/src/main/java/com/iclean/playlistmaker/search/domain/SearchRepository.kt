@@ -1,4 +1,4 @@
-package com.iclean.playlistmaker.search.data
+package com.iclean.playlistmaker.search.domain
 
 import com.iclean.playlistmaker.search.data.models.StateType
 import com.iclean.playlistmaker.search.domain.models.Track

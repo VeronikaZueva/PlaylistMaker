@@ -32,4 +32,5 @@
     <string name="country_track">Страна</string>
     <string name="test">Тест</string>
     <string name="something_went_wrong">Произошла ошибка</string>
+    <string name="null_time">00:00</string>
 </resources>

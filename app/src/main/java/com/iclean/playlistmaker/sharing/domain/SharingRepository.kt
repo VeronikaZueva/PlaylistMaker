@@ -1,4 +1,4 @@
-package com.iclean.playlistmaker.sharing.data
+package com.iclean.playlistmaker.sharing.domain
 
 interface SharingRepository {
     fun shareApp(link : String)

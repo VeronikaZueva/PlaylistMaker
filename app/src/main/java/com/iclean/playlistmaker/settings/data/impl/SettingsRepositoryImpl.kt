@@ -3,7 +3,7 @@ package com.iclean.playlistmaker.settings.data.impl
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
-import com.iclean.playlistmaker.settings.data.SettingsRepository
+import com.iclean.playlistmaker.settings.domain.SettingsRepository
 import com.iclean.playlistmaker.settings.domain.model.ThemeSetting
 
 class SettingsRepositoryImpl(private val context : Context) : SettingsRepository {

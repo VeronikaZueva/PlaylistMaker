@@ -18,7 +18,7 @@ open class CheckStatus  {
     lateinit var historyBlock : LinearLayout
     lateinit var historyText : TextView
     lateinit var historyButton : MaterialButton
-    //private lateinit var reciclerViewHistoryTrack : RecyclerView
+
     fun showStatus(status: Status) {
         when (status) {
             Status.NONE -> {
@@ -28,7 +28,6 @@ open class CheckStatus  {
                 historyText.isVisible = false
                 historyButton.isVisible = false
                 historyBlock.isVisible = false
-                //reciclerViewHistoryTrack.isVisible = false
             }
 
             Status.SEARCH -> {
@@ -40,7 +39,6 @@ open class CheckStatus  {
                 statusImage.setImageResource(R.drawable.search_none)
                 statusText.setText(R.string.none_search)
                 historyBlock.isVisible = false
-                //reciclerViewHistoryTrack.isVisible = false
             }
 
             Status.INTERNET -> {
@@ -52,7 +50,6 @@ open class CheckStatus  {
                 statusImage.setImageResource(R.drawable.internet)
                 statusText.setText(R.string.none_internet)
                 historyBlock.isVisible = false
-                //reciclerViewHistoryTrack.isVisible = false
             }
 
             Status.HISTORY -> {
@@ -60,7 +57,6 @@ open class CheckStatus  {
                 historyBlock.isVisible = true
                 historyText.isVisible = true
                 historyButton.isVisible = true
-                //reciclerViewHistoryTrack.isVisible = true
             }
         }
     }

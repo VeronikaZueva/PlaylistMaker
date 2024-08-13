@@ -3,7 +3,9 @@ package com.iclean.playlistmaker.player.data.repository
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
-import com.iclean.playlistmaker.player.data.PlayerRepository
+import com.iclean.playlistmaker.player.domain.OnCompletionListener
+import com.iclean.playlistmaker.player.domain.OnPreparedListener
+import com.iclean.playlistmaker.player.domain.PlayerRepository
 
 //Частично меняем функционал:
 //1. Класс уже должен создаваться с переданной ссылкой в конструкторе
@@ -11,17 +13,30 @@ import com.iclean.playlistmaker.player.data.PlayerRepository
 //3. Функция StatusTimer относится к бизнес-логике и мы ее перенесем в domain.
 // Здесь же нам просто потребуется метод mediaPlayerа - получение текущей позиции
 
-class PlayerRepositoryImpl(private val previewUrl : String, private val runnable: Runnable) : PlayerRepository {
+class PlayerRepositoryImpl(private val previewUrl : String, private val runnable: Runnable) :
+    PlayerRepository {
 
     private val mediaPlayer = MediaPlayer()
     private val handler = Handler(Looper.getMainLooper())
 
     //Медиаплеер
-    override fun setOnPreparedListener(listener : MediaPlayer.OnPreparedListener) {
-        mediaPlayer.setOnPreparedListener(listener)
+    override fun setOnPreparedListener() {
+        object : OnPreparedListener {
+            override fun onPrepared()   {
+                mediaPlayer.run {
+                    setOnPreparedListener()
+                }
+            }
+        }
     }
-    override fun setOnCompletionListener(listener : MediaPlayer.OnCompletionListener) {
-        mediaPlayer.setOnCompletionListener(listener)
+    override fun setOnCompletionListener() {
+        object : OnCompletionListener {
+            override fun onCompletion() {
+                mediaPlayer.run {
+                    setOnCompletionListener()
+                }
+            }
+        }
     }
     override fun preparePlayer() {
         mediaPlayer.setDataSource(previewUrl)
@@ -55,3 +70,9 @@ class PlayerRepositoryImpl(private val previewUrl : String, private val runnable
     }
 
 }
+
+
+
+
+
+

@@ -1,6 +1,6 @@
 package com.iclean.playlistmaker.search.domain.impl
 
-import com.iclean.playlistmaker.search.data.SearchRepository
+import com.iclean.playlistmaker.search.domain.SearchRepository
 import com.iclean.playlistmaker.search.data.models.StateType
 import com.iclean.playlistmaker.search.domain.SearchInteractor
 import com.iclean.playlistmaker.search.domain.models.Track

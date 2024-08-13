@@ -1,13 +1,11 @@
 package com.iclean.playlistmaker.player.domain
 
-import android.media.MediaPlayer
-
 interface PlayerInteractor {
     //Медиаплеер
     fun preparePlayer()
 
-    fun setOnPreparedListener(listener : MediaPlayer.OnPreparedListener)
-    fun setOnCompletionListener(listener : MediaPlayer.OnCompletionListener)
+    fun setOnPreparedListener()
+    fun setOnCompletionListener()
 
     fun startPlayer()
     fun pausePlayer()

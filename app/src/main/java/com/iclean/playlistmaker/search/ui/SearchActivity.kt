@@ -2,6 +2,8 @@ package com.iclean.playlistmaker.search.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -24,11 +26,13 @@ import com.iclean.playlistmaker.search.ui.models.Status
 @Suppress("UNUSED_EXPRESSION")
 class SearchActivity :  AppCompatActivity() {
 
+    private val handler : Handler = Handler(Looper.getMainLooper())
     //Константы
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_DEF = ""
         const val HISTORY_KEY = "history_key"
+        const val DELAY = 2000L
     }
 
     private var isClickAllowed = true
@@ -199,9 +203,10 @@ class SearchActivity :  AppCompatActivity() {
     fun search() {
         checkStatus.hideBlock.visibility = View.GONE
         progressBar.visibility = View.VISIBLE
+
         val runnable = Runnable { sendRequest() }
-        viewModel.removeCallback(runnable)
-        viewModel.postDelay(runnable)
+        removeCallback(runnable)
+        postDelay(runnable)
     }
 
     //Выполняем поиск - отдаем поисковый запрос
@@ -224,7 +229,7 @@ class SearchActivity :  AppCompatActivity() {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            viewModel.postDelay { isClickAllowed = true }
+            postDelay { isClickAllowed = true }
         }
         return current
     }
@@ -232,9 +237,10 @@ class SearchActivity :  AppCompatActivity() {
     private fun searchDebounce() {
         checkStatus.showStatus(Status.NONE)
         binding.reciclerViewTrack.visibility = View.GONE
+
         val runnable = Runnable { sendRequest() }
-        viewModel.removeCallback(runnable)
-        viewModel.postDelay(runnable)
+        removeCallback(runnable)
+        postDelay(runnable)
         progressBar.visibility = View.VISIBLE
     }
 
@@ -250,6 +256,15 @@ class SearchActivity :  AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         searchText = savedInstanceState.getString(SEARCH_TEXT, SEARCH_DEF)
         binding.searchInput.setText(searchText)
+    }
+
+    //Работаем с Handler
+    private fun postDelay(runnable: Runnable) {
+        handler.postDelayed(runnable, DELAY)
+    }
+
+    private fun removeCallback(runnable: Runnable) {
+        handler.removeCallbacks(runnable)
     }
 
 

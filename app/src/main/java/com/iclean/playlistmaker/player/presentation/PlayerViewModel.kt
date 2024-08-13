@@ -1,7 +1,6 @@
 package com.iclean.playlistmaker.player.presentation
 
 import android.content.Intent
-import android.media.MediaPlayer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -55,12 +54,14 @@ class PlayerViewModel : ViewModel() {
 
     //Методы управления воспроизведением музыки
     fun preparePlayer() {playerInteractor.preparePlayer()}
-    fun setOnPreparedListener(listener : MediaPlayer.OnPreparedListener) {
-        playerInteractor.setOnPreparedListener(listener)
+    fun setOnPreparedListener(onPrepared: () -> Unit) {
+       onPrepared()
+        playerInteractor.setOnPreparedListener()
         playerState = MediaPlayerState.STATE_PREPARED
     }
-    fun setOnCompletionListener(listener : MediaPlayer.OnCompletionListener) {
-        playerInteractor.setOnCompletionListener(listener)
+    fun setOnCompletionListener(onCompletion : () -> Unit) {
+        onCompletion()
+        playerInteractor.setOnCompletionListener()
         playerState = MediaPlayerState.STATE_PREPARED
     }
 
@@ -102,5 +103,7 @@ class PlayerViewModel : ViewModel() {
             }
         }
     }
+
+
 
 }

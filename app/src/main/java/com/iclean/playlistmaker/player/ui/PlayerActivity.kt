@@ -24,9 +24,7 @@ class PlayerActivity : AppCompatActivity() {
     //Определяем переменные, которые пригодятся позже
     private var timeFormat : String? = ""
 
-    companion object {
-        const val nullTime = "00:00"
-    }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +38,9 @@ class PlayerActivity : AppCompatActivity() {
             this,
             PlayerViewModel.getViewModelFactory()
         )[PlayerViewModel::class.java]
+
+        //Определяем "нулевое время"
+        val nullTime = resources.getString(R.string.null_time)
 
         //Возвращаемся домой
         binding.backButton.setOnClickListener {

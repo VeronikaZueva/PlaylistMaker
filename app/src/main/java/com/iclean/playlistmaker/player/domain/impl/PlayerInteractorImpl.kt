@@ -1,19 +1,19 @@
 package com.iclean.playlistmaker.player.domain.impl
 
 
-import android.media.MediaPlayer
 import com.iclean.playlistmaker.player.domain.PlayerInteractor
-import com.iclean.playlistmaker.player.data.PlayerRepository
+import com.iclean.playlistmaker.player.domain.PlayerRepository
 
 
 class PlayerInteractorImpl(private val player : PlayerRepository) : PlayerInteractor {
     //Медиаплеер
-    override fun setOnPreparedListener(listener : MediaPlayer.OnPreparedListener) {
-        player.setOnPreparedListener(listener)
+    override fun setOnPreparedListener() {
+        player.setOnPreparedListener()
     }
-    override fun setOnCompletionListener(listener : MediaPlayer.OnCompletionListener) {
-        player.setOnCompletionListener(listener)
+    override fun setOnCompletionListener() {
+        player.setOnCompletionListener()
     }
+
     override fun preparePlayer()  {
         player.preparePlayer()
     }

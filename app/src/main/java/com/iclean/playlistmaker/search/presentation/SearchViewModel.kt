@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.iclean.playlistmaker.general.Creator
-import com.iclean.playlistmaker.search.data.dto.HandlerController
 import com.iclean.playlistmaker.search.domain.SearchInteractor
 import com.iclean.playlistmaker.search.domain.models.Track
 
@@ -22,11 +21,9 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
                    return SearchViewModel(Creator.getSearchInteractor(sharedPreferences, context)) as T
                }
            }
-       private const val DELAY = 2000L
    }
 
     //Создаем нужные экземпляры data классов, с которые нам нужно будет работать во ViewModel
-    private val handlerController = HandlerController()
     private val liveData = MutableLiveData<LiveDataSearch>()
 
     //Работаем со всеми методами и направляем их в нужные слои
@@ -54,15 +51,6 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
 
     fun clearHistory() {
         searchInteractor.clearHistory()
-    }
-
-    //Работаем с Handler
-    fun postDelay(runnable: Runnable) {
-        handlerController.postDelay(runnable, DELAY)
-    }
-
-    fun removeCallback(runnable: Runnable) {
-        handlerController.removeCallback(runnable)
     }
 
 

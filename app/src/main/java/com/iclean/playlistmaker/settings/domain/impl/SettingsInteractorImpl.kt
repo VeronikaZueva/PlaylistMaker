@@ -1,7 +1,7 @@
 package com.iclean.playlistmaker.settings.domain.impl
 
 
-import com.iclean.playlistmaker.settings.data.SettingsRepository
+import com.iclean.playlistmaker.settings.domain.SettingsRepository
 import com.iclean.playlistmaker.settings.domain.SettingsInteractor
 import com.iclean.playlistmaker.settings.domain.model.ThemeSetting
 
