@@ -29,14 +29,8 @@ class PlayerRepositoryImpl(private val previewUrl : String, private val runnable
             }
         }
     }
-    override fun setOnCompletionListener() {
-        object : OnCompletionListener {
-            override fun onCompletion() {
-                mediaPlayer.run {
-                    setOnCompletionListener()
-                }
-            }
-        }
+    override fun setOnCompletionListener(listener: OnCompletionListener) {
+        mediaPlayer.setOnCompletionListener { listener() }
     }
     override fun preparePlayer() {
         mediaPlayer.setDataSource(previewUrl)
