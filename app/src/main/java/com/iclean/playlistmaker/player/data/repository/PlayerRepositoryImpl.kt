@@ -20,17 +20,11 @@ class PlayerRepositoryImpl(private val previewUrl : String, private val runnable
     private val handler = Handler(Looper.getMainLooper())
 
     //Медиаплеер
-    override fun setOnPreparedListener() {
-        object : OnPreparedListener {
-            override fun onPrepared()   {
-                mediaPlayer.run {
-                    setOnPreparedListener()
-                }
-            }
-        }
+    override fun setOnPreparedListener(listener: OnPreparedListener) {
+        mediaPlayer.setOnPreparedListener {  listener.onPrepared() }
     }
     override fun setOnCompletionListener(listener: OnCompletionListener) {
-        mediaPlayer.setOnCompletionListener { listener() }
+        mediaPlayer.setOnCompletionListener { listener.onCompletion() }
     }
     override fun preparePlayer() {
         mediaPlayer.setDataSource(previewUrl)
@@ -64,6 +58,8 @@ class PlayerRepositoryImpl(private val previewUrl : String, private val runnable
     }
 
 }
+
+
 
 
 

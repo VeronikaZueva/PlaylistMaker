@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.iclean.playlistmaker.general.Creator
+import com.iclean.playlistmaker.player.domain.OnCompletionListener
+import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.domain.PlayerInteractor
 import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
 import com.iclean.playlistmaker.search.domain.models.Track
@@ -16,6 +18,7 @@ import com.iclean.playlistmaker.search.domain.models.Track
 class PlayerViewModel : ViewModel() {
     //В данном случае интерактор будем определять не в конструкторе, т.к. при запуске плеера, нам нужно будет его изменить
     private lateinit var playerInteractor: PlayerInteractor
+
     companion object {
         fun getViewModelFactory(): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
@@ -54,14 +57,12 @@ class PlayerViewModel : ViewModel() {
 
     //Методы управления воспроизведением музыки
     fun preparePlayer() {playerInteractor.preparePlayer()}
-    fun setOnPreparedListener(onPrepared: () -> Unit) {
-       onPrepared()
-        playerInteractor.setOnPreparedListener()
+    fun setOnPreparedListener(listener: OnPreparedListener) {
+        playerInteractor.setOnPreparedListener(listener)
         playerState = MediaPlayerState.STATE_PREPARED
     }
-    fun setOnCompletionListener(onCompletion : () -> Unit) {
-        onCompletion()
-        playerInteractor.setOnCompletionListener()
+    fun setOnCompletionListener(listener: OnCompletionListener) {
+        playerInteractor.setOnCompletionListener(listener)
         playerState = MediaPlayerState.STATE_PREPARED
     }
 

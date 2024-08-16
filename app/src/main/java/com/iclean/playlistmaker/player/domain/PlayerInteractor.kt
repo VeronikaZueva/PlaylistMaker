@@ -1,11 +1,13 @@
 package com.iclean.playlistmaker.player.domain
 
+
+
 interface PlayerInteractor {
     //Медиаплеер
     fun preparePlayer()
 
-    fun setOnPreparedListener()
-    fun setOnCompletionListener()
+    fun setOnPreparedListener(listener: OnPreparedListener)
+    fun setOnCompletionListener(listener: OnCompletionListener)
 
     fun startPlayer()
     fun pausePlayer()
