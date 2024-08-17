@@ -8,6 +8,8 @@ import com.iclean.playlistmaker.R
 import androidx.lifecycle.ViewModelProvider
 import com.iclean.playlistmaker.databinding.ActivityPlayerBinding
 import com.iclean.playlistmaker.general.TrackMethods
+import com.iclean.playlistmaker.player.domain.OnCompletionListener
+import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.presentation.PlayerViewModel
 import com.iclean.playlistmaker.search.domain.models.Track
 
@@ -62,15 +64,20 @@ class PlayerActivity : AppCompatActivity() {
         //Прописываем метода подготовки плеера
         viewModel.preparePlayer()
 
-        viewModel.setOnPreparedListener {
-            binding.buttonPlay.isEnabled = true
-        }
+        viewModel.setOnPreparedListener(object: OnPreparedListener {
+            override fun onPrepared() {
+                binding.buttonPlay.isEnabled = true
+            }
+        })
 
-        viewModel.setOnCompletionListener {
-            setImagePlay()
-            viewModel.removeCallback()
-            binding.timer.text = nullTime
-        }
+        viewModel.setOnCompletionListener(object : OnCompletionListener {
+            override fun onCompletion() {
+                setImagePlay()
+                viewModel.removeCallback()
+                binding.timer.text = nullTime
+            }
+        })
+
 
 
         //Управляем нажатиями кнопок: play|pause
