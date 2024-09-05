@@ -1,3 +1,3 @@
 package com.iclean.playlistmaker.settings.domain.model
 
-data class ThemeSetting(val darkTheme : Boolean)
+data class ThemeSetting(var darkTheme : Boolean)

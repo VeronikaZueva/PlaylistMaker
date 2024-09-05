@@ -3,7 +3,6 @@ package com.iclean.playlistmaker.search.domain.impl
 import com.iclean.playlistmaker.search.domain.SearchRepository
 import com.iclean.playlistmaker.search.data.models.StateType
 import com.iclean.playlistmaker.search.domain.SearchInteractor
-import com.iclean.playlistmaker.search.domain.models.Track
 import java.util.concurrent.Executors
 
 
@@ -20,17 +19,7 @@ class SearchInteractorImpl(private val repository: SearchRepository) : SearchInt
             }
         }
     }
-    override fun load(): List<Track> {
-        return repository.load()
-    }
 
-    override fun save(trackItem: Track) {
-        repository.save(trackItem)
-    }
-
-    override fun clearHistory() {
-        repository.clearHistory()
-    }
 
 
 }

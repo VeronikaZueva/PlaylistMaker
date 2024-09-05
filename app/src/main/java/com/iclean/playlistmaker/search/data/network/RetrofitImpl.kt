@@ -6,27 +6,12 @@ import android.net.NetworkCapabilities
 import com.iclean.playlistmaker.search.data.NetworkClient
 import com.iclean.playlistmaker.search.data.dto.Request
 import com.iclean.playlistmaker.search.data.models.ResposeCode
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
-//Наша библиотека для поиска. Для удобства в названии указываем имя библиотеки и Impl - что она реализует определенный интерфейс
-//Так как мы будем работать с определенным контекстом, то его передаем при создании класса
-//Задачей Ретрофит - взаимодействие с конкретным сервером, а потому ссылку на api, к которому мы обращаемся, тоже нужно передать в конкструктор
-//В будущем, возможно, мы будем использовать другое API, а потому ссылку на него, лучше также сделать отдельным классом
-
-class RetrofitImpl(private val context: Context) : NetworkClient {
-   private val iTunesLink = "https://itunes.apple.com"
-
+//??? Здесь пока не понимаю, как работать с context???
+class RetrofitImpl(private val iTunesApi: ITunesApi,
+                   private val context: Context) : NetworkClient {
 
     //Для передачи контекста
-    //Строим Retrofit по образцу
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(iTunesLink)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val iTunesApi = retrofit.create(ITunesApi::class.java)
-
     override fun search(request: Any): ResposeCode {
         //Если нет интернета
         if(!isConnected()) {

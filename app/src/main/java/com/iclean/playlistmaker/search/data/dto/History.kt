@@ -8,10 +8,6 @@ import com.iclean.playlistmaker.search.domain.models.Track
 
 
 
-//Создаем класс, для работы с данными по истории поиска.
-//С историей у нас есть только 3 действия: загрузка истории поиска, сохранение трека в истории, очистка истории поиска
-//В конструкторе загружаем историю поиска, сохраненную в SharedPreferences
-
 class History(private val sharePref: SharedPreferences) : HistoryInt {
     //Переносим из Activity константы макисмального количества треков в истории, а также ключа SharedPreferences дл истории поиска
     companion object {

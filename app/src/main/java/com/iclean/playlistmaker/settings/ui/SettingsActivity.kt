@@ -2,16 +2,17 @@ package com.iclean.playlistmaker.settings.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.lifecycle.ViewModelProvider
+import com.iclean.playlistmaker.App
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.databinding.ActivitySettingsBinding
 import com.iclean.playlistmaker.settings.presentation.SettingsViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SettingsActivity : AppCompatActivity() {
 
     //Создаем нашу ViewModel и Binding
-    private lateinit var viewModel : SettingsViewModel
+    private val viewModel by viewModel<SettingsViewModel>()
     private lateinit var binding : ActivitySettingsBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +22,6 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        viewModel = ViewModelProvider(this, SettingsViewModel.getViewModelFactory(this))[SettingsViewModel::class.java]
 
         //Возвращаемся домой
         binding.backButton.setOnClickListener {
@@ -29,11 +29,10 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         //Переключаем тему
-        binding.themeSwitcher.apply {
-            viewModel.switchThemeLiveData().observe(this@SettingsActivity) {
-                isChecked = it.darkTheme
-                setOnCheckedChangeListener  {_, _ -> viewModel.switchTheme(isChecked)}
-            }
+        binding.themeSwitcher.isChecked = (application as App).darkTheme
+        binding.themeSwitcher.setOnCheckedChangeListener  {_, isChecked ->
+            (application as App).switchTheme(isChecked)
+            viewModel.switchTheme(isChecked)
         }
 
 

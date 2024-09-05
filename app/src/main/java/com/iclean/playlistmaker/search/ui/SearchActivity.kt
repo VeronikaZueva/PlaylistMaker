@@ -11,7 +11,6 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.iclean.playlistmaker.R
@@ -21,6 +20,7 @@ import com.iclean.playlistmaker.search.domain.api.TrackClick
 import com.iclean.playlistmaker.search.domain.models.Track
 import com.iclean.playlistmaker.search.presentation.SearchViewModel
 import com.iclean.playlistmaker.search.ui.models.Status
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 @Suppress("UNUSED_EXPRESSION")
@@ -31,7 +31,6 @@ class SearchActivity :  AppCompatActivity() {
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_DEF = ""
-        const val HISTORY_KEY = "history_key"
         const val DELAY = 2000L
     }
 
@@ -40,7 +39,7 @@ class SearchActivity :  AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
 
     //Создаем ViewModel и Binding
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel by viewModel<SearchViewModel>()
     private lateinit var binding: ActivitySearchBinding
 
     //Обозначаем Адаптеры для Списока поиска и Списка истории
@@ -59,13 +58,6 @@ class SearchActivity :  AppCompatActivity() {
 
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        //Получаем историю поиска и ViewModel
-        val history = getSharedPreferences(HISTORY_KEY, MODE_PRIVATE)
-        viewModel = ViewModelProvider(
-            this,
-            SearchViewModel.getViewModelFactory(history, this)
-        )[SearchViewModel::class.java]
 
 
         //Вернуться домой
