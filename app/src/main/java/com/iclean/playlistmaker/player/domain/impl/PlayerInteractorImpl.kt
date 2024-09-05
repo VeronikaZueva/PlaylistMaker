@@ -1,20 +1,22 @@
 package com.iclean.playlistmaker.player.domain.impl
 
-
-
-import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
-import com.iclean.playlistmaker.player.domain.OnMediaPlayerStateChangeListener
-import com.iclean.playlistmaker.player.domain.interactor.PlayerInteractor
-import com.iclean.playlistmaker.player.domain.repository.PlayerRepository
+import com.iclean.playlistmaker.player.domain.OnCompletionListener
+import com.iclean.playlistmaker.player.domain.OnPreparedListener
+import com.iclean.playlistmaker.player.domain.PlayerInteractor
+import com.iclean.playlistmaker.player.domain.PlayerRepository
 
 
 class PlayerInteractorImpl(private val player : PlayerRepository) : PlayerInteractor {
-
-    override fun getPlayerState(): MediaPlayerState {
-        return player.state
+    //Медиаплеер
+    override fun setOnPreparedListener(listener : OnPreparedListener) {
+        player.setOnPreparedListener(listener)
     }
-    override fun preparePlayer(previewUrl: String?)  {
-        player.preparePlayer(previewUrl)
+    override fun setOnCompletionListener(listener : OnCompletionListener) {
+        player.setOnCompletionListener(listener)
+    }
+
+    override fun preparePlayer()  {
+        player.preparePlayer()
     }
 
 
@@ -30,14 +32,21 @@ class PlayerInteractorImpl(private val player : PlayerRepository) : PlayerIntera
         player.release()
     }
 
-    override fun setOnChangeStateListener(onMediaPlayerStateChangeListener: OnMediaPlayerStateChangeListener) {
-        player.setOnStateChangeListener(onMediaPlayerStateChangeListener)
+    override fun getCurrentPosition() : Int {
+        return player.getCurrentPosition()
     }
 
-    override fun statusTimer(statePlayer : MediaPlayerState) : String? {
-        return player.statusTimer(statePlayer)
+    //Handler
+    override fun postTimerDelay(delay : Long) {
+        player.postTimerDelay(delay)
     }
 
+    override fun removeCallback() {
+        player.removeCallback()
+    }
 
+    override fun removeCallbacksAndMessages() {
+        player.removeCallbacksAndMessages()
+    }
 
 }

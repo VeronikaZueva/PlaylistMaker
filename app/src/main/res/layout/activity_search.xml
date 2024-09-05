@@ -6,7 +6,7 @@
     android:paddingTop="@dimen/zero"
     android:paddingLeft="@dimen/zero"
     android:paddingRight="@dimen/zero"
-    tools:context=".SearchActivity"
+    tools:context=".search.ui.SearchActivity"
     tools:ignore="Overdraw">
 
 <LinearLayout

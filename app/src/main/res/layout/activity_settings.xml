@@ -5,7 +5,7 @@
     android:paddingTop="@dimen/zero"
     android:paddingLeft="@dimen/zero"
     android:paddingRight="@dimen/zero"
-    tools:context=".SettingsActivity"
+    tools:context=".settings.ui.SettingsActivity"
     tools:ignore="Overdraw">
     
     <LinearLayout

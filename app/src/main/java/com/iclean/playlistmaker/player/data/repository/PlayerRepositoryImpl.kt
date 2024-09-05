@@ -1,62 +1,68 @@
 package com.iclean.playlistmaker.player.data.repository
 
 import android.media.MediaPlayer
-import com.iclean.playlistmaker.player.presentation.ui.TrackMethods
-import com.iclean.playlistmaker.player.domain.TrackMediaPlayerImpl
-import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
-import com.iclean.playlistmaker.player.domain.OnMediaPlayerStateChangeListener
-import com.iclean.playlistmaker.player.domain.repository.PlayerRepository
+import android.os.Handler
+import android.os.Looper
+import com.iclean.playlistmaker.player.domain.OnCompletionListener
+import com.iclean.playlistmaker.player.domain.OnPreparedListener
+import com.iclean.playlistmaker.player.domain.PlayerRepository
 
-class PlayerRepositoryImpl : PlayerRepository {
+//Частично меняем функционал:
+//1. Класс уже должен создаваться с переданной ссылкой в конструкторе
+//2. Упростим функцию prepared и вынесем отдельно состояния плеера: setOnPrepare и setOnCompleted
+//3. Функция StatusTimer относится к бизнес-логике и мы ее перенесем в domain.
+// Здесь же нам просто потребуется метод mediaPlayerа - получение текущей позиции
+
+class PlayerRepositoryImpl(private val previewUrl : String, private val runnable: Runnable) :
+    PlayerRepository {
 
     private val mediaPlayer = MediaPlayer()
-    private val impl = TrackMediaPlayerImpl()
-    private val trackMethods = TrackMethods()
-    private lateinit var onMediaPlayerStateChangeListener : OnMediaPlayerStateChangeListener
-    override var state : MediaPlayerState = impl.defaultPlayerState()
+    private val handler = Handler(Looper.getMainLooper())
 
-    override fun setOnStateChangeListener(onMediaPlayerStateChangeListener: OnMediaPlayerStateChangeListener) {
-        this.onMediaPlayerStateChangeListener = onMediaPlayerStateChangeListener
+    //Медиаплеер
+    override fun setOnPreparedListener(listener: OnPreparedListener) {
+        mediaPlayer.setOnPreparedListener {  listener.onPrepared() }
     }
-    override fun preparePlayer(previewUrl: String?) {
+    override fun setOnCompletionListener(listener: OnCompletionListener) {
+        mediaPlayer.setOnCompletionListener { listener.onCompletion() }
+    }
+    override fun preparePlayer() {
         mediaPlayer.setDataSource(previewUrl)
         mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            onMediaPlayerStateChangeListener.onChange(MediaPlayerState.STATE_PREPARED)
-        }
-        mediaPlayer.setOnCompletionListener {
-            onMediaPlayerStateChangeListener.onChange(MediaPlayerState.STATE_COMPLETED)
-        }
     }
     override fun startPlayer() {
         mediaPlayer.start()
-        state = impl.startPlayer()
     }
 
     override fun pausePlayer(){
         mediaPlayer.pause()
-        state = impl.pausePlayer()
-    }
-
-
-    override fun statusTimer(statePlayer : MediaPlayerState): String? {
-        return when (statePlayer) {
-            MediaPlayerState.STATE_PLAYING -> {
-                val current = mediaPlayer.currentPosition.toString()
-                trackMethods.dateFormatTrack(current)
-            }
-            else -> {
-                impl.statusTimer()
-            }
-
-        }
     }
 
     override fun release() {mediaPlayer.release()}
 
+    override fun getCurrentPosition() : Int {
+        return mediaPlayer.currentPosition
+    }
 
+    //Handler
+    override fun postTimerDelay(delay: Long) {
+        handler.postDelayed(runnable, delay)
+    }
 
+    override fun removeCallback() {
+        handler.removeCallbacks(runnable)
+    }
 
-
+    override fun removeCallbacksAndMessages() {
+        handler.removeCallbacksAndMessages(runnable)
+    }
 
 }
+
+
+
+
+
+
+
+
