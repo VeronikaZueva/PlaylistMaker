@@ -20,7 +20,7 @@ class App : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@App)
-            modules(searchModule, playerModule, settingsModule, sharingModule)
+            modules(playerModule, settingsModule, sharingModule)
         }
         val themeInteractor by inject<SettingsInteractor>()
         val darkTheme = themeInteractor.switchTheme().darkTheme
