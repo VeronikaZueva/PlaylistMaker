@@ -2,41 +2,30 @@ package com.iclean.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.iclean.playlistmaker.player.di.playerInteractorModule
-import com.iclean.playlistmaker.player.di.playerRepositoryModule
-import com.iclean.playlistmaker.player.di.playerViewModel
-import com.iclean.playlistmaker.search.di.searchDataModule
-import com.iclean.playlistmaker.search.di.searchInteractorModule
-import com.iclean.playlistmaker.search.di.searchRepositoryModule
-import com.iclean.playlistmaker.search.di.searchViewModelModule
-import com.iclean.playlistmaker.settings.data.impl.SettingsRepositoryImpl
-import com.iclean.playlistmaker.settings.di.settingInteractorModule
-import com.iclean.playlistmaker.settings.di.settingsRepositoryModule
-import com.iclean.playlistmaker.settings.di.settingsViewModelModule
-import com.iclean.playlistmaker.sharing.di.sharingInteractorModule
-import com.iclean.playlistmaker.sharing.di.sharingRepositoryModule
+import com.iclean.playlistmaker.di.playerModule
+import com.iclean.playlistmaker.di.searchModule
+import com.iclean.playlistmaker.di.settingsModule
+import com.iclean.playlistmaker.di.sharingModule
+import com.iclean.playlistmaker.settings.domain.SettingsInteractor
+import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
 
 class App : Application() {
 
-    var darkTheme : Boolean = false
+    private var darkTheme : Boolean = false
 
     override fun onCreate() {
         super.onCreate()
         startKoin {
             androidContext(this@App)
-            modules(searchDataModule, searchRepositoryModule, searchInteractorModule, searchViewModelModule,
-                playerRepositoryModule, playerInteractorModule, playerViewModel,
-                sharingInteractorModule, sharingRepositoryModule,
-                settingInteractorModule, settingsRepositoryModule, settingsViewModelModule)
+            modules(searchModule, playerModule, settingsModule, sharingModule)
         }
+        val themeInteractor by inject<SettingsInteractor>()
+        val darkTheme = themeInteractor.switchTheme().darkTheme
+        switchTheme(darkTheme)
 
-        val theme = getSharedPreferences(THEME_NAME, MODE_PRIVATE)
-        val themeRepository = SettingsRepositoryImpl(theme)
-
-        switchTheme(themeRepository.switchTheme(this).darkTheme)
     }
 
 
@@ -55,9 +44,7 @@ class App : Application() {
             )
         }
 
-    companion object {
-        private const val THEME_NAME = "settings_app"
-    }
+
 
     }
 

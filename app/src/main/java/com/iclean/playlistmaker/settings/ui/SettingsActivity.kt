@@ -2,7 +2,6 @@ package com.iclean.playlistmaker.settings.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.iclean.playlistmaker.App
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.databinding.ActivitySettingsBinding
 import com.iclean.playlistmaker.settings.presentation.SettingsViewModel
@@ -13,12 +12,12 @@ class SettingsActivity : AppCompatActivity() {
 
     //Создаем нашу ViewModel и Binding
     private val viewModel by viewModel<SettingsViewModel>()
-    private lateinit var binding : ActivitySettingsBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        val binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
 
@@ -28,11 +27,14 @@ class SettingsActivity : AppCompatActivity() {
             this.finish()
         }
 
-        //Переключаем тему
-        binding.themeSwitcher.isChecked = (application as App).darkTheme
-        binding.themeSwitcher.setOnCheckedChangeListener  {_, isChecked ->
-            (application as App).switchTheme(isChecked)
-            viewModel.switchTheme(isChecked)
+        //Переключаем тему - переписываем с использованием LiveData
+        binding.themeSwitcher.apply {
+            viewModel.getLiveData().observe(this@SettingsActivity) {
+                isChecked = it.darkTheme
+            }
+            setOnCheckedChangeListener {_, isChecked ->
+                viewModel.switchTheme(isChecked)
+            }
         }
 
 
