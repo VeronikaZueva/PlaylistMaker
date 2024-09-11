@@ -1,7 +1,6 @@
 package com.iclean.playlistmaker.search.domain.impl
 
 import com.iclean.playlistmaker.search.domain.HistoryInt
-import com.iclean.playlistmaker.search.domain.SearchHistoryInt
 import com.iclean.playlistmaker.search.domain.SearchHistoryInteractor
 import com.iclean.playlistmaker.search.domain.models.Track
 
