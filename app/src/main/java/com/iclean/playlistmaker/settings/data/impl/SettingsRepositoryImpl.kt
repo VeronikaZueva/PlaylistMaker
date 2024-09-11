@@ -11,7 +11,7 @@ class SettingsRepositoryImpl(private val context : Context) : SettingsRepository
     private val sharedPref : SharedPreferences = context.getSharedPreferences(SETTING_PARAMS, Context.MODE_PRIVATE)
     override fun switchTheme() : ThemeSetting {
         return ThemeSetting(sharedPref.getBoolean(
-            SETTING_PARAMS,
+            KEY_FOR_THEME,
             context.applicationContext.resources.configuration.uiMode.and(Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES))
     }
 
