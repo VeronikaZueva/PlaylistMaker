@@ -10,12 +10,12 @@ import org.koin.dsl.module
 
 val settingsModule = module {
     single<SettingsRepository> {
-        SettingsRepositoryImpl(context = get())
+        SettingsRepositoryImpl(context = get(), application = get())
     }
     factory<SettingsInteractor> {
         SettingsInteractorImpl(repository = get())
     }
     viewModel {
-        SettingsViewModel(settingsInteractor = get(), sharingInteractor = get(), application = get())
+        SettingsViewModel(settingsInteractor = get(), sharingInteractor = get())
     }
 }

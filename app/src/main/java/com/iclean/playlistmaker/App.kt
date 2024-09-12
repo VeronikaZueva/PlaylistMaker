@@ -6,7 +6,7 @@ import com.iclean.playlistmaker.di.playerModule
 import com.iclean.playlistmaker.di.searchModule
 import com.iclean.playlistmaker.di.settingsModule
 import com.iclean.playlistmaker.di.sharingModule
-import com.iclean.playlistmaker.settings.domain.SettingsInteractor
+import com.iclean.playlistmaker.settings.domain.SettingsRepository
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -22,8 +22,8 @@ class App : Application() {
             androidContext(this@App)
             modules(searchModule, playerModule, settingsModule, sharingModule)
         }
-        val themeInteractor by inject<SettingsInteractor>()
-        val darkTheme = themeInteractor.switchTheme().darkTheme
+        val themeRepository by inject<SettingsRepository>()
+        val darkTheme = themeRepository.getTheme().darkTheme
         switchTheme(darkTheme)
 
     }

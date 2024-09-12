@@ -28,14 +28,14 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         //Переключаем тему - переписываем с использованием LiveData
-        binding.themeSwitcher.apply {
-            viewModel.getLiveData().observe(this@SettingsActivity) {
-                isChecked = it.darkTheme
-            }
-            setOnCheckedChangeListener {_, isChecked ->
+        viewModel.getLiveData().observe(this) {
+            binding.themeSwitcher.isChecked = it.darkTheme
+        }
+
+        binding.themeSwitcher.setOnCheckedChangeListener {_, isChecked ->
                 viewModel.switchTheme(isChecked)
             }
-        }
+
 
 
         //Поделиться приложением

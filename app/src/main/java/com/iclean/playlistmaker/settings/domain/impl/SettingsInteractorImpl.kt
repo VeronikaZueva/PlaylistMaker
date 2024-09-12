@@ -7,6 +7,9 @@ import com.iclean.playlistmaker.settings.domain.model.ThemeSetting
 
 
 class SettingsInteractorImpl(private val repository: SettingsRepository) : SettingsInteractor  {
-    override fun switchTheme() : ThemeSetting {return repository.switchTheme()}
+    override fun getTheme() : ThemeSetting {return repository.getTheme()}
+    override fun switchTheme(darkTheme : Boolean) {
+        repository.switchTheme(darkTheme)
+    }
     override fun updateThemeInApp(darkThemeSetting: ThemeSetting) {repository.updateThemeInApp(darkThemeSetting)}
 }

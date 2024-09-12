@@ -1,32 +1,29 @@
 package com.iclean.playlistmaker.settings.presentation
 
-import android.app.Application
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.iclean.playlistmaker.App
 import com.iclean.playlistmaker.settings.domain.SettingsInteractor
 import com.iclean.playlistmaker.settings.domain.model.ThemeSetting
 import com.iclean.playlistmaker.sharing.domain.SharingInteractor
 
 class SettingsViewModel(
     private val settingsInteractor: SettingsInteractor,
-    private val sharingInteractor : SharingInteractor,
-    application : Application
+    private val sharingInteractor : SharingInteractor
     ) : ViewModel() {
 
-    //Переопределяем уровень приложения и задаем LiveData, чтобы отслеживать изменения
-    private val app by lazy {application as App}
+    //Задаем LiveData, чтобы отслеживать изменения
     private val themeLiveData = MutableLiveData<ThemeSetting>()
 
     init {
-        themeLiveData.value = settingsInteractor.switchTheme()
+        themeLiveData.value = settingsInteractor.getTheme()
     }
 
     fun switchTheme(isChecked : Boolean) {
         settingsInteractor.updateThemeInApp(ThemeSetting(isChecked))
-        themeLiveData.value = settingsInteractor.switchTheme()
-        themeLiveData.value?.let {app.switchTheme(it.darkTheme)}
+        themeLiveData.value = settingsInteractor.getTheme()
+        themeLiveData.value?.let { settingsInteractor.switchTheme(it.darkTheme) }
     }
     fun shareApp() {sharingInteractor.shareApp()}
     fun sendMessage() {sharingInteractor.sendMessage()}

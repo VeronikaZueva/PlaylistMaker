@@ -5,6 +5,7 @@ import com.iclean.playlistmaker.settings.domain.model.ThemeSetting
 
 
 interface SettingsRepository {
-    fun switchTheme() : ThemeSetting
+    fun getTheme() : ThemeSetting
+    fun switchTheme(darkTheme : Boolean)
     fun updateThemeInApp (darkThemeSetting : ThemeSetting)
 }
