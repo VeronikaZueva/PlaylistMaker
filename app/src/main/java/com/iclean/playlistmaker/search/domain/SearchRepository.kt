@@ -9,8 +9,4 @@ import com.iclean.playlistmaker.search.domain.models.Track
 interface SearchRepository {
     fun search(expression : String) : StateType<List<Track>>
 
-    fun load() : List<Track>
-    fun save(trackItem : Track)
-
-    fun clearHistory()
 }

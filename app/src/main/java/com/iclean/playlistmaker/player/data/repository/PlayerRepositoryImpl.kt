@@ -2,22 +2,14 @@ package com.iclean.playlistmaker.player.data.repository
 
 import android.media.MediaPlayer
 import android.os.Handler
-import android.os.Looper
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.domain.PlayerRepository
 
-//Частично меняем функционал:
-//1. Класс уже должен создаваться с переданной ссылкой в конструкторе
-//2. Упростим функцию prepared и вынесем отдельно состояния плеера: setOnPrepare и setOnCompleted
-//3. Функция StatusTimer относится к бизнес-логике и мы ее перенесем в domain.
-// Здесь же нам просто потребуется метод mediaPlayerа - получение текущей позиции
 
-class PlayerRepositoryImpl(private val previewUrl : String, private val runnable: Runnable) :
+class PlayerRepositoryImpl(private val mediaPlayer : MediaPlayer,
+                           private val handler : Handler) :
     PlayerRepository {
-
-    private val mediaPlayer = MediaPlayer()
-    private val handler = Handler(Looper.getMainLooper())
 
     //Медиаплеер
     override fun setOnPreparedListener(listener: OnPreparedListener) {
@@ -26,7 +18,7 @@ class PlayerRepositoryImpl(private val previewUrl : String, private val runnable
     override fun setOnCompletionListener(listener: OnCompletionListener) {
         mediaPlayer.setOnCompletionListener { listener.onCompletion() }
     }
-    override fun preparePlayer() {
+    override fun preparePlayer(previewUrl : String) {
         mediaPlayer.setDataSource(previewUrl)
         mediaPlayer.prepareAsync()
     }
@@ -38,22 +30,22 @@ class PlayerRepositoryImpl(private val previewUrl : String, private val runnable
         mediaPlayer.pause()
     }
 
-    override fun release() {mediaPlayer.release()}
+    override fun release() {mediaPlayer.reset()}
 
     override fun getCurrentPosition() : Int {
         return mediaPlayer.currentPosition
     }
 
     //Handler
-    override fun postTimerDelay(delay: Long) {
+    override fun postTimerDelay(runnable : Runnable, delay: Long) {
         handler.postDelayed(runnable, delay)
     }
 
-    override fun removeCallback() {
+    override fun removeCallback(runnable : Runnable) {
         handler.removeCallbacks(runnable)
     }
 
-    override fun removeCallbacksAndMessages() {
+    override fun removeCallbacksAndMessages(runnable : Runnable) {
         handler.removeCallbacksAndMessages(runnable)
     }
 

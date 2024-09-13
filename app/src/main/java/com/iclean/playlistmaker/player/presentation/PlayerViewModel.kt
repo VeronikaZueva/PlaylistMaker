@@ -4,9 +4,7 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
-import com.iclean.playlistmaker.general.Creator
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.domain.PlayerInteractor
@@ -15,18 +13,9 @@ import com.iclean.playlistmaker.search.domain.models.Track
 
 //Здесь тоже упрощаем логику. Начнем с того, что явно делает интерактор
 
-class PlayerViewModel : ViewModel() {
-    //В данном случае интерактор будем определять не в конструкторе, т.к. при запуске плеера, нам нужно будет его изменить
-    private lateinit var playerInteractor: PlayerInteractor
+class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
 
     companion object {
-        fun getViewModelFactory(): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return PlayerViewModel() as T
-                }
-            }
         private const val DELAY = 1000L
     }
 
@@ -34,6 +23,9 @@ class PlayerViewModel : ViewModel() {
     private var playerState = MediaPlayerState.STATE_DEFAULT
     //Получаем данные по треку из интента
     private val liveData = MutableLiveData<LiveDataPlayer>()
+    //Инициализируем переменные, которые потребуются позже. в ходе обработки сценария
+    private lateinit var runnable: Runnable
+    private lateinit var gson : Track
 
     //Главный обработчик
     fun buttonCheck() : Boolean {
@@ -56,7 +48,7 @@ class PlayerViewModel : ViewModel() {
     }
 
     //Методы управления воспроизведением музыки
-    fun preparePlayer() {playerInteractor.preparePlayer()}
+    fun preparePlayer() {playerInteractor.preparePlayer(gson.previewUrl)}
     fun setOnPreparedListener(listener: OnPreparedListener) {
         playerInteractor.setOnPreparedListener(listener)
         playerState = MediaPlayerState.STATE_PREPARED
@@ -72,22 +64,22 @@ class PlayerViewModel : ViewModel() {
 
 
     fun getTrack(intent: Intent): LiveData<LiveDataPlayer> {
-        val gson = Gson().fromJson(intent.extras?.getString("trackObject"), Track::class.java)
+        gson = Gson().fromJson(intent.extras?.getString("trackObject"), Track::class.java)
+        runnable = startTimer((gson))
         liveData.value = LiveDataPlayer(gson, 0)
-        playerInteractor = Creator.getPlayerInteractor(gson.previewUrl, startTimer(gson))
         return liveData
     }
 
 
     //Работаем с Handler
     private fun postTimerDelay() {
-        playerInteractor.postTimerDelay(DELAY)
+        playerInteractor.postTimerDelay(runnable, DELAY)
     }
     fun removeCallback() {
-        playerInteractor.removeCallback()
+        playerInteractor.removeCallback(runnable)
     }
     fun removeCallbacksAndMessages() {
-        playerInteractor.removeCallbacksAndMessages()
+        playerInteractor.removeCallbacksAndMessages(runnable)
     }
 
 

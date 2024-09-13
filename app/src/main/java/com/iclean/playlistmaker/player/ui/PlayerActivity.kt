@@ -5,19 +5,19 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.iclean.playlistmaker.R
-import androidx.lifecycle.ViewModelProvider
 import com.iclean.playlistmaker.databinding.ActivityPlayerBinding
 import com.iclean.playlistmaker.general.TrackMethods
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.presentation.PlayerViewModel
 import com.iclean.playlistmaker.search.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class PlayerActivity : AppCompatActivity() {
 
     //Создаем ViewModel и Binding
-    private lateinit var viewModel : PlayerViewModel
+    private val viewModel by viewModel<PlayerViewModel>()
     private lateinit var binding : ActivityPlayerBinding
 
     //Подключаем нужные обработчики к Activity
@@ -27,17 +27,13 @@ class PlayerActivity : AppCompatActivity() {
     private var timeFormat : String? = ""
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel = ViewModelProvider(
-            this,
-            PlayerViewModel.getViewModelFactory()
-        )[PlayerViewModel::class.java]
 
         //Определяем "нулевое время"
         val nullTime = resources.getString(R.string.null_time)
@@ -61,7 +57,8 @@ class PlayerActivity : AppCompatActivity() {
             showCollection(track.collectionName)
         }
 
-        //Прописываем метода подготовки плеера
+
+        //Прописываем методы подготовки плеера
         viewModel.preparePlayer()
 
         viewModel.setOnPreparedListener(object: OnPreparedListener {

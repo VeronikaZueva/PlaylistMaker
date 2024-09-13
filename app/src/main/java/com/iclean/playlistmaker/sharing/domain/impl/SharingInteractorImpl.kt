@@ -1,12 +1,12 @@
 package com.iclean.playlistmaker.sharing.domain.impl
 
+import android.content.Context
 import com.iclean.playlistmaker.R
-import com.iclean.playlistmaker.general.Creator
 import com.iclean.playlistmaker.sharing.domain.SharingRepository
 import com.iclean.playlistmaker.sharing.domain.SharingInteractor
 
-class SharingInteractorImpl(private val repository : SharingRepository) : SharingInteractor {
-    private val app = Creator.app
+class SharingInteractorImpl(private val repository : SharingRepository, private val app : Context) : SharingInteractor {
+
     override fun shareApp() {
         repository.shareApp(getLinkApp())
     }

@@ -2,7 +2,7 @@ package com.iclean.playlistmaker.player.domain
 
 interface PlayerRepository {
 
-    fun preparePlayer()
+    fun preparePlayer(previewUrl : String)
 
     fun setOnPreparedListener(listener : OnPreparedListener)
     fun setOnCompletionListener(listener: OnCompletionListener)
@@ -12,8 +12,8 @@ interface PlayerRepository {
 
     fun release()
     fun getCurrentPosition() : Int
-    fun postTimerDelay(delay: Long)
-    fun removeCallback()
-    fun removeCallbacksAndMessages()
+    fun postTimerDelay(runnable : Runnable, delay: Long)
+    fun removeCallback(runnable : Runnable)
+    fun removeCallbacksAndMessages(runnable : Runnable)
 
 }

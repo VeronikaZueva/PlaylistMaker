@@ -2,39 +2,40 @@ package com.iclean.playlistmaker.settings.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.lifecycle.ViewModelProvider
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.databinding.ActivitySettingsBinding
 import com.iclean.playlistmaker.settings.presentation.SettingsViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SettingsActivity : AppCompatActivity() {
 
     //Создаем нашу ViewModel и Binding
-    private lateinit var viewModel : SettingsViewModel
-    private lateinit var binding : ActivitySettingsBinding
+    private val viewModel by viewModel<SettingsViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        val binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
 
-        viewModel = ViewModelProvider(this, SettingsViewModel.getViewModelFactory(this))[SettingsViewModel::class.java]
 
         //Возвращаемся домой
         binding.backButton.setOnClickListener {
             this.finish()
         }
 
-        //Переключаем тему
-        binding.themeSwitcher.apply {
-            viewModel.switchThemeLiveData().observe(this@SettingsActivity) {
-                isChecked = it.darkTheme
-                setOnCheckedChangeListener  {_, _ -> viewModel.switchTheme(isChecked)}
-            }
+        //Переключаем тему - переписываем с использованием LiveData
+        viewModel.getLiveData().observe(this) {
+            binding.themeSwitcher.isChecked = it.darkTheme
         }
+
+        binding.themeSwitcher.setOnCheckedChangeListener {_, isChecked ->
+                viewModel.switchTheme(isChecked)
+            }
+
 
 
         //Поделиться приложением

@@ -15,8 +15,8 @@ class PlayerInteractorImpl(private val player : PlayerRepository) : PlayerIntera
         player.setOnCompletionListener(listener)
     }
 
-    override fun preparePlayer()  {
-        player.preparePlayer()
+    override fun preparePlayer(previewUrl : String)  {
+        player.preparePlayer(previewUrl)
     }
 
 
@@ -37,16 +37,16 @@ class PlayerInteractorImpl(private val player : PlayerRepository) : PlayerIntera
     }
 
     //Handler
-    override fun postTimerDelay(delay : Long) {
-        player.postTimerDelay(delay)
+    override fun postTimerDelay(runnable: Runnable, delay : Long) {
+        player.postTimerDelay(runnable, delay)
     }
 
-    override fun removeCallback() {
-        player.removeCallback()
+    override fun removeCallback(runnable: Runnable) {
+        player.removeCallback(runnable)
     }
 
-    override fun removeCallbacksAndMessages() {
-        player.removeCallbacksAndMessages()
+    override fun removeCallbacksAndMessages(runnable: Runnable) {
+        player.removeCallbacksAndMessages(runnable)
     }
 
 }

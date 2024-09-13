@@ -1,6 +1,6 @@
 package com.iclean.playlistmaker.search.data.dto
 
-import android.content.SharedPreferences
+import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.iclean.playlistmaker.search.domain.HistoryInt
@@ -8,11 +8,7 @@ import com.iclean.playlistmaker.search.domain.models.Track
 
 
 
-//Создаем класс, для работы с данными по истории поиска.
-//С историей у нас есть только 3 действия: загрузка истории поиска, сохранение трека в истории, очистка истории поиска
-//В конструкторе загружаем историю поиска, сохраненную в SharedPreferences
-
-class History(private val sharePref: SharedPreferences) : HistoryInt {
+class History(context: Context) : HistoryInt {
     //Переносим из Activity константы макисмального количества треков в истории, а также ключа SharedPreferences дл истории поиска
     companion object {
         const val COUNT_TRACK = 10
@@ -20,6 +16,7 @@ class History(private val sharePref: SharedPreferences) : HistoryInt {
     }
 
     //Для начала получим историю поиска
+    private val sharePref = context.getSharedPreferences(HISTORY_KEY, Context.MODE_PRIVATE)
     //Заберем строки из файла SearchHistory
     private val gson = sharePref.getString(HISTORY_KEY, Gson().toJson(null))
     class Token : TypeToken<ArrayList<Track>>()
