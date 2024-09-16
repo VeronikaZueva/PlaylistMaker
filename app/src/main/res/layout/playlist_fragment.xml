@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/update_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/two_four"
+        android:backgroundTint="@color/secondary"
+        android:paddingHorizontal="@dimen/base"
+        android:fontFamily="@font/ys_display_medium"
+        android:text="@string/new_playlist"
+        android:textAllCaps="false"
+        android:textColor="@color/new_color"
+        android:layout_marginBottom="@dimen/input_height"
+        app:cornerRadius="@dimen/header_stroke" />
+
+    <ImageView android:id="@+id/status_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@string/none_search"
+        android:src="@drawable/search_none"/>
+
+    <TextView android:id="@+id/favourite_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/no_playlist"
+        style="@style/StatusText"/>
+
+</LinearLayout>
