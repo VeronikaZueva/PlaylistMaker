@@ -85,6 +85,7 @@
         <item name="android:gravity">center_horizontal</item>
         <item name="android:textColor">@color/secondary</item>
         <item name="android:textSize">@dimen/status_text</item>
+        <item name="textAllCaps">false</item>
     </style>
     <style name="ParamName">
         <item name="android:layout_width">wrap_content</item>
