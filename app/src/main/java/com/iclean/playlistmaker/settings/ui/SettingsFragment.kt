@@ -1,40 +1,36 @@
 package com.iclean.playlistmaker.settings.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.iclean.playlistmaker.R
-import com.iclean.playlistmaker.databinding.ActivitySettingsBinding
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.iclean.playlistmaker.databinding.FragmentSettingsBinding
 import com.iclean.playlistmaker.settings.presentation.SettingsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-
-class SettingsActivity : AppCompatActivity() {
-
+class SettingsFragment : Fragment() {
     //Создаем нашу ViewModel и Binding
     private val viewModel by viewModel<SettingsViewModel>()
+    private lateinit var binding : FragmentSettingsBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) : View {
+        binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        val binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onViewCreated(view : View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-
-
-        //Возвращаемся домой
-        binding.backButton.setOnClickListener {
-            this.finish()
-        }
 
         //Переключаем тему - переписываем с использованием LiveData
-        viewModel.getLiveData().observe(this) {
+        viewModel.getLiveData().observe(viewLifecycleOwner) {
             binding.themeSwitcher.isChecked = it.darkTheme
         }
 
         binding.themeSwitcher.setOnCheckedChangeListener {_, isChecked ->
-                viewModel.switchTheme(isChecked)
-            }
+            viewModel.switchTheme(isChecked)
+        }
 
 
 

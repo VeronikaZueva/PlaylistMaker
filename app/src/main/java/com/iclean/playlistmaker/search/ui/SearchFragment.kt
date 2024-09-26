@@ -6,15 +6,16 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ProgressBar
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
-import com.iclean.playlistmaker.R
-import com.iclean.playlistmaker.databinding.ActivitySearchBinding
+import com.iclean.playlistmaker.databinding.FragmentSearchBinding
 import com.iclean.playlistmaker.player.ui.PlayerActivity
 import com.iclean.playlistmaker.search.domain.api.TrackClick
 import com.iclean.playlistmaker.search.domain.models.Track
@@ -22,15 +23,13 @@ import com.iclean.playlistmaker.search.presentation.SearchViewModel
 import com.iclean.playlistmaker.search.ui.models.Status
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+class SearchFragment : Fragment() {
+    private val handler: Handler = Handler(Looper.getMainLooper())
 
-@Suppress("UNUSED_EXPRESSION")
-class SearchActivity :  AppCompatActivity() {
-
-    private val handler : Handler = Handler(Looper.getMainLooper())
     //Константы
     companion object {
-        const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_DEF = ""
+        const val SEARCH_TEXT = "SEARCH_TEXT"
         const val DELAY = 2000L
     }
 
@@ -40,7 +39,7 @@ class SearchActivity :  AppCompatActivity() {
 
     //Создаем ViewModel и Binding
     private val viewModel by viewModel<SearchViewModel>()
-    private lateinit var binding: ActivitySearchBinding
+    private lateinit var binding: FragmentSearchBinding
 
     //Обозначаем Адаптеры для Списока поиска и Списка истории
     private lateinit var trackAdapter: TrackAdapter
@@ -48,23 +47,17 @@ class SearchActivity :  AppCompatActivity() {
 
     //Покдлючаемся к классу, регулирующему отображение блоков
     val checkStatus = CheckStatus()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-
-
-    //Открываем стандартно метод onCreate, меняется лишь добавление binding
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
-
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-
-        //Вернуться домой
-        binding.backButton.setOnClickListener {
-            this.finish()
-        }
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         //Кликнуть на трек - добавляем трек в историю и переходим на его просмотр
         val trackClick = object : TrackClick {
             override fun getTrack(track: Track) {
@@ -72,7 +65,7 @@ class SearchActivity :  AppCompatActivity() {
                 if (clickDebounce()) {
                     viewModel.save(track)
                     //Сохранили трек и переходим к нему через Intent
-                    val intent = Intent(this@SearchActivity, PlayerActivity::class.java)
+                    val intent = Intent(requireContext(), PlayerActivity::class.java)
                     intent.putExtra("trackObject", Gson().toJson(track))
                     startActivity(intent)
                 }
@@ -104,16 +97,16 @@ class SearchActivity :  AppCompatActivity() {
         checkStatus.showStatus(Status.NONE)
 
         //ВОТ ЗДЕСЬ ГЛАВНЫЙ ОБРАБОТЧИК
-        viewModel.getResult().observe(this) {
+        viewModel.getResult().observe(viewLifecycleOwner) {
             //Работаем с LiveData
             progressBar.visibility = View.GONE
             trackAdapter.submitList(it.trackList)
             historyAdapter.submitList(it.historyList)
             //Если запрос не пустой
-            if((it.code != -2) and binding.searchInput.text.isNotEmpty()) {
+            if ((it.code != -2) and binding.searchInput.text.isNotEmpty()) {
                 binding.reciclerViewTrack.adapter = trackAdapter
                 setCodeResponse(it.code)
-                if((it.trackList.isNullOrEmpty()) and (it.code != -1)) {
+                if ((it.trackList.isNullOrEmpty()) and (it.code != -1)) {
                     //Показываем ничего не нашлось
                     checkStatus.showStatus(Status.SEARCH)
                     binding.reciclerViewTrack.isVisible = false
@@ -121,9 +114,8 @@ class SearchActivity :  AppCompatActivity() {
                     checkStatus.showStatus(Status.NONE)
                     binding.reciclerViewTrack.isVisible = true
                 }
-            }
-            else {
-                if(it.historyList.isEmpty()) {
+            } else {
+                if (it.historyList.isEmpty()) {
                     checkStatus.showStatus(Status.NONE)
                 } else {
                     checkStatus.showStatus(Status.HISTORY)
@@ -143,7 +135,7 @@ class SearchActivity :  AppCompatActivity() {
         binding.searchInput.setOnFocusChangeListener { _, _ ->
             viewModel.load()
             checkStatus.showStatus(Status.HISTORY)
-         }
+        }
 
         //Очищаем поле поиска - РАБОТАЕТ
         binding.clear.setOnClickListener {
@@ -152,14 +144,15 @@ class SearchActivity :  AppCompatActivity() {
             checkStatus.showStatus(Status.HISTORY)
         }
 
-        binding.reciclerViewTrack.layoutManager = LinearLayoutManager(this)
-        binding.searchInput.setOnEditorActionListener {_, actionId, _ ->
-            if(actionId == EditorInfo.IME_ACTION_DONE) {
-                if(binding.searchInput.text.isNotEmpty()) {
+        binding.reciclerViewTrack.layoutManager = LinearLayoutManager(requireContext())
+        binding.searchInput.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (binding.searchInput.text.isNotEmpty()) {
                     searchDebounce()
                 } else {
                     viewModel.load()
                 }
+                @Suppress("UNUSED_EXPRESSION")
                 true
             }
             false
@@ -186,9 +179,6 @@ class SearchActivity :  AppCompatActivity() {
             }
         }
         binding.searchInput.addTextChangedListener(textWatcher)
-
-
-
     }
 
     //Выполняем поиск - основной процесс
@@ -200,6 +190,7 @@ class SearchActivity :  AppCompatActivity() {
         removeCallback(runnable)
         postDelay(runnable)
     }
+
 
     //Выполняем поиск - отдаем поисковый запрос
     private fun sendRequest() {
@@ -244,11 +235,7 @@ class SearchActivity :  AppCompatActivity() {
         outState.putString(SEARCH_TEXT, searchText)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        searchText = savedInstanceState.getString(SEARCH_TEXT, SEARCH_DEF)
-        binding.searchInput.setText(searchText)
-    }
+
 
     //Работаем с Handler
     private fun postDelay(runnable: Runnable) {
@@ -258,8 +245,4 @@ class SearchActivity :  AppCompatActivity() {
     private fun removeCallback(runnable: Runnable) {
         handler.removeCallbacks(runnable)
     }
-
-
 }
-
-
