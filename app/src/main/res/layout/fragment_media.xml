@@ -6,7 +6,7 @@
     android:paddingTop="@dimen/zero"
     android:paddingLeft="@dimen/zero"
     android:paddingRight="@dimen/zero"
-    tools:context=".media.ui.MediaActivity"
+    tools:context=".media.ui.MediaFragment"
     tools:ignore="Overdraw">
 
     <LinearLayout
@@ -15,21 +15,12 @@
         android:background="@android:color/transparent"
         android:layout_marginBottom="@dimen/two_four">
 
-        <ImageButton android:id="@+id/back_button"
-            android:src="@drawable/back"
-            android:contentDescription="@string/back_text"
-            style="@style/IconSetting"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:padding="@dimen/base"
-            android:backgroundTint="@android:color/transparent"
-            android:theme="@style/Theme.TextPlaylistMaker"
-            />
 
         <TextView android:text="@string/media"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="@dimen/base"
+            android:layout_marginStart="@dimen/base"
             style="@style/BaseTitle" />
 
     </LinearLayout>
