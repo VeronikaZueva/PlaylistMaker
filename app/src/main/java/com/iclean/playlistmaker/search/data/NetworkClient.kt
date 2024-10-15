@@ -10,6 +10,6 @@ import com.iclean.playlistmaker.search.data.models.ResposeCode
 //Поэтому в параметры поискового метода мы передаем запрос, а возвращаем ответ приведенного типа
 
 interface NetworkClient {
-    fun search(request : Any) : ResposeCode
+    suspend fun search(request : Any) : ResposeCode
 
 }

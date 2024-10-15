@@ -14,9 +14,6 @@ interface PlayerInteractor {
 
     fun release()
     fun getCurrentPosition() : Int
-    //Handler
-    fun postTimerDelay(runnable: Runnable, delay : Long)
-    fun removeCallback(runnable: Runnable)
-    fun removeCallbacksAndMessages(runnable: Runnable)
+
 
 }

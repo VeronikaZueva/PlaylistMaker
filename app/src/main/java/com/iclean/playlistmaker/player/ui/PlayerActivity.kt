@@ -70,7 +70,7 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.setOnCompletionListener(object : OnCompletionListener {
             override fun onCompletion() {
                 setImagePlay()
-                viewModel.removeCallback()
+                stopTimer()
                 binding.timer.text = nullTime
             }
         })
@@ -134,18 +134,22 @@ class PlayerActivity : AppCompatActivity() {
         binding.buttonPlay.setImageResource(R.drawable.play)
     }
 
+    private fun stopTimer() {
+        viewModel.stopTimer()
+    }
+
     //Переопределяем системные методы
     override fun onDestroy() {
         super.onDestroy()
         viewModel.release()
-        viewModel.removeCallbacksAndMessages()
+        stopTimer()
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.pausePlayer()
         setImagePlay()
-        viewModel.removeCallback()
+        stopTimer()
     }
 
 
