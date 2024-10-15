@@ -12,8 +12,6 @@ interface PlayerRepository {
 
     fun release()
     fun getCurrentPosition() : Int
-    fun postTimerDelay(runnable : Runnable, delay: Long)
-    fun removeCallback(runnable : Runnable)
-    fun removeCallbacksAndMessages(runnable : Runnable)
+
 
 }

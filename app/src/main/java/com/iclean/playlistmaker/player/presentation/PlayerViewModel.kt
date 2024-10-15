@@ -4,12 +4,16 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.domain.PlayerInteractor
 import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
 import com.iclean.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 //Здесь тоже упрощаем логику. Начнем с того, что явно делает интерактор
 
@@ -23,8 +27,9 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
     private var playerState = MediaPlayerState.STATE_DEFAULT
     //Получаем данные по треку из интента
     private val liveData = MutableLiveData<LiveDataPlayer>()
+    //Добавляем Job
+    private var job : Job? = null
     //Инициализируем переменные, которые потребуются позже. в ходе обработки сценария
-    private lateinit var runnable: Runnable
     private lateinit var gson : Track
 
     //Главный обработчик
@@ -38,7 +43,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
             MediaPlayerState.STATE_PREPARED, MediaPlayerState.STATE_PAUSED -> {
                 startPlayer()
                 playerState = MediaPlayerState.STATE_PLAYING
-                postTimerDelay()
+                startTimer()
                 return false
             }
             else -> {
@@ -65,36 +70,31 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
 
     fun getTrack(intent: Intent): LiveData<LiveDataPlayer> {
         gson = Gson().fromJson(intent.extras?.getString("trackObject"), Track::class.java)
-        runnable = startTimer((gson))
         liveData.value = LiveDataPlayer(gson, 0)
         return liveData
     }
 
 
-    //Работаем с Handler
-    private fun postTimerDelay() {
-        playerInteractor.postTimerDelay(runnable, DELAY)
-    }
-    fun removeCallback() {
-        playerInteractor.removeCallback(runnable)
-    }
-    fun removeCallbacksAndMessages() {
-        playerInteractor.removeCallbacksAndMessages(runnable)
-    }
-
-
     //Работаем с таймером
+    fun stopTimer() {
+        job?.cancel()
+    }
     private fun getCurrentPosition() : Int {
         return playerInteractor.getCurrentPosition()
     }
 
-    private fun startTimer(track: Track) : Runnable {
-        return Runnable {
-            if(playerState==MediaPlayerState.STATE_PLAYING) {
-                postTimerDelay()
-                liveData.value = LiveDataPlayer(track, getCurrentPosition().toLong())
+    private fun startTimer() {
+        job = viewModelScope.launch {
+            while(getStatus()) {
+                delay(DELAY)
+                liveData.postValue(LiveDataPlayer(gson, getCurrentPosition().toLong()))
             }
         }
+
+    }
+
+    private fun getStatus() : Boolean {
+        return playerState == MediaPlayerState.STATE_PLAYING
     }
 
 

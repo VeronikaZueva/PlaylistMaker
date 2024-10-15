@@ -36,17 +36,4 @@ class PlayerInteractorImpl(private val player : PlayerRepository) : PlayerIntera
         return player.getCurrentPosition()
     }
 
-    //Handler
-    override fun postTimerDelay(runnable: Runnable, delay : Long) {
-        player.postTimerDelay(runnable, delay)
-    }
-
-    override fun removeCallback(runnable: Runnable) {
-        player.removeCallback(runnable)
-    }
-
-    override fun removeCallbacksAndMessages(runnable: Runnable) {
-        player.removeCallbacksAndMessages(runnable)
-    }
-
 }
