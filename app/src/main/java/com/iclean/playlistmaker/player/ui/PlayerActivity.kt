@@ -20,12 +20,14 @@ class PlayerActivity : AppCompatActivity() {
     private val viewModel by viewModel<PlayerViewModel>()
     private lateinit var binding : ActivityPlayerBinding
 
+    //Задаем переменную трека
+    private lateinit var track : Track
+
     //Подключаем нужные обработчики к Activity
     private val trackMethods = TrackMethods() //Общие методы
 
     //Определяем переменные, которые пригодятся позже
     private var timeFormat : String? = ""
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,18 +45,23 @@ class PlayerActivity : AppCompatActivity() {
             this.finish()
         }
 
-        //УСТАНАВЛИВАЕМ ДАННЫЕ В ПЛЕЕР
+        //Работаем с наблюдателями - УСТАНАВЛИВАЕМ ДАННЫЕ В ПЛЕЕР и МЕНЯЕМ СОСТОЯНИЕ КНОПКИ FAVORITE
         viewModel.getTrack(intent).observe(this) {
             //Достаем основные переменные - подготавливаем время в нужном формате
             val timeNoFormat = it.time.toString()
             timeFormat = trackMethods.dateFormatTrack(timeNoFormat)
             //Устанавливаем поля для трека
-            val track = it.track
+            track = it.track
             setDataForView(track)
             //Устанавливаем обложку
             setPoster(track.artworkUrl100)
             //Выводим альбом, только если информация передана
             showCollection(track.collectionName)
+        }
+
+        viewModel.getLiveDataFavorite().observe(this) {
+            val isFavorite = it.isFavorite
+            setFavoriteButton(isFavorite)
         }
 
 
@@ -77,9 +84,13 @@ class PlayerActivity : AppCompatActivity() {
 
 
 
-        //Управляем нажатиями кнопок: play|pause
+        //Управляем нажатиями кнопок
         binding.buttonPlay.setOnClickListener {
             buttonCheck()
+        }
+
+        binding.buttonHeart.setOnClickListener {
+            viewModel.onFavoriteClicked(track)
         }
     }
     //КОНЕЦ МЕТОДА onCreate
@@ -132,6 +143,13 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun setImagePlay() {
         binding.buttonPlay.setImageResource(R.drawable.play)
+    }
+    private fun setFavoriteButton(isFavorite : Boolean) {
+        if(isFavorite) {
+            binding.buttonHeart.setImageResource(R.drawable.button_red)
+        } else {
+            binding.buttonHeart.setImageResource(R.drawable.heart)
+        }
     }
 
     private fun stopTimer() {

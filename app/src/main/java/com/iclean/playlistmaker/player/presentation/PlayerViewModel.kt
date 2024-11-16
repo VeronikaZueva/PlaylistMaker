@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.iclean.playlistmaker.media.domain.MediaInteractor
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.domain.PlayerInteractor
@@ -17,7 +18,8 @@ import kotlinx.coroutines.launch
 
 //Здесь тоже упрощаем логику. Начнем с того, что явно делает интерактор
 
-class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
+class PlayerViewModel(private val playerInteractor: PlayerInteractor,
+                      private val favoriteInteractor: MediaInteractor) : ViewModel() {
 
     companion object {
         private const val DELAY = 1000L
@@ -25,8 +27,16 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
 
     //Подключаем дополнительные классы и задаем начальные переменные
     private var playerState = MediaPlayerState.STATE_DEFAULT
-    //Получаем данные по треку из интента
+
+    //Задаем LiveData
     private val liveData = MutableLiveData<LiveDataPlayer>()
+    private val liveDataFavorite = MutableLiveData<LiveDataFavorite>()
+
+    fun getLiveDataFavorite(): LiveData<LiveDataFavorite> {
+        return liveDataFavorite
+    }
+
+
     //Добавляем Job
     private var job : Job? = null
     //Инициализируем переменные, которые потребуются позже. в ходе обработки сценария
@@ -95,6 +105,21 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
 
     private fun getStatus() : Boolean {
         return playerState == MediaPlayerState.STATE_PLAYING
+    }
+
+    //Работаем с избранными треками
+    fun onFavoriteClicked(track : Track) {
+        viewModelScope.launch {
+            if (!track.isFavorite) {
+                favoriteInteractor.insertTrack(track)
+                track.isFavorite = true
+                liveDataFavorite.postValue(LiveDataFavorite(true))
+            } else {
+                favoriteInteractor.deleteTrack(track)
+                track.isFavorite = false
+                liveDataFavorite.postValue(LiveDataFavorite(false))
+            }
+        }
     }
 
 

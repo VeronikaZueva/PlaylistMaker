@@ -9,6 +9,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.databinding.FragmentMediaBinding
 
+
 class MediaFragment : Fragment() {
     private lateinit var binding: FragmentMediaBinding
     private lateinit var tabMediator: TabLayoutMediator
@@ -23,7 +24,6 @@ class MediaFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         //Работаем с TabLayout и ViewPager
         binding.viewPager.adapter = MediaViewPagerAdapter(childFragmentManager, lifecycle)
@@ -43,4 +43,5 @@ class MediaFragment : Fragment() {
         super.onDestroyView()
         tabMediator.detach()
     }
+
 }

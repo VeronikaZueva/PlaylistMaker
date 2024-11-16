@@ -1,5 +1,6 @@
 package com.iclean.playlistmaker.search.data.impl
 
+import com.iclean.playlistmaker.db.AppDatabase
 import com.iclean.playlistmaker.search.data.NetworkClient
 import com.iclean.playlistmaker.search.domain.SearchRepository
 import com.iclean.playlistmaker.search.data.dto.Request
@@ -14,10 +15,12 @@ import kotlinx.coroutines.flow.flow
 //Мы не знаем, какая библиотека используется, а потому, будем взаимодействовать с ней через класс NetWorkClient, который и будет возвращать нам ответы
 //Так как NetworkClient берет на себя основную работу по взаимодействию с сервером, то создадим его объект в параметрах конструктора данного класса
 //Также работаем в данном классе с историей
-class SearchRepositoryImpl(private val networkClient: NetworkClient) :
+class SearchRepositoryImpl(private val networkClient: NetworkClient, private val db : AppDatabase) :
     SearchRepository {
 
     override fun search(expression: String) : Flow<StateType<List<Track>>> = flow {
+        //Получаем список id избранных треков
+        val faviriteIdList = db.trackDao().getKeyId()
         //Создаем переменную, куда записываем полученный ответ сервера от заданного запроса
         val response = networkClient.search(Request(expression))
         when(response.stateResponse) {
@@ -34,8 +37,11 @@ class SearchRepositoryImpl(private val networkClient: NetworkClient) :
                             it.releaseDate,
                             it.primaryGenreName,
                             it.country,
-                            it.previewUrl)
+                            it.previewUrl,
+                            it.trackId in faviriteIdList
+                        )
                     }
+
                     emit(StateType.Success(data))
                 }
 
