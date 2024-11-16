@@ -1,14 +1,12 @@
 package com.iclean.playlistmaker.player.data.repository
 
 import android.media.MediaPlayer
-import android.os.Handler
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.domain.PlayerRepository
 
 
-class PlayerRepositoryImpl(private val mediaPlayer : MediaPlayer,
-                           private val handler : Handler) :
+class PlayerRepositoryImpl(private val mediaPlayer : MediaPlayer) :
     PlayerRepository {
 
     //Медиаплеер
@@ -36,18 +34,7 @@ class PlayerRepositoryImpl(private val mediaPlayer : MediaPlayer,
         return mediaPlayer.currentPosition
     }
 
-    //Handler
-    override fun postTimerDelay(runnable : Runnable, delay: Long) {
-        handler.postDelayed(runnable, delay)
-    }
 
-    override fun removeCallback(runnable : Runnable) {
-        handler.removeCallbacks(runnable)
-    }
-
-    override fun removeCallbacksAndMessages(runnable : Runnable) {
-        handler.removeCallbacksAndMessages(runnable)
-    }
 
 }
 

@@ -6,13 +6,15 @@ import android.net.NetworkCapabilities
 import com.iclean.playlistmaker.search.data.NetworkClient
 import com.iclean.playlistmaker.search.data.dto.Request
 import com.iclean.playlistmaker.search.data.models.ResposeCode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 //??? Здесь пока не понимаю, как работать с context???
 class RetrofitImpl(private val iTunesApi: ITunesApi,
                    private val context: Context) : NetworkClient {
 
     //Для передачи контекста
-    override fun search(request: Any): ResposeCode {
+    override suspend fun search(request: Any): ResposeCode {
         //Если нет интернета
         if(!isConnected()) {
             return ResposeCode().apply { stateResponse = -1 }
@@ -22,10 +24,14 @@ class RetrofitImpl(private val iTunesApi: ITunesApi,
             return ResposeCode().apply { stateResponse = 400 }
         }
         //Если все хорошо, составляем запрос
-        val response = iTunesApi.search(request.expression).execute()
-        val body = response.body()
-        return body?.apply { stateResponse = response.code() }
-            ?: ResposeCode().apply { stateResponse = response.code() }
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = iTunesApi.search(request.expression)
+                response.apply { stateResponse = 200 }
+            } catch (e : Throwable) {
+                ResposeCode().apply { stateResponse = 500 }
+            }
+        }
 
 
 
