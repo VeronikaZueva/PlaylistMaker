@@ -5,8 +5,10 @@ import com.iclean.playlistmaker.db.convertor.TrackDbConvertor
 import com.iclean.playlistmaker.db.entity.TrackEntity
 import com.iclean.playlistmaker.media.domain.MediaRepository
 import com.iclean.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 
 class MediaRepositoryImpl(
     private val appDatabase: AppDatabase,
@@ -18,11 +20,13 @@ class MediaRepositoryImpl(
     }
 
     override suspend fun deleteTrack(track: Track) {
-        appDatabase.trackDao().deleteTrack(trackDbConvertor.map(track).trackId)
+        appDatabase.trackDao().deleteTrack(trackDbConvertor.map(track))
     }
 
     override fun getFavoriteTracks(): Flow<List<Track>> = flow {
-        val tracks = appDatabase.trackDao().getTracks()
+        val tracks = withContext(Dispatchers.IO) {
+            appDatabase.trackDao().getTracks()
+        }
         emit(convertFromTrackEntity(tracks))
     }
 

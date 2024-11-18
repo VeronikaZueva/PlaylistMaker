@@ -1,15 +1,15 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
-    namespace = "com.example.playlistmaker"
+    namespace = "com.iclean.playlistmaker"
     compileSdk=34
 
     defaultConfig {
-        applicationId = "com.example.playlistmaker"
+        applicationId = "com.iclean.playlistmaker"
         minSdk = 29
         targetSdk = 33
         versionCode = 1
@@ -64,7 +64,7 @@ dependencies {
     implementation ("androidx.fragment:fragment-ktx:1.5.6")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
     implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
 
 }

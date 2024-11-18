@@ -20,7 +20,7 @@ class SearchRepositoryImpl(private val networkClient: NetworkClient, private val
 
     override fun search(expression: String) : Flow<StateType<List<Track>>> = flow {
         //Получаем список id избранных треков
-        val faviriteIdList = db.trackDao().getKeyId()
+        val faviriteIdList = db.trackDao().getTrackIdForFavorite()
         //Создаем переменную, куда записываем полученный ответ сервера от заданного запроса
         val response = networkClient.search(Request(expression))
         when(response.stateResponse) {
@@ -38,7 +38,7 @@ class SearchRepositoryImpl(private val networkClient: NetworkClient, private val
                             it.primaryGenreName,
                             it.country,
                             it.previewUrl,
-                            it.trackId in faviriteIdList
+                            it.trackId.toInt() in faviriteIdList
                         )
                     }
 

@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class TrackEntity (
     @PrimaryKey(autoGenerate = true)
     val keyId : Int,
-    val trackId : String,
+    val trackId : Int,
     val artworkUrl100 : String,
     val trackName : String,
     val artistName : String,

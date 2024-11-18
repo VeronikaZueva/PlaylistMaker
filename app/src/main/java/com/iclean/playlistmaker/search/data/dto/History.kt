@@ -3,12 +3,12 @@ package com.iclean.playlistmaker.search.data.dto
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.iclean.playlistmaker.search.domain.HistoryInt
+import com.iclean.playlistmaker.search.domain.SearchHistoryInteractor
 import com.iclean.playlistmaker.search.domain.models.Track
 
 
 
-class History(context: Context) : HistoryInt {
+class History(context: Context) : SearchHistoryInteractor {
     //Переносим из Activity константы макисмального количества треков в истории, а также ключа SharedPreferences дл истории поиска
     companion object {
         const val COUNT_TRACK = 10

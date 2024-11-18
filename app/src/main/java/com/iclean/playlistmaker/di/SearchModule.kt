@@ -40,10 +40,10 @@ val searchModule = module {
         Gson()
     }
     //SearchHistoryRepository
-    single<SearchHistoryInt> {
+    single<HistoryInt> {
         SearchHistoryImpl(history = get(), db = get())
     }
-    single<HistoryInt> {
+    single<SearchHistoryInteractor> {
         History(context = get())
     }
 
@@ -52,7 +52,7 @@ val searchModule = module {
     factory<SearchInteractor> {
         SearchInteractorImpl(repository = get())
     }
-    factory<SearchHistoryInteractor>  {
+    factory<SearchHistoryInt>  {
         HistoryInteractorImpl(historyRepository = get())
     }
     viewModel {
