@@ -30,6 +30,13 @@ class MediaRepositoryImpl(
         emit(convertFromTrackEntity(tracks))
     }
 
+    override suspend fun onFavoriteCheck(trackId : Int) : Boolean {
+         val faviriteIdList  = withContext(Dispatchers.IO) {
+            appDatabase.trackDao().getTrackIdForFavorite()
+        }
+        return trackId in faviriteIdList
+    }
+
     private fun convertFromTrackEntity(tracks: List<TrackEntity>): List<Track> {
         return tracks.map { track -> trackDbConvertor.map(track) }
     }

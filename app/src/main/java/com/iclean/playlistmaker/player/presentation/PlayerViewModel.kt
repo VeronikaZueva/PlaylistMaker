@@ -1,6 +1,7 @@
 package com.iclean.playlistmaker.player.presentation
 
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,13 +29,12 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
     //Подключаем дополнительные классы и задаем начальные переменные
     private var playerState = MediaPlayerState.STATE_DEFAULT
 
+
     //Задаем LiveData
     private val liveData = MutableLiveData<LiveDataPlayer>()
-    private val liveDataFavorite = MutableLiveData<LiveDataFavorite>()
+    private val liveFavorite = MutableLiveData<Boolean>()
+    fun getLiveFavorite() = liveFavorite
 
-    fun getLiveDataFavorite(): LiveData<LiveDataFavorite> {
-        return liveDataFavorite
-    }
 
 
     //Добавляем Job
@@ -108,16 +108,23 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
     }
 
     //Работаем с избранными треками
+    suspend fun setValueFavorite(track: Int)  {
+        liveFavorite.postValue(favoriteInteractor.onFavoriteCheck(track))
+
+    }
+
+
     fun onFavoriteClicked(track : Track) {
         viewModelScope.launch {
-            if (!track.isFavorite) {
-                favoriteInteractor.insertTrack(track)
-                track.isFavorite = true
-                liveDataFavorite.postValue(LiveDataFavorite(true))
-            } else {
+            if((track.isFavorite)) {
+                liveFavorite.postValue(false)
                 favoriteInteractor.deleteTrack(track)
-                track.isFavorite = false
-                liveDataFavorite.postValue(LiveDataFavorite(false))
+           Log.i("del", "Произошел метод удаления")
+
+            } else {
+                liveFavorite.postValue(true)
+                favoriteInteractor.insertTrack(track)
+                Log.i("del", "Произошел метод добавления")
             }
         }
     }

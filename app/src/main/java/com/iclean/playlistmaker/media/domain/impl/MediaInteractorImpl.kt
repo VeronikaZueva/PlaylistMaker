@@ -17,4 +17,8 @@ class MediaInteractorImpl(private val mediaRepository : MediaRepository) : Media
     override fun getFavoriteTracks(): Flow<List<Track>> {
         return mediaRepository.getFavoriteTracks()
     }
+
+    override suspend fun onFavoriteCheck(trackId: Int): Boolean {
+        return mediaRepository.onFavoriteCheck(trackId)
+    }
 }

@@ -16,7 +16,8 @@ class TrackDbConvertor {
             track.primaryGenreName,
             track.country,
             track.trackTimeMillis,
-            track.previewUrl)
+            track.previewUrl,
+            track.isFavorite)
     }
 
     fun map(track : TrackEntity) : Track {

@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.iclean.playlistmaker.db.dao.TrackDao
 import com.iclean.playlistmaker.db.entity.TrackEntity
 
-@Database(version = 1, entities = [TrackEntity::class], exportSchema = false)
+@Database(version = 2, entities = [TrackEntity::class])
 abstract class AppDatabase : RoomDatabase() {
     abstract fun trackDao() : TrackDao
 }

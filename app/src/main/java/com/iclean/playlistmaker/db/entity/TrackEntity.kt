@@ -16,5 +16,6 @@ data class TrackEntity (
     val primaryGenreName : String,
     val country : String,
     val trackTimeMillis : String,
-    val previewUrl : String
+    val previewUrl : String,
+    val isFavorite : Boolean
 )

@@ -9,4 +9,6 @@ interface MediaInteractor {
     suspend fun deleteTrack(track : Track)
 
     fun getFavoriteTracks() : Flow<List<Track>>
+
+    suspend fun onFavoriteCheck(trackId : Int) : Boolean
 }

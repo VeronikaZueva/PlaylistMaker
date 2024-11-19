@@ -7,8 +7,10 @@ import com.iclean.playlistmaker.search.data.dto.Request
 import com.iclean.playlistmaker.search.data.dto.Response
 import com.iclean.playlistmaker.search.data.models.StateType
 import com.iclean.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 
 
 //Создаем реализацию интерфейса экрана поиска, который будет совершать действия, в зависимости от полученного ответа сервера
@@ -20,7 +22,9 @@ class SearchRepositoryImpl(private val networkClient: NetworkClient, private val
 
     override fun search(expression: String) : Flow<StateType<List<Track>>> = flow {
         //Получаем список id избранных треков
-        val faviriteIdList = db.trackDao().getTrackIdForFavorite()
+        val faviriteIdList = withContext(Dispatchers.IO) {
+            db.trackDao().getTrackIdForFavorite()
+        }
         //Создаем переменную, куда записываем полученный ответ сервера от заданного запроса
         val response = networkClient.search(Request(expression))
         when(response.stateResponse) {

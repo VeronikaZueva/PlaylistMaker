@@ -2,8 +2,10 @@ package com.iclean.playlistmaker.player.ui
 
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.databinding.ActivityPlayerBinding
 import com.iclean.playlistmaker.general.TrackMethods
@@ -11,6 +13,8 @@ import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.presentation.PlayerViewModel
 import com.iclean.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -20,7 +24,7 @@ class PlayerActivity : AppCompatActivity() {
     private val viewModel by viewModel<PlayerViewModel>()
     private lateinit var binding : ActivityPlayerBinding
 
-    //Задаем переменную трека
+    //Задаем переменную трека и состояния избранного
     private lateinit var track : Track
 
     //Подключаем нужные обработчики к Activity
@@ -57,12 +61,24 @@ class PlayerActivity : AppCompatActivity() {
             setPoster(track.artworkUrl100)
             //Выводим альбом, только если информация передана
             showCollection(track.collectionName)
+
+            //Проверяем, есть ли такой трек в Избранном и устанавливаем соответствующее значение livedata
+            lifecycleScope.launch(Dispatchers.IO) {
+                viewModel.setValueFavorite(track.trackId.toInt())
+            }
+            Log.i("start", "Загрузили начальные данные.")
         }
 
-        viewModel.getLiveDataFavorite().observe(this) {
-            val isFavorite = it.isFavorite
-            setFavoriteButton(isFavorite)
+
+        //Подписываемся на состояние livedata об избранном стэйте
+        viewModel.getLiveFavorite().observe(this) {
+            setImages(it)
+            Log.i("check", "Состояние LiveData - $it")
         }
+
+
+
+
 
 
         //Прописываем методы подготовки плеера
@@ -144,17 +160,21 @@ class PlayerActivity : AppCompatActivity() {
     private fun setImagePlay() {
         binding.buttonPlay.setImageResource(R.drawable.play)
     }
-    private fun setFavoriteButton(isFavorite : Boolean) {
-        if(isFavorite) {
-            binding.buttonHeart.setImageResource(R.drawable.button_red)
-        } else {
-            binding.buttonHeart.setImageResource(R.drawable.heart)
-        }
-    }
+
 
     private fun stopTimer() {
         viewModel.stopTimer()
     }
+
+private fun setImages(isFavorite : Boolean) {
+    //Проверяем, если ли трек в избранном, и выводим соответствующую кнопку
+        if (isFavorite) {
+            binding.buttonHeart.setImageResource(R.drawable.button_red)
+        } else {
+            binding.buttonHeart.setImageResource(R.drawable.heart)
+        }
+
+}
 
     //Переопределяем системные методы
     override fun onDestroy() {
@@ -169,6 +189,5 @@ class PlayerActivity : AppCompatActivity() {
         setImagePlay()
         stopTimer()
     }
-
 
 }
