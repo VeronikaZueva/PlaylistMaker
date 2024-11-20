@@ -9,7 +9,7 @@ class HistoryInteractorImpl(private val historyRepository : HistoryInt) : Search
         return historyRepository.load()
     }
 
-    override fun save(trackItem: Track) {
+    override suspend fun save(trackItem: Track) {
         historyRepository.save(trackItem)
     }
 

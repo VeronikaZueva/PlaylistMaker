@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.iclean.playlistmaker.search.domain.SearchHistoryInt
 import com.iclean.playlistmaker.search.domain.SearchInteractor
 import com.iclean.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -52,7 +53,7 @@ class SearchViewModel(private val searchInteractor: SearchInteractor,
     }
 
     fun save(trackItem: Track) {
-        historyInteractor.save(trackItem)
+        viewModelScope.launch(Dispatchers.IO) { historyInteractor.save(trackItem) }
     }
 
     fun clearHistory() {

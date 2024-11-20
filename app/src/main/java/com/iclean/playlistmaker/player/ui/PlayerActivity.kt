@@ -1,11 +1,8 @@
 package com.iclean.playlistmaker.player.ui
 
-
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.databinding.ActivityPlayerBinding
 import com.iclean.playlistmaker.general.TrackMethods
@@ -13,8 +10,6 @@ import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.presentation.PlayerViewModel
 import com.iclean.playlistmaker.search.domain.models.Track
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -28,7 +23,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var track : Track
 
     //Подключаем нужные обработчики к Activity
-    private val trackMethods = TrackMethods() //Общие методы
+    private val trackMethods = TrackMethods()
 
     //Определяем переменные, которые пригодятся позже
     private var timeFormat : String? = ""
@@ -49,7 +44,8 @@ class PlayerActivity : AppCompatActivity() {
             this.finish()
         }
 
-        //Работаем с наблюдателями - УСТАНАВЛИВАЕМ ДАННЫЕ В ПЛЕЕР и МЕНЯЕМ СОСТОЯНИЕ КНОПКИ FAVORITE
+
+        //Работаем с наблюдателями - УСТАНАВЛИВАЕМ ДАННЫЕ В ПЛЕЕР
         viewModel.getTrack(intent).observe(this) {
             //Достаем основные переменные - подготавливаем время в нужном формате
             val timeNoFormat = it.time.toString()
@@ -61,24 +57,10 @@ class PlayerActivity : AppCompatActivity() {
             setPoster(track.artworkUrl100)
             //Выводим альбом, только если информация передана
             showCollection(track.collectionName)
+            //Определяем добавлерн ли трек в избранное
+            setImages(track.isFavorite)
 
-            //Проверяем, есть ли такой трек в Избранном и устанавливаем соответствующее значение livedata
-            lifecycleScope.launch(Dispatchers.IO) {
-                viewModel.setValueFavorite(track.trackId.toInt())
-            }
-            Log.i("start", "Загрузили начальные данные.")
         }
-
-
-        //Подписываемся на состояние livedata об избранном стэйте
-        viewModel.getLiveFavorite().observe(this) {
-            setImages(it)
-            Log.i("check", "Состояние LiveData - $it")
-        }
-
-
-
-
 
 
         //Прописываем методы подготовки плеера

@@ -25,7 +25,7 @@ val searchModule = module {
     //СЛОЙ DATA
     //Repository
     single<SearchRepository> {
-        SearchRepositoryImpl(networkClient = get(), db = get())
+        SearchRepositoryImpl(networkClient = get())
     }
     single<NetworkClient> {
         RetrofitImpl(iTunesApi = get(), context = androidContext())
@@ -41,7 +41,7 @@ val searchModule = module {
     }
     //SearchHistoryRepository
     single<HistoryInt> {
-        SearchHistoryImpl(history = get(), db = get())
+        SearchHistoryImpl(history = get(), db=get())
     }
     single<SearchHistoryInteractor> {
         History(context = get())

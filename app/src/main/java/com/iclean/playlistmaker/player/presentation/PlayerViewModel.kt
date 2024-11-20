@@ -1,7 +1,6 @@
 package com.iclean.playlistmaker.player.presentation
 
 import android.content.Intent
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,11 +28,8 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
     //Подключаем дополнительные классы и задаем начальные переменные
     private var playerState = MediaPlayerState.STATE_DEFAULT
 
-
     //Задаем LiveData
     private val liveData = MutableLiveData<LiveDataPlayer>()
-    private val liveFavorite = MutableLiveData<Boolean>()
-    fun getLiveFavorite() = liveFavorite
 
 
 
@@ -107,26 +103,43 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
         return playerState == MediaPlayerState.STATE_PLAYING
     }
 
-    //Работаем с избранными треками
-    suspend fun setValueFavorite(track: Int)  {
-        liveFavorite.postValue(favoriteInteractor.onFavoriteCheck(track))
-
-    }
-
-
     fun onFavoriteClicked(track : Track) {
         viewModelScope.launch {
             if((track.isFavorite)) {
-                liveFavorite.postValue(false)
                 favoriteInteractor.deleteTrack(track)
-           Log.i("del", "Произошел метод удаления")
-
+                //Меняем значение у избранного
+                liveData.postValue(LiveDataPlayer(Track(
+                    gson.trackId,
+                    gson.trackName,
+                    gson.artistName,
+                    gson.trackTimeMillis,
+                    gson.artworkUrl100,
+                    gson.collectionName,
+                    gson.releaseDate,
+                    gson.primaryGenreName,
+                    gson.country,
+                    gson.previewUrl,
+                    false
+                    ), getCurrentPosition().toLong()))
             } else {
-                liveFavorite.postValue(true)
                 favoriteInteractor.insertTrack(track)
-                Log.i("del", "Произошел метод добавления")
+                //Меняем значение у избранного
+                liveData.postValue(LiveDataPlayer(Track(
+                    gson.trackId,
+                    gson.trackName,
+                    gson.artistName,
+                    gson.trackTimeMillis,
+                    gson.artworkUrl100,
+                    gson.collectionName,
+                    gson.releaseDate,
+                    gson.primaryGenreName,
+                    gson.country,
+                    gson.previewUrl,
+                    true
+                ), getCurrentPosition().toLong()))
             }
         }
+
     }
 
 
