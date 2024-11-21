@@ -150,7 +150,7 @@ class PlayerActivity : AppCompatActivity() {
 
 private fun setImages(isFavorite : Boolean) {
     //Проверяем, если ли трек в избранном, и выводим соответствующую кнопку
-        if (isFavorite) {
+        if(isFavorite) {
             binding.buttonHeart.setImageResource(R.drawable.button_red)
         } else {
             binding.buttonHeart.setImageResource(R.drawable.heart)

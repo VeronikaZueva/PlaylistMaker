@@ -12,9 +12,7 @@ class FavoriteFragmentViewModel(private val favoriteInteractor : MediaInteractor
 
     private val liveData = MutableLiveData<LiveDataFavoriteState>()
 
-    fun getLiveData() : LiveData<LiveDataFavoriteState> {
-        return liveData
-    }
+    fun getLiveData() : LiveData<LiveDataFavoriteState> = liveData
 
     fun returnFavoriteTracks() {
         viewModelScope.launch {
@@ -28,9 +26,9 @@ class FavoriteFragmentViewModel(private val favoriteInteractor : MediaInteractor
     private fun renderResults(trackList : List<Track>) {
         if(trackList.isEmpty()) {
             //Отображаем плейсхолдер
-            liveData.postValue(LiveDataFavoriteState(true))
+            liveData.postValue(LiveDataFavoriteState(emptyList(), 1))
         } else {
-            liveData.postValue(LiveDataFavoriteState(false))
+            liveData.postValue(LiveDataFavoriteState(trackList, null))
         }
     }
 

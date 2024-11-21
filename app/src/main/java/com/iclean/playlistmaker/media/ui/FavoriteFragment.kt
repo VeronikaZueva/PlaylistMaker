@@ -54,14 +54,21 @@ class FavoriteFragment : Fragment() {
 
         //Задаем сам список
         trackAdapter = TrackAdapter(trackClick)
-        trackAdapter.submitList(listOf())
+
 
         //Получаем треки
         viewModel.returnFavoriteTracks()
 
         viewModel.getLiveData().observe(viewLifecycleOwner) {
-            val isEmpty = it.isEmpty
-            renderScreen(isEmpty)
+            if(it.error != 1) {
+                trackAdapter.submitList(it.tracks)
+                binding.reciclerViewTrack.adapter = trackAdapter
+                renderScreen(false)
+            }
+            else {
+                trackAdapter.submitList(listOf())
+                renderScreen(true)
+            }
         }
 
 

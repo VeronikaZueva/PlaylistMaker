@@ -105,39 +105,17 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
 
     fun onFavoriteClicked(track : Track) {
         viewModelScope.launch {
-            if((track.isFavorite)) {
+        val newTrack = track.copy(isFavorite = !track.isFavorite)
+            if(track.isFavorite) {
                 favoriteInteractor.deleteTrack(track)
-                //Меняем значение у избранного
-                liveData.postValue(LiveDataPlayer(Track(
-                    gson.trackId,
-                    gson.trackName,
-                    gson.artistName,
-                    gson.trackTimeMillis,
-                    gson.artworkUrl100,
-                    gson.collectionName,
-                    gson.releaseDate,
-                    gson.primaryGenreName,
-                    gson.country,
-                    gson.previewUrl,
-                    false
-                    ), getCurrentPosition().toLong()))
+
             } else {
-                favoriteInteractor.insertTrack(track)
-                //Меняем значение у избранного
-                liveData.postValue(LiveDataPlayer(Track(
-                    gson.trackId,
-                    gson.trackName,
-                    gson.artistName,
-                    gson.trackTimeMillis,
-                    gson.artworkUrl100,
-                    gson.collectionName,
-                    gson.releaseDate,
-                    gson.primaryGenreName,
-                    gson.country,
-                    gson.previewUrl,
-                    true
-                ), getCurrentPosition().toLong()))
+                favoriteInteractor.insertTrack(newTrack)
+
             }
+            liveData.postValue(LiveDataPlayer(newTrack, getCurrentPosition().toLong()))
+
+
         }
 
     }

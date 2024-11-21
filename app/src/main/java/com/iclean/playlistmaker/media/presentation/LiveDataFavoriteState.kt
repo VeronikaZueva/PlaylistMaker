@@ -1,3 +1,5 @@
 package com.iclean.playlistmaker.media.presentation
 
-data class LiveDataFavoriteState(var isEmpty : Boolean)
+import com.iclean.playlistmaker.search.domain.models.Track
+
+data class LiveDataFavoriteState(val tracks : List<Track>, val error: Int?)
