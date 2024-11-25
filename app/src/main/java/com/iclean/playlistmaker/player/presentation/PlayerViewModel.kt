@@ -1,5 +1,6 @@
 package com.iclean.playlistmaker.player.presentation
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -103,6 +104,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
         return playerState == MediaPlayerState.STATE_PLAYING
     }
 
+    @SuppressLint("SuspiciousIndentation")
     fun onFavoriteClicked(track : Track) {
         viewModelScope.launch {
         val newTrack = track.copy(isFavorite = !track.isFavorite)
