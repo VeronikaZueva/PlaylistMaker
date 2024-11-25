@@ -31,6 +31,7 @@ class FavoriteFragment : Fragment() {
     private var isClickAllowed = true
     private lateinit var trackAdapter: TrackAdapter
 
+    //Методы жизненного цикла Fragment
     override fun onCreateView(inflater: LayoutInflater, container:ViewGroup?, savedInstanceState: Bundle?) : View {
         binding = FavoriteFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -76,6 +77,11 @@ class FavoriteFragment : Fragment() {
         }
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.returnFavoriteTracks()
     }
 
 //Функции внутри фрагмента

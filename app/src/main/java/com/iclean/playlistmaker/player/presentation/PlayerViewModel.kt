@@ -106,9 +106,8 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
     fun onFavoriteClicked(track : Track) {
         viewModelScope.launch {
         val newTrack = track.copy(isFavorite = !track.isFavorite)
-            if(track.isFavorite) {
+            if((track.isFavorite)) {
                 favoriteInteractor.deleteTrack(track)
-
             } else {
                 favoriteInteractor.insertTrack(newTrack)
 
