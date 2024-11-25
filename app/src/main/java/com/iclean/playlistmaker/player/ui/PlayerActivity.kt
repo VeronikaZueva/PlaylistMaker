@@ -41,7 +41,7 @@ class PlayerActivity : AppCompatActivity() {
 
         //Возвращаемся домой
         binding.backButton.setOnClickListener {
-            this.finish()
+            finish()
         }
 
 

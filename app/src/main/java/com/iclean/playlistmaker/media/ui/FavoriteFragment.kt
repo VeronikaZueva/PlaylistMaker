@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.iclean.playlistmaker.databinding.FavoriteFragmentBinding
@@ -40,9 +41,11 @@ class FavoriteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-            //Объект списка
+        //Объект списка
         val trackClick = object : TrackClick {
             override fun getTrack(track: Track) {
+                //Обнуляем список
+                binding.reciclerViewTrack.adapter = null
                 if (clickDebounce()) {
                     //Переходим к нему через Intent
                     val intent = Intent(requireContext(), PlayerActivity::class.java)
@@ -54,21 +57,22 @@ class FavoriteFragment : Fragment() {
 
         //Задаем сам список
         trackAdapter = TrackAdapter(trackClick)
+        trackAdapter.submitList(listOf())
 
 
         //Получаем треки
         viewModel.returnFavoriteTracks()
 
-        viewModel.getLiveData().observe(viewLifecycleOwner) {
+        viewModel.getLiveData().observe(this as LifecycleOwner) {
             if(it.error != 1) {
                 trackAdapter.submitList(it.tracks)
-                binding.reciclerViewTrack.adapter = trackAdapter
                 renderScreen(false)
             }
             else {
                 trackAdapter.submitList(listOf())
                 renderScreen(true)
             }
+            binding.reciclerViewTrack.adapter = trackAdapter
         }
 
 
@@ -99,5 +103,7 @@ class FavoriteFragment : Fragment() {
             binding.favouriteText.visibility = View.GONE
         }
     }
+
+
 
 }
