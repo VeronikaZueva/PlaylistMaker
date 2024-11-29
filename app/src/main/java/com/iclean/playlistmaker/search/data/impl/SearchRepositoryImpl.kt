@@ -1,5 +1,6 @@
 package com.iclean.playlistmaker.search.data.impl
 
+
 import com.iclean.playlistmaker.search.data.NetworkClient
 import com.iclean.playlistmaker.search.domain.SearchRepository
 import com.iclean.playlistmaker.search.data.dto.Request
@@ -18,6 +19,7 @@ class SearchRepositoryImpl(private val networkClient: NetworkClient) :
     SearchRepository {
 
     override fun search(expression: String) : Flow<StateType<List<Track>>> = flow {
+
         //Создаем переменную, куда записываем полученный ответ сервера от заданного запроса
         val response = networkClient.search(Request(expression))
         when(response.stateResponse) {
@@ -34,8 +36,10 @@ class SearchRepositoryImpl(private val networkClient: NetworkClient) :
                             it.releaseDate,
                             it.primaryGenreName,
                             it.country,
-                            it.previewUrl)
+                            it.previewUrl
+                        )
                     }
+
                     emit(StateType.Success(data))
                 }
 

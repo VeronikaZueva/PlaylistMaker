@@ -1,6 +1,5 @@
 package com.iclean.playlistmaker.player.ui
 
-
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -20,12 +19,14 @@ class PlayerActivity : AppCompatActivity() {
     private val viewModel by viewModel<PlayerViewModel>()
     private lateinit var binding : ActivityPlayerBinding
 
+    //Задаем переменную трека и состояния избранного
+    private lateinit var track : Track
+
     //Подключаем нужные обработчики к Activity
-    private val trackMethods = TrackMethods() //Общие методы
+    private val trackMethods = TrackMethods()
 
     //Определяем переменные, которые пригодятся позже
     private var timeFormat : String? = ""
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,21 +41,25 @@ class PlayerActivity : AppCompatActivity() {
 
         //Возвращаемся домой
         binding.backButton.setOnClickListener {
-            this.finish()
+            finish()
         }
 
-        //УСТАНАВЛИВАЕМ ДАННЫЕ В ПЛЕЕР
+
+        //Работаем с наблюдателями - УСТАНАВЛИВАЕМ ДАННЫЕ В ПЛЕЕР
         viewModel.getTrack(intent).observe(this) {
             //Достаем основные переменные - подготавливаем время в нужном формате
             val timeNoFormat = it.time.toString()
             timeFormat = trackMethods.dateFormatTrack(timeNoFormat)
             //Устанавливаем поля для трека
-            val track = it.track
+            track = it.track
             setDataForView(track)
             //Устанавливаем обложку
             setPoster(track.artworkUrl100)
             //Выводим альбом, только если информация передана
             showCollection(track.collectionName)
+            //Определяем добавлерн ли трек в избранное
+            setImages(track.isFavorite)
+
         }
 
 
@@ -77,9 +82,13 @@ class PlayerActivity : AppCompatActivity() {
 
 
 
-        //Управляем нажатиями кнопок: play|pause
+        //Управляем нажатиями кнопок
         binding.buttonPlay.setOnClickListener {
             buttonCheck()
+        }
+
+        binding.buttonHeart.setOnClickListener {
+            viewModel.onFavoriteClicked(track)
         }
     }
     //КОНЕЦ МЕТОДА onCreate
@@ -134,9 +143,20 @@ class PlayerActivity : AppCompatActivity() {
         binding.buttonPlay.setImageResource(R.drawable.play)
     }
 
+
     private fun stopTimer() {
         viewModel.stopTimer()
     }
+
+private fun setImages(isFavorite : Boolean) {
+    //Проверяем, если ли трек в избранном, и выводим соответствующую кнопку
+        if(isFavorite) {
+            binding.buttonHeart.setImageResource(R.drawable.button_red)
+        } else {
+            binding.buttonHeart.setImageResource(R.drawable.heart)
+        }
+
+}
 
     //Переопределяем системные методы
     override fun onDestroy() {
@@ -151,6 +171,5 @@ class PlayerActivity : AppCompatActivity() {
         setImagePlay()
         stopTimer()
     }
-
 
 }

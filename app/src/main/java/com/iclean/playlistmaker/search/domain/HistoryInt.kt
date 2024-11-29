@@ -3,7 +3,8 @@ package com.iclean.playlistmaker.search.domain
 import com.iclean.playlistmaker.search.domain.models.Track
 
 interface HistoryInt {
-    fun load(): List<Track>
-    fun save(trackItem: Track)
+    //Работа с поиском
+    fun load() : List<Track>
+    suspend fun save(trackItem : Track)
     fun clearHistory()
 }

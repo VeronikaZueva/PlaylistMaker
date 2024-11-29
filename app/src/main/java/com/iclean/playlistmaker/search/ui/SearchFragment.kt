@@ -64,7 +64,10 @@ class SearchFragment : Fragment() {
             override fun getTrack(track: Track) {
                 checkStatus.showStatus(Status.NONE)
                 if (clickDebounce()) {
+
+                    //Сохраняем трек в историю и проверяем, есть ли он в избранном
                     viewModel.save(track)
+
                     //Сохранили трек и переходим к нему через Intent
                     val intent = Intent(requireContext(), PlayerActivity::class.java)
                     intent.putExtra("trackObject", Gson().toJson(track))
