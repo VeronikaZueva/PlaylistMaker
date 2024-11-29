@@ -70,7 +70,10 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
         playerState = MediaPlayerState.STATE_PREPARED
     }
 
-    fun pausePlayer() {playerInteractor.pausePlayer()}
+    fun pausePlayer() {
+        playerInteractor.pausePlayer()
+        playerState = MediaPlayerState.STATE_PAUSED
+    }
     private fun startPlayer() {playerInteractor.startPlayer()}
     fun release() {playerInteractor.release()}
 
