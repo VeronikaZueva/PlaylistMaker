@@ -10,8 +10,8 @@ class MediaInteractorImpl(private val mediaRepository : MediaRepository) : Media
         mediaRepository.insertTrack(track)
     }
 
-    override suspend fun deleteTrack(track: Track) {
-        return mediaRepository.deleteTrack(track)
+    override suspend fun deleteTrack(id: Int) {
+        return mediaRepository.deleteTrack(id)
     }
 
     override fun getFavoriteTracks(): Flow<List<Track>> {

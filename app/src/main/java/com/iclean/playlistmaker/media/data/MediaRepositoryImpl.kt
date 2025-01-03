@@ -19,8 +19,8 @@ class MediaRepositoryImpl(
         appDatabase.trackDao().insertTrack(trackDbConvertor.map(track))
     }
 
-    override suspend fun deleteTrack(track: Track) {
-        appDatabase.trackDao().deleteTrack(trackDbConvertor.map(track))
+    override suspend fun deleteTrack(id: Int) {
+        appDatabase.trackDao().deleteTrack(id)
     }
 
     override fun getFavoriteTracks(): Flow<List<Track>> = flow {

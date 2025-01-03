@@ -5,7 +5,7 @@ import com.iclean.playlistmaker.search.domain.models.Track
 
 class TrackDbConvertor {
     fun map(track : Track) : TrackEntity {
-        return TrackEntity(
+        return TrackEntity(0,
             trackId = track.trackId.toInt(),
             artworkUrl100 = track.artworkUrl100,
             trackName = track.trackName,

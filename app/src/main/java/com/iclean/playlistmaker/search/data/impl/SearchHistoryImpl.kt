@@ -15,7 +15,7 @@ class SearchHistoryImpl(private val history : SearchHistoryInteractor,
     }
     override suspend fun save(trackItem : Track) {
 
-            val faviriteIdList = db.trackDao().getTrackIdForFavorite()
+        val faviriteIdList = db.trackDao().getTrackIdForFavorite()
 
         if(faviriteIdList.any { trackItem.trackId.toInt() in faviriteIdList }) {
             trackItem.isFavorite = true

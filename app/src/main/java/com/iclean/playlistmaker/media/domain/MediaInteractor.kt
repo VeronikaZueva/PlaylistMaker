@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface MediaInteractor {
     suspend fun insertTrack(track : Track)
 
-    suspend fun deleteTrack(track : Track)
+    suspend fun deleteTrack(id : Int)
 
     fun getFavoriteTracks() : Flow<List<Track>>
 
