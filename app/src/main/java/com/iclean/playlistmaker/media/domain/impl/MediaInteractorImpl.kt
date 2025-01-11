@@ -21,4 +21,8 @@ class MediaInteractorImpl(private val mediaRepository : MediaRepository) : Media
     override suspend fun onFavoriteCheck(trackId: Int): Boolean {
         return mediaRepository.onFavoriteCheck(trackId)
     }
+
+    override fun getFavoriteId(): List<Int> {
+        return mediaRepository.getFavoriteId()
+    }
 }

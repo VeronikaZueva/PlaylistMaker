@@ -41,4 +41,9 @@ class MediaRepositoryImpl(
         return tracks.map { track -> trackDbConvertor.map(track) }
     }
 
+    //Перед загрузкой активити Плеера
+    override fun getFavoriteId(): List<Int> {
+        return appDatabase.trackDao().getTrackIdForFavorite()
+    }
+
 }

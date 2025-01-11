@@ -59,6 +59,8 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
         }
     }
 
+
+
     //Методы управления воспроизведением музыки
     fun preparePlayer() {playerInteractor.preparePlayer(gson.previewUrl)}
     fun setOnPreparedListener(listener: OnPreparedListener) {
@@ -80,10 +82,14 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
 
     fun getTrack(intent: Intent): LiveData<LiveDataPlayer> {
         gson = Gson().fromJson(intent.extras?.getString("trackObject"), Track::class.java)
+
         liveData.value = LiveDataPlayer(gson, 0)
         return liveData
     }
 
+    fun checkFavoriteState(trackId: Int) : Boolean {
+        return trackId in favoriteInteractor.getFavoriteId()
+    }
 
     //Работаем с таймером
     fun stopTimer() {
@@ -106,6 +112,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
     private fun getStatus() : Boolean {
         return playerState == MediaPlayerState.STATE_PLAYING
     }
+
 
     @SuppressLint("SuspiciousIndentation")
     fun onFavoriteClicked(track : Track) {

@@ -43,8 +43,7 @@ class FavoriteFragment : Fragment() {
         //Объект списка
         val trackClick = object : TrackClick {
             override fun getTrack(track: Track) {
-                //Обнуляем список
-                binding.reciclerViewTrack.adapter = null
+
                 if (clickDebounce()) {
                     //Переходим к нему через Intent
                     val intent = Intent(requireContext(), PlayerActivity::class.java)

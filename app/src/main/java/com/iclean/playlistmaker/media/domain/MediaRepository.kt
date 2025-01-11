@@ -12,4 +12,6 @@ interface MediaRepository {
     fun getFavoriteTracks() : Flow<List<Track>>
 
     suspend fun onFavoriteCheck(trackId : Int) : Boolean
+
+    fun getFavoriteId() : List<Int>
 }
