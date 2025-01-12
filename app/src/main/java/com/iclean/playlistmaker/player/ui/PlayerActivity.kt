@@ -83,7 +83,7 @@ class PlayerActivity : AppCompatActivity() {
 
         viewModel.setOnCompletionListener(object : OnCompletionListener {
             override fun onCompletion() {
-                viewModel.setStatePrepared()
+                viewModel.setPreparedState()
                 setImagePlay()
                 stopTimer()
                 binding.timer.text = nullTime

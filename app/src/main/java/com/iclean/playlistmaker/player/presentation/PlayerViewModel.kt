@@ -27,7 +27,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
     }
 
     //Подключаем дополнительные классы и задаем начальные переменные
-    private var playerState = MediaPlayerState.STATE_DEFAULT
+     var playerState = MediaPlayerState.STATE_DEFAULT
 
     //Задаем LiveData
     private val liveData = MutableLiveData<LiveDataPlayer>()
@@ -94,9 +94,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
     fun isPlaying() : Boolean {
         return playerInteractor.isPlaying()
     }
-    fun setStatePrepared() : Boolean {
-        return playerState == MediaPlayerState.STATE_PREPARED
-    }
+
 
     //Работаем с таймером
     fun stopTimer() {
@@ -118,6 +116,10 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
 
     private fun getStatus() : Boolean {
         return playerState == MediaPlayerState.STATE_PLAYING
+    }
+
+    fun setPreparedState() {
+        playerState = MediaPlayerState.STATE_PREPARED
     }
 
 
