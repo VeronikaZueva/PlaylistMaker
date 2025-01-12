@@ -27,7 +27,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
     }
 
     //Подключаем дополнительные классы и задаем начальные переменные
-     var playerState = MediaPlayerState.STATE_DEFAULT
+     private var playerState = MediaPlayerState.STATE_DEFAULT
 
     //Задаем LiveData
     private val liveData = MutableLiveData<LiveDataPlayer>()
