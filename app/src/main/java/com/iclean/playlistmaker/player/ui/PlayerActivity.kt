@@ -56,7 +56,9 @@ class PlayerActivity : AppCompatActivity() {
             track = it.track
             //Смотрим, есть ли в базе данных трек
             lifecycleScope.launch(Dispatchers.IO) {
-                setImages(viewModel.checkFavoriteState(track.trackId.toInt()))
+                val isFavorite = viewModel.checkFavoriteState(track.trackId.toInt())
+                track = track.copy(isFavorite = isFavorite)
+                setImages(isFavorite)
             }
 
             //Устанавливаем поля для трека
@@ -70,10 +72,18 @@ class PlayerActivity : AppCompatActivity() {
 
         }
 
+        //Прописываем методы подготовки плеера
+        viewModel.preparePlayer()
 
+        viewModel.setOnPreparedListener(object: OnPreparedListener {
+            override fun onPrepared() {
+                binding.buttonPlay.isEnabled = true
+            }
+        })
 
         viewModel.setOnCompletionListener(object : OnCompletionListener {
             override fun onCompletion() {
+                viewModel.setStatePrepared()
                 setImagePlay()
                 stopTimer()
                 binding.timer.text = nullTime
@@ -92,19 +102,6 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
     //КОНЕЦ МЕТОДА onCreate
-
-    override fun onResume() {
-        super.onResume()
-        //Прописываем методы подготовки плеера
-        viewModel.preparePlayer()
-
-        viewModel.setOnPreparedListener(object: OnPreparedListener {
-            override fun onPrepared() {
-                binding.buttonPlay.isEnabled = true
-            }
-        })
-
-    }
 
 
     //МЕТОДЫ ФУНКЦИОНАЛА УРОВНЯ UI
@@ -182,9 +179,11 @@ private fun setImages(isFavorite : Boolean) {
 
     override fun onPause() {
         super.onPause()
-        viewModel.pausePlayer()
-        setImagePlay()
-        stopTimer()
+        if(viewModel.isPlaying()) {
+            viewModel.pausePlayer()
+            setImagePlay()
+            stopTimer()
+        }
     }
 
 }

@@ -91,6 +91,13 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
         return trackId in favoriteInteractor.getFavoriteId()
     }
 
+    fun isPlaying() : Boolean {
+        return playerInteractor.isPlaying()
+    }
+    fun setStatePrepared() : Boolean {
+        return playerState == MediaPlayerState.STATE_PREPARED
+    }
+
     //Работаем с таймером
     fun stopTimer() {
         job?.cancel()
