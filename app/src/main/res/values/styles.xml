@@ -111,4 +111,24 @@
         <item name="android:textColor">@color/secondary</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
+    <style name="BorderPlaylistImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/min_padding</item>
+    </style>
+    <style name="TextInputPlaylistCreate">
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">@dimen/setting_text</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/gray_change</item>
+    </style>
+    <style name="FieldInputPlaylistCreate" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusBottomEnd">@dimen/portion</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/portion</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/portion</item>
+        <item name="boxCornerRadiusTopStart">@dimen/portion</item>
+        <item name="boxStrokeColor">@drawable/selector_input_create</item>
+        <item name="strokeWidth">@dimen/one</item>
+        <item name="hintTextColor">@color/blue</item>
+
+    </style>
 </resources>

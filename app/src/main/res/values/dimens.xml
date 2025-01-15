@@ -8,6 +8,7 @@
     <dimen name="base">16dp</dimen>
     <dimen name="two_four">24dp</dimen>
     <dimen name="padding_bottom">28dp</dimen>
+    <dimen name="new_padding_bottom">32dp</dimen>
     <dimen name="button_height">36dp</dimen>
     <dimen name="logo_bottom">40dp</dimen>
     <dimen name="progress">44dp</dimen>

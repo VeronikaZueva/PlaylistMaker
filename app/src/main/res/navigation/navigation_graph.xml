@@ -19,6 +19,13 @@
         android:id="@+id/mediaFragment"
         android:name="com.iclean.playlistmaker.media.ui.MediaFragment"
         android:label="MediaFragment"
-        android:layout="@layout/fragment_media"/>
+        android:layout="@layout/fragment_media">
+        <action android:id="@+id/to_create_playlist"
+            app:destination="@id/createPlaylist"/>
+    </fragment>
+
+    <activity android:id="@+id/createPlaylist"
+        android:name="com.iclean.playlistmaker.create.ui.CreatePlaylistActivity"
+        android:label="CreatePlaylist"/>
 
 </navigation>
