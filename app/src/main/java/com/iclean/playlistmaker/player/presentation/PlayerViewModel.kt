@@ -1,11 +1,13 @@
 package com.iclean.playlistmaker.player.presentation
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.iclean.playlistmaker.media.domain.MediaInteractor
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.domain.PlayerInteractor
@@ -17,16 +19,21 @@ import kotlinx.coroutines.launch
 
 //Здесь тоже упрощаем логику. Начнем с того, что явно делает интерактор
 
-class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
+class PlayerViewModel(private val playerInteractor: PlayerInteractor,
+                      private val favoriteInteractor: MediaInteractor) : ViewModel() {
 
     companion object {
         private const val DELAY = 1000L
     }
 
     //Подключаем дополнительные классы и задаем начальные переменные
-    private var playerState = MediaPlayerState.STATE_DEFAULT
-    //Получаем данные по треку из интента
+     private var playerState = MediaPlayerState.STATE_DEFAULT
+
+    //Задаем LiveData
     private val liveData = MutableLiveData<LiveDataPlayer>()
+
+
+
     //Добавляем Job
     private var job : Job? = null
     //Инициализируем переменные, которые потребуются позже. в ходе обработки сценария
@@ -52,6 +59,8 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
         }
     }
 
+
+
     //Методы управления воспроизведением музыки
     fun preparePlayer() {playerInteractor.preparePlayer(gson.previewUrl)}
     fun setOnPreparedListener(listener: OnPreparedListener) {
@@ -63,15 +72,27 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
         playerState = MediaPlayerState.STATE_PREPARED
     }
 
-    fun pausePlayer() {playerInteractor.pausePlayer()}
+    fun pausePlayer() {
+        playerInteractor.pausePlayer()
+        playerState = MediaPlayerState.STATE_PAUSED
+    }
     private fun startPlayer() {playerInteractor.startPlayer()}
     fun release() {playerInteractor.release()}
 
 
     fun getTrack(intent: Intent): LiveData<LiveDataPlayer> {
         gson = Gson().fromJson(intent.extras?.getString("trackObject"), Track::class.java)
+
         liveData.value = LiveDataPlayer(gson, 0)
         return liveData
+    }
+
+    fun checkFavoriteState(trackId: Int) : Boolean {
+        return trackId in favoriteInteractor.getFavoriteId()
+    }
+
+    fun isPlaying() : Boolean {
+        return playerInteractor.isPlaying()
     }
 
 
@@ -95,6 +116,28 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
 
     private fun getStatus() : Boolean {
         return playerState == MediaPlayerState.STATE_PLAYING
+    }
+
+    fun setPreparedState() {
+        playerState = MediaPlayerState.STATE_PREPARED
+    }
+
+
+    @SuppressLint("SuspiciousIndentation")
+    fun onFavoriteClicked(track : Track) {
+        viewModelScope.launch {
+        val newTrack = track.copy(isFavorite = !track.isFavorite)
+            if((track.isFavorite)) {
+                favoriteInteractor.deleteTrack(track.trackId.toInt())
+            } else {
+                favoriteInteractor.insertTrack(newTrack)
+
+            }
+            liveData.postValue(LiveDataPlayer(newTrack, getCurrentPosition().toLong()))
+
+
+        }
+
     }
 
 

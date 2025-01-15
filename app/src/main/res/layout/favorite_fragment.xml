@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:ignore="UseCompoundDrawables">
 
@@ -20,5 +21,13 @@
         android:layout_gravity="center_horizontal"
         android:text="@string/empty_media"
         style="@style/StatusText"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/reciclerViewTrack"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="@dimen/twelve_padding"
+        android:layout_marginVertical="@dimen/base"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 </LinearLayout>

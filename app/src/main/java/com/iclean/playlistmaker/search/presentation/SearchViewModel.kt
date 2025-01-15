@@ -7,12 +7,15 @@ import androidx.lifecycle.viewModelScope
 import com.iclean.playlistmaker.search.domain.SearchHistoryInt
 import com.iclean.playlistmaker.search.domain.SearchInteractor
 import com.iclean.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-class SearchViewModel(private val searchInteractor: SearchInteractor, private val historyInteractor : SearchHistoryInt) : ViewModel(){
+class SearchViewModel(private val searchInteractor: SearchInteractor,
+                      private val historyInteractor : SearchHistoryInt
+) : ViewModel(){
 
     companion object {
         private const val DELAY = 2000L
@@ -42,12 +45,15 @@ class SearchViewModel(private val searchInteractor: SearchInteractor, private va
     fun getResult() : LiveData<LiveDataSearch> = liveData
 
     //Работаем с историей:
-    fun load() {
-        renderState(LiveDataSearch(listOf(), -2, historyInteractor.load()))
+     fun load() {
+         viewModelScope.launch {
+             renderState(LiveDataSearch(listOf(), -2, historyInteractor.load()))
+         }
+
     }
 
     fun save(trackItem: Track) {
-        historyInteractor.save(trackItem)
+        viewModelScope.launch(Dispatchers.IO) { historyInteractor.save(trackItem) }
     }
 
     fun clearHistory() {

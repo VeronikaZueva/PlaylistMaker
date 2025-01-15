@@ -1,9 +1,9 @@
 package com.iclean.playlistmaker.player.ui
 
-
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.databinding.ActivityPlayerBinding
 import com.iclean.playlistmaker.general.TrackMethods
@@ -11,6 +11,8 @@ import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.presentation.PlayerViewModel
 import com.iclean.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -20,13 +22,14 @@ class PlayerActivity : AppCompatActivity() {
     private val viewModel by viewModel<PlayerViewModel>()
     private lateinit var binding : ActivityPlayerBinding
 
+    //Задаем переменную трека и состояния избранного
+    private lateinit var track : Track
+
     //Подключаем нужные обработчики к Activity
-    private val trackMethods = TrackMethods() //Общие методы
+    private val trackMethods = TrackMethods()
 
     //Определяем переменные, которые пригодятся позже
     private var timeFormat : String? = ""
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,23 +43,34 @@ class PlayerActivity : AppCompatActivity() {
 
         //Возвращаемся домой
         binding.backButton.setOnClickListener {
-            this.finish()
+            finish()
         }
 
-        //УСТАНАВЛИВАЕМ ДАННЫЕ В ПЛЕЕР
+
+        //Работаем с наблюдателями - УСТАНАВЛИВАЕМ ДАННЫЕ В ПЛЕЕР
         viewModel.getTrack(intent).observe(this) {
             //Достаем основные переменные - подготавливаем время в нужном формате
             val timeNoFormat = it.time.toString()
             timeFormat = trackMethods.dateFormatTrack(timeNoFormat)
+
+            track = it.track
+            //Смотрим, есть ли в базе данных трек
+            lifecycleScope.launch(Dispatchers.IO) {
+                val isFavorite = viewModel.checkFavoriteState(track.trackId.toInt())
+                track = track.copy(isFavorite = isFavorite)
+                setImages(isFavorite)
+            }
+
             //Устанавливаем поля для трека
-            val track = it.track
             setDataForView(track)
             //Устанавливаем обложку
             setPoster(track.artworkUrl100)
             //Выводим альбом, только если информация передана
             showCollection(track.collectionName)
-        }
+            //Определяем добавлерн ли трек в избранное
 
+
+        }
 
         //Прописываем методы подготовки плеера
         viewModel.preparePlayer()
@@ -69,6 +83,7 @@ class PlayerActivity : AppCompatActivity() {
 
         viewModel.setOnCompletionListener(object : OnCompletionListener {
             override fun onCompletion() {
+                viewModel.setPreparedState()
                 setImagePlay()
                 stopTimer()
                 binding.timer.text = nullTime
@@ -77,9 +92,13 @@ class PlayerActivity : AppCompatActivity() {
 
 
 
-        //Управляем нажатиями кнопок: play|pause
+        //Управляем нажатиями кнопок
         binding.buttonPlay.setOnClickListener {
             buttonCheck()
+        }
+
+        binding.buttonHeart.setOnClickListener {
+            viewModel.onFavoriteClicked(track)
         }
     }
     //КОНЕЦ МЕТОДА onCreate
@@ -134,9 +153,22 @@ class PlayerActivity : AppCompatActivity() {
         binding.buttonPlay.setImageResource(R.drawable.play)
     }
 
+
     private fun stopTimer() {
         viewModel.stopTimer()
     }
+
+private fun setImages(isFavorite : Boolean) {
+    //Проверяем, если ли трек в избранном, и выводим соответствующую кнопку
+        if(isFavorite) {
+            binding.buttonHeart.setImageResource(R.drawable.button_red)
+
+        } else {
+            binding.buttonHeart.setImageResource(R.drawable.heart)
+
+        }
+
+}
 
     //Переопределяем системные методы
     override fun onDestroy() {
@@ -147,10 +179,11 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        viewModel.pausePlayer()
-        setImagePlay()
-        stopTimer()
+        if(viewModel.isPlaying()) {
+            viewModel.pausePlayer()
+            setImagePlay()
+            stopTimer()
+        }
     }
-
 
 }
