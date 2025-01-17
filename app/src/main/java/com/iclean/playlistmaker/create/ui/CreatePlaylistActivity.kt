@@ -1,6 +1,7 @@
 package com.iclean.playlistmaker.create.ui
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -8,6 +9,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -15,6 +17,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.create.presentation.CreatePlaylistViewModel
 import com.iclean.playlistmaker.databinding.ActivityCreatePlaylistBinding
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreatePlaylistActivity : AppCompatActivity() {
@@ -26,7 +29,8 @@ class CreatePlaylistActivity : AppCompatActivity() {
     //Выставляем изначальные поля пустыми
     private var playlistName : String? = null
     private var playlistDescription : String? = null
-    private var isImage = false
+    private var playlistUri : Uri? = null
+
 
 
     @SuppressLint("DiscouragedApi")
@@ -52,7 +56,7 @@ class CreatePlaylistActivity : AppCompatActivity() {
             //Событие выбора фотографии пользователем
             if(uri != null) {
                 Glide.with(this).load(uri).transform(CenterCrop(), RoundedCorners(16)).into(binding.posterAdd)
-                isImage = true
+                playlistUri = uri
             }
         }
         binding.posterAdd.setOnClickListener{
@@ -86,7 +90,7 @@ class CreatePlaylistActivity : AppCompatActivity() {
 
         //Показываем диалог, если случилось состояние возврата (системное или по кнопке)
         binding.backButton.setOnClickListener {
-            if(isImage or (playlistName?.isNotEmpty() == true) or (playlistDescription?.isNotEmpty() == true )) {
+            if((playlistUri!=null) or (playlistName?.isNotEmpty() == true) or (playlistDescription?.isNotEmpty() == true )) {
                 confirmDialog.show()
             } else {
                 finish()
@@ -94,7 +98,7 @@ class CreatePlaylistActivity : AppCompatActivity() {
         }
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if(isImage or (playlistName?.isNotEmpty() == true) or (playlistDescription?.isNotEmpty() == true )) {
+                if((playlistUri!=null) or (playlistName?.isNotEmpty() == true) or (playlistDescription?.isNotEmpty() == true )) {
                     confirmDialog.show()
                 } else {
                     finish()
@@ -106,10 +110,18 @@ class CreatePlaylistActivity : AppCompatActivity() {
         //Кнопка "Создать" неактивна
         binding.createPlaylistButton.setOnClickListener {
             if(playlistName?.isNotEmpty() == true) {
-                Toast.makeText(this, "Плейлист создан", Toast.LENGTH_SHORT).show()
-
-            } else {
-                Toast.makeText(this, "Заполните поле Название", Toast.LENGTH_SHORT).show()
+                //Работаем с файлом
+                if(playlistUri!=null) {
+                    lifecycleScope.launch {
+                        viewModel.saveImage(playlistUri!!, playlistName!!)
+                    }
+                }
+                //Сохраняем плейлист в базу данных
+                lifecycleScope.launch {
+                    viewModel.insertPlaylist(playlistName!!, playlistDescription, playlistUri)
+                }
+                Toast.makeText(this, "Плейлист $playlistName создан", Toast.LENGTH_SHORT).show()
+                finish()
 
             }
         }

@@ -119,6 +119,8 @@
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textSize">@dimen/setting_text</item>
         <item name="android:maxLines">1</item>
+        <item name="android:inputType">text</item>
+        <item name="android:singleLine">true</item>
         <item name="android:textColor">@color/gray_change</item>
     </style>
     <style name="FieldInputPlaylistCreate" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
