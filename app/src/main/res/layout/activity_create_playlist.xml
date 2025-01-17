@@ -56,7 +56,6 @@
         android:id="@+id/poster_add"
         android:layout_width="@dimen/zero"
         android:layout_height="@dimen/zero"
-        android:padding="@dimen/padding_bottom"
         android:background="@drawable/border_image_playlist"
         android:clickable="true"
         android:contentDescription="@string/new_playlist"
