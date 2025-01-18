@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/poster_size"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="@dimen/portion"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/poster"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/poster_size"
+        android:src="@drawable/album"
+        android:contentDescription="@string/album_track"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ImageContrastCheck" />
+
+    <TextView
+        android:id="@+id/playlist_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/poster"
+        android:layout_marginTop="@dimen/portion"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="@dimen/minimum_text"
+        android:fontFamily="@font/ys_display_regular"
+        android:textFontWeight="400"
+        android:textColor="@color/secondary"
+        />
+
+    <TextView
+        android:id="@+id/count_track"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/playlist_name"
+        android:layout_marginTop="@dimen/portion"
+        android:maxLines="1"
+        android:textSize="@dimen/minimum_text"
+        android:fontFamily="@font/ys_display_regular"
+        android:textFontWeight="400"
+        android:textColor="@color/secondary"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
