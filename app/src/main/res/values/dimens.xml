@@ -17,6 +17,7 @@
     <dimen name="height_menu_string">60dp</dimen>
     <dimen name="big_button">84dp</dimen>
     <dimen name="big_margin">120dp</dimen>
+    <dimen name="poster_size">160dp</dimen>
     <dimen name="base_text">22sp</dimen>
     <dimen name="status_text">19sp</dimen>
     <dimen name="setting_text">16sp</dimen>
