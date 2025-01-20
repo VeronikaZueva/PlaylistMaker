@@ -1,7 +1,7 @@
-package com.iclean.playlistmaker.media.domain.impl
+package com.iclean.playlistmaker.media.domain.favorite.impl
 
-import com.iclean.playlistmaker.media.domain.MediaInteractor
-import com.iclean.playlistmaker.media.domain.MediaRepository
+import com.iclean.playlistmaker.media.domain.favorite.MediaInteractor
+import com.iclean.playlistmaker.media.domain.favorite.MediaRepository
 import com.iclean.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 

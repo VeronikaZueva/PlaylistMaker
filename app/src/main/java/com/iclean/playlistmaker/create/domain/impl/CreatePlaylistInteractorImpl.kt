@@ -33,7 +33,8 @@ class CreatePlaylistInteractorImpl(
                 FileOutputStream(file)
             }
             BitmapFactory.decodeStream(inputStream).compress(Bitmap.CompressFormat.JPEG, 30, outStream)
-        return file.toUri()
+            val fileResult = file.toUri()
+            return fileResult
     }
 
     //Сохраняем плейлист в БД

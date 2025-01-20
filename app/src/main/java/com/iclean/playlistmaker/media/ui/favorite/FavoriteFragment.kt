@@ -1,4 +1,4 @@
-package com.iclean.playlistmaker.media.ui
+package com.iclean.playlistmaker.media.ui.favorite
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,7 +10,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.iclean.playlistmaker.databinding.FavoriteFragmentBinding
-import com.iclean.playlistmaker.media.presentation.FavoriteFragmentViewModel
+import com.iclean.playlistmaker.media.presentation.favorite.FavoriteFragmentViewModel
 import com.iclean.playlistmaker.player.ui.PlayerActivity
 import com.iclean.playlistmaker.search.domain.api.TrackClick
 import com.iclean.playlistmaker.search.domain.models.Track

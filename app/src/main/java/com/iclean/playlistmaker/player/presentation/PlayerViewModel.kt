@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-import com.iclean.playlistmaker.media.domain.MediaInteractor
+import com.iclean.playlistmaker.media.domain.favorite.MediaInteractor
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.domain.PlayerInteractor
@@ -20,7 +20,8 @@ import kotlinx.coroutines.launch
 //Здесь тоже упрощаем логику. Начнем с того, что явно делает интерактор
 
 class PlayerViewModel(private val playerInteractor: PlayerInteractor,
-                      private val favoriteInteractor: MediaInteractor) : ViewModel() {
+                      private val favoriteInteractor: MediaInteractor
+) : ViewModel() {
 
     companion object {
         private const val DELAY = 1000L

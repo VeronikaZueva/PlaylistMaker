@@ -33,6 +33,7 @@ class CreatePlaylistActivity : AppCompatActivity() {
 
 
 
+
     @SuppressLint("DiscouragedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,7 +91,7 @@ class CreatePlaylistActivity : AppCompatActivity() {
 
         //Показываем диалог, если случилось состояние возврата (системное или по кнопке)
         binding.backButton.setOnClickListener {
-            if((playlistUri!=null) or (playlistName?.isNotEmpty() == true) or (playlistDescription?.isNotEmpty() == true )) {
+            if((playlistUri != null) or (playlistName?.isNotEmpty() == true) or (playlistDescription?.isNotEmpty() == true )) {
                 confirmDialog.show()
             } else {
                 finish()
@@ -98,7 +99,7 @@ class CreatePlaylistActivity : AppCompatActivity() {
         }
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if((playlistUri!=null) or (playlistName?.isNotEmpty() == true) or (playlistDescription?.isNotEmpty() == true )) {
+                if((playlistUri != null) or (playlistName?.isNotEmpty() == true) or (playlistDescription?.isNotEmpty() == true )) {
                     confirmDialog.show()
                 } else {
                     finish()
@@ -113,13 +114,13 @@ class CreatePlaylistActivity : AppCompatActivity() {
                 //Работаем с файлом
                 if(playlistUri!=null) {
                     lifecycleScope.launch {
-                        viewModel.saveImage(playlistUri!!, playlistName!!)
+                        playlistUri = viewModel.saveImage(playlistUri!!, playlistName!!)
+                        viewModel.insertPlaylist(playlistName!!, playlistDescription, playlistUri.toString())
                     }
+
                 }
-                //Сохраняем плейлист в базу данных
-                lifecycleScope.launch {
-                    viewModel.insertPlaylist(playlistName!!, playlistDescription, playlistUri)
-                }
+
+
                 Toast.makeText(this, "Плейлист $playlistName создан", Toast.LENGTH_SHORT).show()
                 finish()
 

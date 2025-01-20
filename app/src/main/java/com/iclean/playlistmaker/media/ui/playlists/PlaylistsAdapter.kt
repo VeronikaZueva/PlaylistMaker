@@ -2,13 +2,11 @@ package com.iclean.playlistmaker.media.ui.playlists
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ListAdapter
 import com.iclean.playlistmaker.create.domain.models.Playlist
 import com.iclean.playlistmaker.databinding.PlaylistViewBinding
 
-class PlaylistsAdapter : RecyclerView.Adapter<PlaylistsViewHolder>() {
-
-    private val playlists = mutableListOf<Playlist>()
+class PlaylistsAdapter : ListAdapter<Playlist, PlaylistsViewHolder>(PlaylistComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistsViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -16,9 +14,9 @@ class PlaylistsAdapter : RecyclerView.Adapter<PlaylistsViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: PlaylistsViewHolder, position: Int) {
-        holder.bind(playlists[position])
-    }
+        val playlistItem = getItem(position)
+        holder.bind(playlistItem)
 
-    override fun getItemCount() : Int = playlists.size
+    }
 
 }

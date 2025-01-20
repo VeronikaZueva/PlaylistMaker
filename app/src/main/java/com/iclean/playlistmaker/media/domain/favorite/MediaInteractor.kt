@@ -1,4 +1,4 @@
-package com.iclean.playlistmaker.media.domain
+package com.iclean.playlistmaker.media.domain.favorite
 
 import com.iclean.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.flow.Flow

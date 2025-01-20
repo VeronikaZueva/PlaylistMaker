@@ -18,13 +18,13 @@ class CreatePlaylistViewModel(private val createPlaylistInteractor: CreatePlayli
         }
 
         //Сохраняем плейлист в базу данных
-        suspend fun insertPlaylist(playlistName : String, playlistDescription : String?, playlistUri : Uri?) {
+        suspend fun insertPlaylist(playlistName : String, playlistDescription : String?, playlistUri : String?) {
             createPlaylistInteractor.insertPlaylist(
                 Playlist(
                     id = 0,
                     playlistName = playlistName,
                     playlistDescription = playlistDescription,
-                    plailistImage = playlistUri.toString(),
+                    plailistImage = playlistUri,
                     playlistList = "",
                     playlistCount = 0
                 )

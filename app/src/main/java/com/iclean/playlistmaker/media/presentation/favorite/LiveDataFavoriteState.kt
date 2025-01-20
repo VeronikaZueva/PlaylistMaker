@@ -1,4 +1,4 @@
-package com.iclean.playlistmaker.media.presentation
+package com.iclean.playlistmaker.media.presentation.favorite
 
 import com.iclean.playlistmaker.search.domain.models.Track
 
