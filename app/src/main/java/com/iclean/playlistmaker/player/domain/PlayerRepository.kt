@@ -15,5 +15,4 @@ interface PlayerRepository {
 
     fun isPlaying() : Boolean
 
-
 }

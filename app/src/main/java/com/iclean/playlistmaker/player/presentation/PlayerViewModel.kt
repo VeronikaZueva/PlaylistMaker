@@ -7,7 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.iclean.playlistmaker.create.domain.models.Playlist
 import com.iclean.playlistmaker.media.domain.favorite.MediaInteractor
+import com.iclean.playlistmaker.media.domain.playlists.PlaylistInteractor
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.domain.PlayerInteractor
@@ -20,7 +22,8 @@ import kotlinx.coroutines.launch
 //Здесь тоже упрощаем логику. Начнем с того, что явно делает интерактор
 
 class PlayerViewModel(private val playerInteractor: PlayerInteractor,
-                      private val favoriteInteractor: MediaInteractor
+                      private val favoriteInteractor: MediaInteractor,
+                      private val playlistInteractor : PlaylistInteractor
 ) : ViewModel() {
 
     companion object {
@@ -32,6 +35,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
 
     //Задаем LiveData
     private val liveData = MutableLiveData<LiveDataPlayer>()
+    private val liveDataPlaylist = MutableLiveData<LiveDataPlaylist>()
 
 
 
@@ -123,7 +127,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
         playerState = MediaPlayerState.STATE_PREPARED
     }
 
-
+    //Избранные треки
     @SuppressLint("SuspiciousIndentation")
     fun onFavoriteClicked(track : Track) {
         viewModelScope.launch {
@@ -141,6 +145,25 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
 
     }
 
+    //Плейлисты
+    fun getLiveDataPlaylist() : LiveData<LiveDataPlaylist> = liveDataPlaylist
+
+    fun returnPlaylists() {
+        viewModelScope.launch {
+            playlistInteractor.getPlaylists()
+                .collect{
+                        playlists -> renderResults(playlists)
+                }
+        }
+    }
+
+    private fun renderResults(playlists : List<Playlist>) {
+        if(playlists.isEmpty()) {
+            liveDataPlaylist.postValue(LiveDataPlaylist(emptyList(), 1))
+        } else {
+            liveDataPlaylist.postValue(LiveDataPlaylist(playlists, null))
+        }
+    }
 
 
 }

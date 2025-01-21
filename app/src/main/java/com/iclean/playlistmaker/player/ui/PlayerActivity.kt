@@ -1,10 +1,15 @@
 package com.iclean.playlistmaker.player.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.iclean.playlistmaker.R
+import com.iclean.playlistmaker.create.ui.CreatePlaylistActivity
 import com.iclean.playlistmaker.databinding.ActivityPlayerBinding
 import com.iclean.playlistmaker.general.TrackMethods
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
@@ -18,9 +23,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerActivity : AppCompatActivity() {
 
-    //Создаем ViewModel и Binding
+    //Создаем ViewModel, Adapter и Binding
     private val viewModel by viewModel<PlayerViewModel>()
     private lateinit var binding : ActivityPlayerBinding
+    private lateinit var adapter: PlaylistForPlayerAdapter
 
     //Задаем переменную трека и состояния избранного
     private lateinit var track : Track
@@ -40,6 +46,27 @@ class PlayerActivity : AppCompatActivity() {
 
         //Определяем "нулевое время"
         val nullTime = resources.getString(R.string.null_time)
+
+        //Задаем BottomSheet
+        val bottomSheetContainer = binding.bottomSheet
+        val bottomSheetBehaivor = BottomSheetBehavior.from(bottomSheetContainer)
+        bottomSheetBehaivor.state = BottomSheetBehavior.STATE_HIDDEN
+
+        //Получаем плейлисты
+        adapter = PlaylistForPlayerAdapter()
+        adapter.submitList(listOf())
+
+        viewModel.returnPlaylists()
+
+        viewModel.getLiveDataPlaylist().observe(this as LifecycleOwner) {
+            if(it.status != 1) {
+                adapter.submitList(it.playlists)
+            } else {
+                adapter.submitList(listOf())
+            }
+            binding.playlists.layoutManager = LinearLayoutManager(this)
+            binding.playlists.adapter = adapter
+        }
 
         //Возвращаемся домой
         binding.backButton.setOnClickListener {
@@ -99,6 +126,16 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.buttonHeart.setOnClickListener {
             viewModel.onFavoriteClicked(track)
+        }
+
+        binding.buttonPlus.setOnClickListener {
+            bottomSheetBehaivor.state = BottomSheetBehavior.STATE_EXPANDED
+        }
+
+        binding.newButton.setOnClickListener {
+            val intent = Intent(this, CreatePlaylistActivity::class.java)
+            startActivity(intent)
+            bottomSheetBehaivor.state = BottomSheetBehavior.STATE_HIDDEN
         }
     }
     //КОНЕЦ МЕТОДА onCreate
@@ -169,6 +206,8 @@ private fun setImages(isFavorite : Boolean) {
         }
 
 }
+
+
 
     //Переопределяем системные методы
     override fun onDestroy() {
