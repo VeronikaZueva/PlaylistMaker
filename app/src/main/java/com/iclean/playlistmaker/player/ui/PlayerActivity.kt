@@ -2,6 +2,8 @@ package com.iclean.playlistmaker.player.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
@@ -9,14 +11,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.iclean.playlistmaker.R
+import com.iclean.playlistmaker.create.domain.models.Playlist
 import com.iclean.playlistmaker.create.ui.CreatePlaylistActivity
 import com.iclean.playlistmaker.databinding.ActivityPlayerBinding
 import com.iclean.playlistmaker.general.TrackMethods
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
+import com.iclean.playlistmaker.player.domain.api.ClickPlaylist
 import com.iclean.playlistmaker.player.presentation.PlayerViewModel
 import com.iclean.playlistmaker.search.domain.models.Track
+import com.iclean.playlistmaker.search.ui.SearchFragment.Companion.DELAY
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -36,6 +42,7 @@ class PlayerActivity : AppCompatActivity() {
 
     //Определяем переменные, которые пригодятся позже
     private var timeFormat : String? = ""
+    private var isClickAllowed = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,8 +59,54 @@ class PlayerActivity : AppCompatActivity() {
         val bottomSheetBehaivor = BottomSheetBehavior.from(bottomSheetContainer)
         bottomSheetBehaivor.state = BottomSheetBehavior.STATE_HIDDEN
 
+        bottomSheetBehaivor.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when(newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> binding.overlay.visibility = View.GONE
+                    BottomSheetBehavior.STATE_EXPANDED -> binding.overlay.visibility = View.VISIBLE
+                    else -> binding.overlay.visibility = View.GONE
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                binding.overlay.alpha = slideOffset
+            }
+        })
+
+        //Добавляем трек в плейлист по клику на трек
+        val playlistClick = object : ClickPlaylist {
+            override fun addTrackInPlaylist(playlist: Playlist) {
+                if(clickDebounce()) {
+                    if(playlist.playlistList?.contains(track.trackId) == true) {
+                        Toast.makeText(
+                            this@PlayerActivity,
+                            "Трек уже добавлен в плейлист ${playlist.playlistName}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        viewModel.updatePlaylist(
+                            Playlist(
+                                playlist.id,
+                                playlist.playlistName,
+                                playlist.playlistDescription,
+                                playlist.plailistImage,
+                                playlist.playlistList + track.trackId,
+                                playlist.playlistCount + 1)
+                        )
+                        viewModel.insertTrackInPlaylist(track)
+                        Toast.makeText(
+                            this@PlayerActivity,
+                            "Добавлено в плейлист ${playlist.playlistName}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        bottomSheetBehaivor.state = BottomSheetBehavior.STATE_HIDDEN
+                    }
+                }
+            }
+        }
+
         //Получаем плейлисты
-        adapter = PlaylistForPlayerAdapter()
+        adapter = PlaylistForPlayerAdapter(playlistClick)
         adapter.submitList(listOf())
 
         viewModel.returnPlaylists()
@@ -206,6 +259,20 @@ private fun setImages(isFavorite : Boolean) {
         }
 
 }
+
+    //Задержка действий по клику
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            lifecycleScope.launch {
+                delay(DELAY)
+                isClickAllowed = true
+            }
+
+        }
+        return current
+    }
 
 
 

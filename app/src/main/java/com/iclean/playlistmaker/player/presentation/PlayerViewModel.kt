@@ -15,6 +15,7 @@ import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.domain.PlayerInteractor
 import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
 import com.iclean.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -164,6 +165,19 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
             liveDataPlaylist.postValue(LiveDataPlaylist(playlists, null))
         }
     }
+
+    //Добавляем трек в плейлист
+    fun updatePlaylist(playlist : Playlist) {
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistInteractor.updatePlaylist(playlist)
+        }
+    }
+    fun insertTrackInPlaylist(track: Track) {
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistInteractor.insertTrackInPlaylist(track)
+        }
+    }
+
 
 
 }

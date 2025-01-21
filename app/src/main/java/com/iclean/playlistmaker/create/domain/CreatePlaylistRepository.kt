@@ -6,4 +6,5 @@ interface CreatePlaylistRepository {
 
     suspend fun insertPlaylist(playlist : Playlist)
 
+
 }

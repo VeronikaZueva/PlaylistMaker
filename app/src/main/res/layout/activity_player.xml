@@ -224,11 +224,17 @@
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <View android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone"/>
+
     <LinearLayout android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/new_color"
+        android:background="@drawable/bottom_sheet_bg"
         app:behavior_hideable="true"
         app:behavior_peekHeight="@dimen/bottom_sheet_height"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
