@@ -119,8 +119,15 @@ class CreatePlaylistActivity : AppCompatActivity() {
                     }
 
                 }
-
-
+                else {
+                    lifecycleScope.launch {
+                        viewModel.insertPlaylist(
+                            playlistName!!,
+                            playlistDescription,
+                            playlistUri.toString()
+                        )
+                    }
+                }
                 Toast.makeText(this, "Плейлист $playlistName создан", Toast.LENGTH_SHORT).show()
                 finish()
 

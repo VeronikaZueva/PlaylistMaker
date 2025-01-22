@@ -1,5 +1,6 @@
 package com.iclean.playlistmaker.media.ui.playlists
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,11 +30,13 @@ class PlaylistFragment : Fragment() {
             return binding.root
         }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //Получаем плейлисты
         adapter = PlaylistsAdapter()
         adapter.submitList(listOf())
+
         viewModel.returnPlaylists()
 
         viewModel.getLiveData().observe(this as LifecycleOwner) {
@@ -44,8 +47,9 @@ class PlaylistFragment : Fragment() {
                 adapter.submitList(listOf())
                 renderScreen(true)
             }
-            binding.playlists.layoutManager = GridLayoutManager(requireActivity(), 2)
             binding.playlists.adapter = adapter
+            binding.playlists.layoutManager = GridLayoutManager(requireActivity(), 2)
+
         }
 
 
@@ -65,6 +69,13 @@ class PlaylistFragment : Fragment() {
                 binding.statusImage.visibility = View.GONE
                 binding.favouriteText.visibility = View.GONE
                 binding.playlists.visibility = View.VISIBLE
+
+
             }
         }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.returnPlaylists()
+    }
 }

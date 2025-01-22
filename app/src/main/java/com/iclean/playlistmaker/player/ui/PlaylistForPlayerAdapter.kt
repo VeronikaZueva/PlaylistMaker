@@ -5,11 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import com.iclean.playlistmaker.create.domain.models.Playlist
 import com.iclean.playlistmaker.databinding.PlaylistBottomViewBinding
-import com.iclean.playlistmaker.media.ui.playlists.PlaylistComparator
 import com.iclean.playlistmaker.player.domain.api.ClickPlaylist
 
 
-class PlaylistForPlayerAdapter(private val playlistClick: ClickPlaylist) : ListAdapter<Playlist, PlaylistForPlayerViewHolder>(PlaylistComparator()) {
+class PlaylistForPlayerAdapter(private val playlistClick: ClickPlaylist) : ListAdapter<Playlist, PlaylistForPlayerViewHolder>(PlaylistForPlayerComparator()) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistForPlayerViewHolder {
             val view = LayoutInflater.from(parent.context)

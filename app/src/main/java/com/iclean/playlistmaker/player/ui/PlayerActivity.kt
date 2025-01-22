@@ -63,7 +63,10 @@ class PlayerActivity : AppCompatActivity() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when(newState) {
                     BottomSheetBehavior.STATE_HIDDEN -> binding.overlay.visibility = View.GONE
-                    BottomSheetBehavior.STATE_EXPANDED -> binding.overlay.visibility = View.VISIBLE
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        binding.overlay.visibility = View.VISIBLE
+                        viewModel.returnPlaylists()
+                    }
                     else -> binding.overlay.visibility = View.GONE
                 }
             }
@@ -77,7 +80,7 @@ class PlayerActivity : AppCompatActivity() {
         val playlistClick = object : ClickPlaylist {
             override fun addTrackInPlaylist(playlist: Playlist) {
                 if(clickDebounce()) {
-                    if(playlist.playlistList?.contains(track.trackId) == true) {
+                    if(playlist.playlistList?.contains(track.trackId)!!) {
                         Toast.makeText(
                             this@PlayerActivity,
                             "Трек уже добавлен в плейлист ${playlist.playlistName}",
@@ -94,12 +97,12 @@ class PlayerActivity : AppCompatActivity() {
                                 playlist.playlistCount + 1)
                         )
                         viewModel.insertTrackInPlaylist(track)
+                        bottomSheetBehaivor.state = BottomSheetBehavior.STATE_HIDDEN
                         Toast.makeText(
                             this@PlayerActivity,
                             "Добавлено в плейлист ${playlist.playlistName}",
                             Toast.LENGTH_LONG
                         ).show()
-                        bottomSheetBehaivor.state = BottomSheetBehavior.STATE_HIDDEN
                     }
                 }
             }
@@ -109,16 +112,14 @@ class PlayerActivity : AppCompatActivity() {
         adapter = PlaylistForPlayerAdapter(playlistClick)
         adapter.submitList(listOf())
 
-        viewModel.returnPlaylists()
-
         viewModel.getLiveDataPlaylist().observe(this as LifecycleOwner) {
             if(it.status != 1) {
                 adapter.submitList(it.playlists)
             } else {
                 adapter.submitList(listOf())
             }
-            binding.playlists.layoutManager = LinearLayoutManager(this)
             binding.playlists.adapter = adapter
+            binding.playlists.layoutManager = LinearLayoutManager(this)
         }
 
         //Возвращаемся домой
