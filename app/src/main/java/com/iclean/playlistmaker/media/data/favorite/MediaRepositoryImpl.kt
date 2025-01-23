@@ -1,9 +1,9 @@
-package com.iclean.playlistmaker.media.data
+package com.iclean.playlistmaker.media.data.favorite
 
 import com.iclean.playlistmaker.db.AppDatabase
 import com.iclean.playlistmaker.db.convertor.TrackDbConvertor
 import com.iclean.playlistmaker.db.entity.TrackEntity
-import com.iclean.playlistmaker.media.domain.MediaRepository
+import com.iclean.playlistmaker.media.domain.favorite.MediaRepository
 import com.iclean.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

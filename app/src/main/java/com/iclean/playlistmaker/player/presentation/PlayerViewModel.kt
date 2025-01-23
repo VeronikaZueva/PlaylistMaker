@@ -7,12 +7,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-import com.iclean.playlistmaker.media.domain.MediaInteractor
+import com.iclean.playlistmaker.create.domain.models.Playlist
+import com.iclean.playlistmaker.media.domain.favorite.MediaInteractor
+import com.iclean.playlistmaker.media.domain.playlists.PlaylistInteractor
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.domain.PlayerInteractor
 import com.iclean.playlistmaker.player.domain.models.MediaPlayerState
 import com.iclean.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -20,7 +23,9 @@ import kotlinx.coroutines.launch
 //Здесь тоже упрощаем логику. Начнем с того, что явно делает интерактор
 
 class PlayerViewModel(private val playerInteractor: PlayerInteractor,
-                      private val favoriteInteractor: MediaInteractor) : ViewModel() {
+                      private val favoriteInteractor: MediaInteractor,
+                      private val playlistInteractor : PlaylistInteractor
+) : ViewModel() {
 
     companion object {
         private const val DELAY = 1000L
@@ -31,6 +36,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
 
     //Задаем LiveData
     private val liveData = MutableLiveData<LiveDataPlayer>()
+    private val liveDataPlaylist = MutableLiveData<LiveDataPlaylist>()
 
 
 
@@ -122,7 +128,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
         playerState = MediaPlayerState.STATE_PREPARED
     }
 
-
+    //Избранные треки
     @SuppressLint("SuspiciousIndentation")
     fun onFavoriteClicked(track : Track) {
         viewModelScope.launch {
@@ -138,6 +144,38 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
 
         }
 
+    }
+
+    //Плейлисты
+    fun getLiveDataPlaylist() : LiveData<LiveDataPlaylist> = liveDataPlaylist
+
+    fun returnPlaylists() {
+        viewModelScope.launch {
+            playlistInteractor.getPlaylists()
+                .collect{
+                        playlists -> renderResults(playlists)
+                }
+        }
+    }
+
+    private fun renderResults(playlists : List<Playlist>) {
+        if(playlists.isEmpty()) {
+            liveDataPlaylist.postValue(LiveDataPlaylist(emptyList(), 1))
+        } else {
+            liveDataPlaylist.postValue(LiveDataPlaylist(playlists, null))
+        }
+    }
+
+    //Добавляем трек в плейлист
+    fun updatePlaylist(playlist : Playlist) {
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistInteractor.updatePlaylist(playlist)
+        }
+    }
+    fun insertTrackInPlaylist(track: Track) {
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistInteractor.insertTrackInPlaylist(track)
+        }
     }
 
 

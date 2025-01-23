@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/update_button"
+        android:id="@+id/new_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -18,20 +20,40 @@
         android:textAllCaps="false"
         android:textColor="@color/new_color"
         android:layout_marginBottom="@dimen/input_height"
-        app:cornerRadius="@dimen/header_stroke" />
+        app:cornerRadius="@dimen/header_stroke"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="VisualLintOverlap" />
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlists"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/new_button"
+        android:padding="@dimen/min_padding"
+        />
 
     <ImageView android:id="@+id/status_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:contentDescription="@string/none_search"
-        android:src="@drawable/search_none"/>
+        android:src="@drawable/search_none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/new_button"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView android:id="@+id/favourite_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/no_playlist"
+        app:layout_constraintTop_toBottomOf="@+id/status_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         style="@style/StatusText"/>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

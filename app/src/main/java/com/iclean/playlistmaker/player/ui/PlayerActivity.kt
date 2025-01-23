@@ -1,26 +1,38 @@
 package com.iclean.playlistmaker.player.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.iclean.playlistmaker.R
+import com.iclean.playlistmaker.create.domain.models.Playlist
+import com.iclean.playlistmaker.create.ui.CreatePlaylistActivity
 import com.iclean.playlistmaker.databinding.ActivityPlayerBinding
 import com.iclean.playlistmaker.general.TrackMethods
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
+import com.iclean.playlistmaker.player.domain.api.ClickPlaylist
 import com.iclean.playlistmaker.player.presentation.PlayerViewModel
 import com.iclean.playlistmaker.search.domain.models.Track
+import com.iclean.playlistmaker.search.ui.SearchFragment.Companion.DELAY
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class PlayerActivity : AppCompatActivity() {
 
-    //Создаем ViewModel и Binding
+    //Создаем ViewModel, Adapter и Binding
     private val viewModel by viewModel<PlayerViewModel>()
     private lateinit var binding : ActivityPlayerBinding
+    private lateinit var adapter: PlaylistForPlayerAdapter
 
     //Задаем переменную трека и состояния избранного
     private lateinit var track : Track
@@ -30,6 +42,7 @@ class PlayerActivity : AppCompatActivity() {
 
     //Определяем переменные, которые пригодятся позже
     private var timeFormat : String? = ""
+    private var isClickAllowed = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +53,74 @@ class PlayerActivity : AppCompatActivity() {
 
         //Определяем "нулевое время"
         val nullTime = resources.getString(R.string.null_time)
+
+        //Задаем BottomSheet
+        val bottomSheetContainer = binding.bottomSheet
+        val bottomSheetBehaivor = BottomSheetBehavior.from(bottomSheetContainer)
+        bottomSheetBehaivor.state = BottomSheetBehavior.STATE_HIDDEN
+
+        bottomSheetBehaivor.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when(newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> binding.overlay.visibility = View.GONE
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        binding.overlay.visibility = View.VISIBLE
+                        viewModel.returnPlaylists()
+                    }
+                    else -> binding.overlay.visibility = View.GONE
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                binding.overlay.alpha = slideOffset
+            }
+        })
+
+        //Добавляем трек в плейлист по клику на трек
+        val playlistClick = object : ClickPlaylist {
+            override fun addTrackInPlaylist(playlist: Playlist) {
+                if(clickDebounce()) {
+                    if(playlist.playlistList?.contains(track.trackId)!!) {
+                        Toast.makeText(
+                            this@PlayerActivity,
+                            "Трек уже добавлен в плейлист ${playlist.playlistName}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        viewModel.updatePlaylist(
+                            Playlist(
+                                playlist.id,
+                                playlist.playlistName,
+                                playlist.playlistDescription,
+                                playlist.plailistImage,
+                                playlist.playlistList + track.trackId,
+                                playlist.playlistCount + 1)
+                        )
+                        viewModel.insertTrackInPlaylist(track)
+                        bottomSheetBehaivor.state = BottomSheetBehavior.STATE_HIDDEN
+                        Toast.makeText(
+                            this@PlayerActivity,
+                            "Добавлено в плейлист ${playlist.playlistName}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        }
+
+        //Получаем плейлисты
+        adapter = PlaylistForPlayerAdapter(playlistClick)
+        adapter.submitList(listOf())
+
+        viewModel.getLiveDataPlaylist().observe(this as LifecycleOwner) {
+            if(it.status != 1) {
+                adapter.submitList(it.playlists)
+            } else {
+                adapter.submitList(listOf())
+            }
+            binding.playlists.adapter = adapter
+            binding.playlists.layoutManager = LinearLayoutManager(this)
+        }
 
         //Возвращаемся домой
         binding.backButton.setOnClickListener {
@@ -99,6 +180,16 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.buttonHeart.setOnClickListener {
             viewModel.onFavoriteClicked(track)
+        }
+
+        binding.buttonPlus.setOnClickListener {
+            bottomSheetBehaivor.state = BottomSheetBehavior.STATE_EXPANDED
+        }
+
+        binding.newButton.setOnClickListener {
+            val intent = Intent(this, CreatePlaylistActivity::class.java)
+            startActivity(intent)
+            bottomSheetBehaivor.state = BottomSheetBehavior.STATE_HIDDEN
         }
     }
     //КОНЕЦ МЕТОДА onCreate
@@ -169,6 +260,22 @@ private fun setImages(isFavorite : Boolean) {
         }
 
 }
+
+    //Задержка действий по клику
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            lifecycleScope.launch {
+                delay(DELAY)
+                isClickAllowed = true
+            }
+
+        }
+        return current
+    }
+
+
 
     //Переопределяем системные методы
     override fun onDestroy() {

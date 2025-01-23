@@ -2,6 +2,7 @@ package com.iclean.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.iclean.playlistmaker.di.createPlaylistModule
 import com.iclean.playlistmaker.di.mediaModule
 import com.iclean.playlistmaker.di.playerModule
 import com.iclean.playlistmaker.di.searchModule
@@ -21,7 +22,7 @@ class App : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@App)
-            modules(searchModule, playerModule, settingsModule, sharingModule, mediaModule)
+            modules(searchModule, playerModule, settingsModule, sharingModule, mediaModule, createPlaylistModule)
         }
         val themeRepository by inject<SettingsRepository>()
         val darkTheme = themeRepository.getTheme().darkTheme
