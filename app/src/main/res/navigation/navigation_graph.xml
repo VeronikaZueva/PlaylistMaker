@@ -22,9 +22,16 @@
         android:layout="@layout/fragment_media">
         <action android:id="@+id/to_create_playlist"
             app:destination="@id/createPlaylist"/>
+        <action android:id="@+id/to_playlist_item"
+            app:destination="@id/playlist_item"/>
+    </fragment>
+    <fragment
+        android:id="@+id/playlist_item"
+        android:name="com.iclean.playlistmaker.playlist.ui.PlaylistItemFragment"
+        android:label="PlaylistItemFragment">
     </fragment>
 
-    <activity android:id="@+id/createPlaylist"
+   <activity android:id="@+id/createPlaylist"
         android:name="com.iclean.playlistmaker.create.ui.CreatePlaylistActivity"
         android:label="CreatePlaylist"/>
 

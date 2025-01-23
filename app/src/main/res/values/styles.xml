@@ -131,6 +131,12 @@
         <item name="boxStrokeColor">@drawable/selector_input_create</item>
         <item name="strokeWidth">@dimen/one</item>
         <item name="hintTextColor">@color/blue</item>
-
+    </style>
+    <style name="PlaylistText">
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textColor">@color/dark</item>
+        <item name="android:textSize">@dimen/status_text</item>
+        <item name="android:ellipsize">end</item>
     </style>
 </resources>

@@ -6,6 +6,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.iclean.playlistmaker.db.entity.PlaylistEntity
+import kotlinx.coroutines.flow.Flow
+
 
 @Dao
 interface PlaylistDao {
@@ -18,5 +20,8 @@ interface PlaylistDao {
 
     @Query("SELECT * FROM playlist_table ORDER BY playlistKey DESC")
     suspend fun getPlaylists() : List<PlaylistEntity>
+
+    @Query("SELECT * FROM playlist_table WHERE playlistKey = :id")
+    fun getPlaylistFromId(id : Int) : Flow<PlaylistEntity>
 
 }
