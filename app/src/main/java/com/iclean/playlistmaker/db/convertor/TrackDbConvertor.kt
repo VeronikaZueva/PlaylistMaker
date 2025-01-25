@@ -3,7 +3,7 @@ package com.iclean.playlistmaker.db.convertor
 import com.iclean.playlistmaker.db.entity.TrackEntity
 import com.iclean.playlistmaker.search.domain.models.Track
 
-class TrackDbConvertor {
+class  TrackDbConvertor {
     fun map(track : Track) : TrackEntity {
         return TrackEntity(0,
             trackId = track.trackId.toInt(),

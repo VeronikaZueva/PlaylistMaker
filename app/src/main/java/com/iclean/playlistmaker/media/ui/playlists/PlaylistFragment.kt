@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.iclean.playlistmaker.R
@@ -16,22 +15,17 @@ import com.iclean.playlistmaker.databinding.PlaylistFragmentBinding
 import com.iclean.playlistmaker.media.domain.api.ClickPlaylistItem
 import com.iclean.playlistmaker.media.presentation.playlists.PlaylistFragmentViewModel
 import com.iclean.playlistmaker.playlist.ui.PlaylistItemFragment
-
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistFragment : Fragment() {
 
     companion object {
         fun newInstance() = PlaylistFragment().apply {}
-        const val DELAY = 1000L
     }
 
     private lateinit var binding : PlaylistFragmentBinding
     private val viewModel by viewModel<PlaylistFragmentViewModel>()
     private lateinit var adapter : PlaylistsAdapter
-    private var isClickAllowed = true
     private lateinit  var contentView : View
 
 
@@ -50,13 +44,12 @@ class PlaylistFragment : Fragment() {
         //Получаем плейлисты
         val playlistItemClick = object : ClickPlaylistItem {
             override fun goToPlaylist(playlist: Playlist) {
-                if(clickDebounce()) {
-                    findNavController().navigate(R.id.to_playlist_item, PlaylistItemFragment.getArguments(playlist.id))
-                }
+
+            findNavController().navigate(R.id.to_playlist_item, PlaylistItemFragment.getArguments(playlist.id, playlist.playlistList))
+
             }
         }
         adapter = PlaylistsAdapter(playlistItemClick)
-        adapter.submitList(listOf())
 
         viewModel.returnPlaylists()
 
@@ -101,16 +94,4 @@ class PlaylistFragment : Fragment() {
         viewModel.returnPlaylists()
     }
 
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            viewLifecycleOwner.lifecycleScope.launch {
-                delay(DELAY)
-                isClickAllowed = true
-            }
-
-        }
-        return current
-    }
 }

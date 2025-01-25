@@ -115,9 +115,10 @@ class CreatePlaylistActivity : AppCompatActivity() {
                 if(playlistUri!=null) {
                     lifecycleScope.launch {
                         playlistUri = viewModel.saveImage(playlistUri!!, playlistName!!)
+                    }
+                    lifecycleScope.launch {
                         viewModel.insertPlaylist(playlistName!!, playlistDescription, playlistUri.toString())
                     }
-
                 }
                 else {
                     lifecycleScope.launch {

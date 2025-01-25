@@ -2,6 +2,7 @@ package com.iclean.playlistmaker.player.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -93,7 +94,7 @@ class PlayerActivity : AppCompatActivity() {
                                 playlist.playlistName,
                                 playlist.playlistDescription,
                                 playlist.plailistImage,
-                                playlist.playlistList + track.trackId,
+                                playlist.playlistList + track.trackId + ", ",
                                 playlist.playlistCount + 1)
                         )
                         viewModel.insertTrackInPlaylist(track)
