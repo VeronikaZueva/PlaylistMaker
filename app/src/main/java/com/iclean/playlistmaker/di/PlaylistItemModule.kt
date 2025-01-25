@@ -14,7 +14,7 @@ import org.koin.dsl.module
 
 val playlistItemModule = module {
     viewModel {
-        PlaylistItemViewModel(playlistItemInteractor = get())
+        PlaylistItemViewModel(playlistItemInteractor = get(), playlistInteractor = get())
     }
     single {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")

@@ -1,6 +1,6 @@
 package com.iclean.playlistmaker.playlist.domain.impl
 
-import com.google.gson.reflect.TypeToken
+
 import com.iclean.playlistmaker.create.domain.models.Playlist
 import com.iclean.playlistmaker.playlist.domain.PlaylistItemInteractor
 import com.iclean.playlistmaker.playlist.domain.PlaylistItemRepository
@@ -16,5 +16,7 @@ class PlaylistItemInteractorImpl(private val playlistItemRepository: PlaylistIte
         return playlistItemRepository.getTracksForPlaylist(tracksList)
     }
 
-
+    override suspend fun checkTrackAllPlaylists(track: Int) {
+        playlistItemRepository.checkTrackAllPlaylist(track)
+    }
 }

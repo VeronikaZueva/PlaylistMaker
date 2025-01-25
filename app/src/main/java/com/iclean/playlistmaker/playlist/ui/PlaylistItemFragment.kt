@@ -8,9 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.create.domain.models.Playlist
@@ -19,9 +21,9 @@ import com.iclean.playlistmaker.general.PlaylistMethods
 import com.iclean.playlistmaker.player.ui.PlayerActivity
 import com.iclean.playlistmaker.playlist.presentation.LiveDataForPlaylist
 import com.iclean.playlistmaker.playlist.presentation.PlaylistItemViewModel
-import com.iclean.playlistmaker.search.domain.api.TrackClick
+import com.iclean.playlistmaker.playlist.domain.api.TrackClick
 import com.iclean.playlistmaker.search.domain.models.Track
-import com.iclean.playlistmaker.search.ui.TrackAdapter
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistItemFragment : Fragment() {
@@ -35,7 +37,18 @@ class PlaylistItemFragment : Fragment() {
     private lateinit var binding : FragmentPlaylistItemBinding
     private val viewModel by viewModel<PlaylistItemViewModel>()
     private val playlistMethods = PlaylistMethods()
-    private lateinit var adapter: TrackAdapter
+    private lateinit var adapter: PlaylistItemAdapter
+    private lateinit var confirmDialog : MaterialAlertDialogBuilder
+
+
+    lateinit var playlistName : String
+    private var playlistDescription : String? = null
+    var playlistCount : Int = 0
+    private var playlistImage : String? = null
+    var tracklistAfterRemove : String? = null
+    var trackForDelete : Int = 0
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,21 +62,19 @@ class PlaylistItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //Получаем переданные данные и устанавливаем поля
-        val playlistId = requireArguments().getInt(PLAYLIST)
+        val playlistId= requireArguments().getInt(PLAYLIST)
         val tracks = requireArguments().getString(TRACKLIST)
-        val trackList = tracks?.split(", ")?.mapNotNull { it.toIntOrNull() } ?: listOf()
-
+        val trackList = convertFormat(tracks)
 
         viewModel.getPlaylistFromId(playlistId)
         viewModel.getLiveDataPlaylist().observe(viewLifecycleOwner) {
             state -> renderPlaylist(state)
         }
 
-
         //Задаем BottomSheet и отображаем в нем треки
         val bottomSheetContainer = binding.bottomSheet
         val bottomSheetBehaivor = BottomSheetBehavior.from(bottomSheetContainer)
-        bottomSheetBehaivor.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetBehaivor.state = BottomSheetBehavior.STATE_COLLAPSED
 
         val trackClick = object : TrackClick {
             override fun getTrack(track: Track) {
@@ -71,9 +82,16 @@ class PlaylistItemFragment : Fragment() {
                 intent.putExtra("trackObject", Gson().toJson(track))
                 startActivity(intent)
             }
+            override fun removeTrack(track: Int) {
+                val mutableListTrack : MutableList<Int> = trackList.toMutableList()
+                mutableListTrack.remove(track)
+                tracklistAfterRemove = mutableListTrack.joinToString()
+                trackForDelete = track
+                confirmDialog.show()
+            }
         }
 
-        adapter = TrackAdapter(trackClick)
+        adapter = PlaylistItemAdapter(trackClick)
         adapter.submitList(listOf())
 
 
@@ -81,12 +99,23 @@ class PlaylistItemFragment : Fragment() {
         viewModel.getLiveDataTracklist().observe(viewLifecycleOwner) {
             if(it.status !=1) {
                 adapter.submitList(it.tracklist)
+                val time = playlistMethods.dateFormatTrack(it.time)
+                binding.playlistDuration.text = time
+
             } else {
                 adapter.submitList(listOf())
             }
             binding.playlists.adapter = adapter
             binding.playlists.layoutManager = LinearLayoutManager(requireContext())
         }
+
+        //Открываем наш диалог
+        confirmDialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.remove_track))
+            .setNeutralButton(getString(R.string.cancel_button)) {_, _ ->}
+            .setNegativeButton(getString(R.string.delete)) { _, _ ->
+                deleteTrack(playlistId)
+            }
 
         //Обработчики кнопок
         binding.backButton.setOnClickListener {
@@ -103,10 +132,10 @@ class PlaylistItemFragment : Fragment() {
 
 
     private fun showDataPlaylist(playlist : Playlist) {
-        val playlistName = playlist.playlistName
-        val playlistDescription = playlist.playlistDescription
-        val playlistCount = playlist.playlistCount
-        val playlistImage = playlist.plailistImage
+        playlistName = playlist.playlistName
+        playlistDescription = playlist.playlistDescription
+        playlistCount = playlist.playlistCount
+        playlistImage = playlist.plailistImage
         val placeholder = R.drawable.placeholder
 
         binding.playlistName.text = playlistName
@@ -115,6 +144,27 @@ class PlaylistItemFragment : Fragment() {
         playlistMethods.setImage(requireContext(), playlistImage, binding.poster, placeholder, 8)
     }
 
+    private fun convertFormat(tracks : String?) : List<Int> {
+        return tracks?.split(", ")?.mapNotNull { it.toIntOrNull() } ?: listOf()
+    }
 
+    private fun deleteTrack(playlistId : Int) {
+        //1. Обновить список треков у плейлиста
+        viewModel.updatePlaylist(
+            Playlist(
+                playlistId,
+                playlistName,
+                playlistDescription,
+                playlistImage,
+                tracklistAfterRemove,
+                playlistCount-1
+            ), convertFormat(tracklistAfterRemove)
+        )
+
+        //2. Проверить, есть ли данный трек хотя бы в одном плейлисте
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.checkTrackAllPlaylists(trackForDelete)
+        }
+    }
 
 }

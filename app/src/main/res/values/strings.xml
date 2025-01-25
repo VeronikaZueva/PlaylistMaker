@@ -49,4 +49,6 @@
     <string name="finish_button">Завершить</string>
     <string name="add_in_playlist">Добавить в плейлист</string>
     <string name="playlist_item">Плейлист</string>
+    <string name="remove_track">Вы уверены, что хотите удалить трек из плейлиста?</string>
+    <string name="delete">Удалить</string>
 </resources>

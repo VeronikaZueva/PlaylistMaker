@@ -4,11 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iclean.playlistmaker.create.domain.models.Playlist
+import com.iclean.playlistmaker.media.domain.playlists.PlaylistInteractor
 import com.iclean.playlistmaker.playlist.domain.PlaylistItemInteractor
 import com.iclean.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class PlaylistItemViewModel(private val playlistItemInteractor: PlaylistItemInteractor) : ViewModel() {
+class PlaylistItemViewModel(
+    private val playlistItemInteractor: PlaylistItemInteractor,
+    private val playlistInteractor: PlaylistInteractor) : ViewModel() {
 
         private val liveDataForPlaylist = MutableLiveData<LiveDataForPlaylist>()
         private val liveDataForTracklist = MutableLiveData<LivaDataForTracklist>()
@@ -38,13 +43,23 @@ class PlaylistItemViewModel(private val playlistItemInteractor: PlaylistItemInte
 
     private fun renderResult(result : List<Track>) {
         if(result.isEmpty()) {
-            liveDataForTracklist.postValue(LivaDataForTracklist(emptyList(), 1))
+            liveDataForTracklist.postValue(LivaDataForTracklist(emptyList(), 1, 0))
         } else {
-            liveDataForTracklist.postValue(LivaDataForTracklist(result, null))
+            val timeList = result.map { track -> track.trackTimeMillis.toInt() }
+            val sum = timeList.sum()
+            liveDataForTracklist.postValue(LivaDataForTracklist(result, null, sum))
         }
     }
 
-
+    fun updatePlaylist(playlist : Playlist, tracklists : List<Int>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistInteractor.updatePlaylist(playlist)
+        }
+        getTracksForPlaylist(tracklists)
+    }
+    suspend fun checkTrackAllPlaylists(track : Int) {
+        playlistItemInteractor.checkTrackAllPlaylists(track)
+    }
 
 
 

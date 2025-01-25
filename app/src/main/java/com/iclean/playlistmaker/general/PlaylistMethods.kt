@@ -5,6 +5,8 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class PlaylistMethods {
     fun setImage(
@@ -31,6 +33,18 @@ class PlaylistMethods {
                 "$countTrack треков"
             }
         }
+    }
+
+    fun dateFormatTrack(model : Int) : String {
+        val time = SimpleDateFormat(
+            "mm",
+            Locale.getDefault())
+            .format(model)
+        return if(time.toInt() % 10 == 1) {"$time минута"}
+        else if((time.toInt() % 10 == 2) or (time.toInt() % 10 == 3) or (time.toInt() % 10 == 4)){"$time минуты"}
+        else if((time.toInt() == 11) or (time.toInt() == 12) or (time.toInt() == 13) or (time.toInt() == 14)) {
+            "$time минут"
+        } else {"$time минут"}
     }
 
 }

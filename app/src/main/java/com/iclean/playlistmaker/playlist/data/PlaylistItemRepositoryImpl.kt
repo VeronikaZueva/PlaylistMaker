@@ -28,8 +28,23 @@ class PlaylistItemRepositoryImpl(
         emit(convertFromTrackPlaylistEntity(tracklists))
     }
 
+
+    override suspend fun checkTrackAllPlaylist(track: Int) {
+        val playlists = appDataBase.playlistDao().getPlaylists().map(dbConvertor::map)
+        val tracklists = playlists.map{
+            playlist -> playlist.playlistList!!.contains(track.toString())
+        }
+        if(tracklists.contains(true)) {
+            removeTrack(track)
+        }
+    }
+
     private fun convertFromTrackPlaylistEntity(tracklists: List<TrackInPlaylistEntity>): List<Track> {
         return tracklists.map {tracklist -> dbConvertor.map(tracklist)}
+    }
+
+    private suspend fun removeTrack(track: Int) {
+        appDataBase.trackInPlaylistDao().deleteTrack(track)
     }
 
 }

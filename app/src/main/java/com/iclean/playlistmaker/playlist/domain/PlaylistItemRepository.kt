@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface PlaylistItemRepository {
     fun getPlaylistFromId(id : Int) : Flow<Playlist>
     fun getTracksForPlaylist(trackIdList: List<Int>?) : Flow<List<Track>>
+    suspend fun checkTrackAllPlaylist(track : Int)
 }
