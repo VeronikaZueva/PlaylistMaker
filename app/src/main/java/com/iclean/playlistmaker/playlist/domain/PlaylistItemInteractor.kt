@@ -8,4 +8,6 @@ interface PlaylistItemInteractor {
     fun getPlaylistFromId(id : Int) : Flow<Playlist>
     fun getTracksForPlaylist(tracksList: List<Int>?) : Flow<List<Track>>
     suspend fun checkTrackAllPlaylists(track : Int)
+    fun sharePlaylist(playlistName : String, playlistDescription : String?, playlistCount : Int, trackList : List<Track>)
+    suspend fun deletePlaylist(playlistId : Int)
 }

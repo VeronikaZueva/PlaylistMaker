@@ -61,7 +61,13 @@ class PlaylistItemViewModel(
         playlistItemInteractor.checkTrackAllPlaylists(track)
     }
 
+    fun share(playlistName : String, playlistDescription : String?, playlistCount : Int, trackList : List<Track>) {
+        playlistItemInteractor.sharePlaylist(playlistName, playlistDescription, playlistCount, trackList)
+    }
 
+    fun deletePlaylist(playlistId : Int){
+        viewModelScope.launch { playlistItemInteractor.deletePlaylist(playlistId) }
+    }
 
 
 }

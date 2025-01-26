@@ -39,6 +39,10 @@ class PlaylistItemRepositoryImpl(
         }
     }
 
+    override suspend fun deletePlaylist(playlistId: Int) {
+        appDataBase.playlistDao().deletePlaylist(playlistId)
+    }
+
     private fun convertFromTrackPlaylistEntity(tracklists: List<TrackInPlaylistEntity>): List<Track> {
         return tracklists.map {tracklist -> dbConvertor.map(tracklist)}
     }

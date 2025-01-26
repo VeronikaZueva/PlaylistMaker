@@ -3,9 +3,11 @@ package com.iclean.playlistmaker.playlist.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -39,6 +41,7 @@ class PlaylistItemFragment : Fragment() {
     private val playlistMethods = PlaylistMethods()
     private lateinit var adapter: PlaylistItemAdapter
     private lateinit var confirmDialog : MaterialAlertDialogBuilder
+    private lateinit var confirmDialogMenu : MaterialAlertDialogBuilder
 
 
     lateinit var playlistName : String
@@ -47,6 +50,7 @@ class PlaylistItemFragment : Fragment() {
     private var playlistImage : String? = null
     var tracklistAfterRemove : String? = null
     var trackForDelete : Int = 0
+    private lateinit var myTrackList : List<Track>
 
 
 
@@ -84,6 +88,7 @@ class PlaylistItemFragment : Fragment() {
             }
             override fun removeTrack(track: Int) {
                 val mutableListTrack : MutableList<Int> = trackList.toMutableList()
+                Log.i("Список до удаления", "$mutableListTrack")
                 mutableListTrack.remove(track)
                 tracklistAfterRemove = mutableListTrack.joinToString()
                 trackForDelete = track
@@ -98,6 +103,7 @@ class PlaylistItemFragment : Fragment() {
         viewModel.getTracksForPlaylist(trackList)
         viewModel.getLiveDataTracklist().observe(viewLifecycleOwner) {
             if(it.status !=1) {
+                myTrackList = it.tracklist
                 adapter.submitList(it.tracklist)
                 val time = playlistMethods.dateFormatTrack(it.time)
                 binding.playlistDuration.text = time
@@ -109,7 +115,7 @@ class PlaylistItemFragment : Fragment() {
             binding.playlists.layoutManager = LinearLayoutManager(requireContext())
         }
 
-        //Открываем наш диалог
+        //Открываем наш диалог с подтверждением удаления
         confirmDialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.remove_track))
             .setNeutralButton(getString(R.string.cancel_button)) {_, _ ->}
@@ -117,9 +123,63 @@ class PlaylistItemFragment : Fragment() {
                 deleteTrack(playlistId)
             }
 
+        //Отображаем меню
+        val bottomSheetMenu = binding.bottomMenu
+        val bottomSheetBehaivorMenu = BottomSheetBehavior.from(bottomSheetMenu)
+        bottomSheetBehaivorMenu.state = BottomSheetBehavior.STATE_HIDDEN
+
+        bottomSheetBehaivorMenu.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when(newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> binding.overlay.visibility = View.GONE
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        binding.overlay.visibility = View.VISIBLE
+                    }
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                        binding.overlay.visibility = View.VISIBLE
+                    }
+                    else -> binding.overlay.visibility = View.GONE
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                binding.overlay.alpha = slideOffset
+            }
+        })
+
+        confirmDialogMenu = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.want_delete_playlist))
+            .setNeutralButton(getString(R.string.no)) {_, _ ->}
+            .setNegativeButton(getString(R.string.yes)) { _, _ ->
+                deletePlaylist(playlistId)
+            }
+
         //Обработчики кнопок
         binding.backButton.setOnClickListener {
             findNavController().popBackStack()
+        }
+        binding.shareButton.setOnClickListener {
+            if(playlistCount > 0) {
+                viewModel.share(playlistName, playlistDescription, playlistCount, myTrackList)
+            } else {
+                Toast.makeText(requireContext(), R.string.no_share, Toast.LENGTH_SHORT).show()
+            }
+        }
+        binding.menuButton.setOnClickListener {
+            bottomSheetBehaivorMenu.state = BottomSheetBehavior.STATE_EXPANDED
+        }
+        binding.shareBottomMenu.setOnClickListener {
+            if(playlistCount > 0) {
+                viewModel.share(playlistName, playlistDescription, playlistCount, myTrackList)
+            } else {
+                Toast.makeText(requireContext(), R.string.no_share, Toast.LENGTH_SHORT).show()
+            }
+        }
+        binding.deletePlaylist.setOnClickListener {
+            confirmDialogMenu.show()
+        }
+        binding.editPlaylist.setOnClickListener {
+            //Редактирование плейлиста
         }
     }
 
@@ -142,6 +202,9 @@ class PlaylistItemFragment : Fragment() {
         binding.playlistDescription.text = playlistDescription
         binding.playlistCount.text = playlistMethods.setCountTrack(playlistCount)
         playlistMethods.setImage(requireContext(), playlistImage, binding.poster, placeholder, 8)
+        binding.playlistNameBottom.text = playlistName
+        binding.countTrack.text = playlistMethods.setCountTrack(playlistCount)
+        playlistMethods.setImage(requireContext(), playlistImage, binding.posterBottom, placeholder, 8)
     }
 
     private fun convertFormat(tracks : String?) : List<Int> {
@@ -149,6 +212,7 @@ class PlaylistItemFragment : Fragment() {
     }
 
     private fun deleteTrack(playlistId : Int) {
+        Log.i("Строка в диалоге", "$tracklistAfterRemove")
         //1. Обновить список треков у плейлиста
         viewModel.updatePlaylist(
             Playlist(
@@ -165,6 +229,11 @@ class PlaylistItemFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.checkTrackAllPlaylists(trackForDelete)
         }
+    }
+
+    private fun deletePlaylist(playlistId: Int) {
+            viewModel.deletePlaylist(playlistId)
+            findNavController().popBackStack()
     }
 
 }

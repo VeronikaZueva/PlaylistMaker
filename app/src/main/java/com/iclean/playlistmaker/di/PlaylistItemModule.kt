@@ -28,6 +28,6 @@ val playlistItemModule = module {
         PlaylistItemRepositoryImpl(appDataBase = get(), dbConvertor = get())
     }
     single<PlaylistItemInteractor> {
-        PlaylistItemInteractorImpl(playlistItemRepository = get())
+        PlaylistItemInteractorImpl(playlistItemRepository = get(), get())
     }
 }
