@@ -34,7 +34,7 @@ class PlaylistItemRepositoryImpl(
         val tracklists = playlists.map{
             playlist -> playlist.playlistList!!.contains(track.toString())
         }
-        if(tracklists.contains(true)) {
+        if(tracklists.contains(false)) {
             removeTrack(track)
         }
     }

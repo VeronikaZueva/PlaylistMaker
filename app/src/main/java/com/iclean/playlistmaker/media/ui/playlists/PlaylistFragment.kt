@@ -45,7 +45,7 @@ class PlaylistFragment : Fragment() {
         val playlistItemClick = object : ClickPlaylistItem {
             override fun goToPlaylist(playlist: Playlist) {
 
-            findNavController().navigate(R.id.to_playlist_item, PlaylistItemFragment.getArguments(playlist.id, playlist.playlistList))
+            findNavController().navigate(R.id.to_playlist_item, PlaylistItemFragment.getArguments(playlist.id))
 
             }
         }

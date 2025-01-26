@@ -26,8 +26,6 @@ import com.iclean.playlistmaker.playlist.presentation.LiveDataForPlaylist
 import com.iclean.playlistmaker.playlist.presentation.PlaylistItemViewModel
 import com.iclean.playlistmaker.playlist.domain.api.TrackClick
 import com.iclean.playlistmaker.search.domain.models.Track
-import com.iclean.playlistmaker.search.ui.SearchFragment.Companion.DELAY
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -35,12 +33,9 @@ class PlaylistItemFragment : Fragment() {
 
     companion object {
         private const val PLAYLIST = "playlist"
-        private const val TRACKLIST = "tracklist"
-        private const val DELAY = 1000L
-        fun getArguments(key: Int?, list : String?) : Bundle = bundleOf(PLAYLIST to key, TRACKLIST to list)
+        fun getArguments(key: Int?) : Bundle = bundleOf(PLAYLIST to key)
     }
-
-    private var isClickAllowed = true
+    //Системные переменные
     private lateinit var binding : FragmentPlaylistItemBinding
     private val viewModel by viewModel<PlaylistItemViewModel>()
     private val playlistMethods = PlaylistMethods()
@@ -48,14 +43,18 @@ class PlaylistItemFragment : Fragment() {
     private lateinit var confirmDialog : MaterialAlertDialogBuilder
     private lateinit var confirmDialogMenu : MaterialAlertDialogBuilder
 
-
+    //Переменные данных
     lateinit var playlistName : String
     private var playlistDescription : String? = null
     var playlistCount : Int = 0
     private var playlistImage : String? = null
+    private var playlistList : String? = null
+    private lateinit var myTrackList : List<Track>
+
+    //Для удаления треков
     var tracklistAfterRemove : String? = null
     var trackForDelete : Int = 0
-    private lateinit var myTrackList : List<Track>
+
 
 
 
@@ -72,40 +71,17 @@ class PlaylistItemFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         //Получаем переданные данные и устанавливаем поля
         val playlistId= requireArguments().getInt(PLAYLIST)
-        val tracks = requireArguments().getString(TRACKLIST)
-        val trackList = convertFormat(tracks)
 
         viewModel.getPlaylistFromId(playlistId)
-        viewModel.getLiveDataPlaylist().observe(viewLifecycleOwner) {
-            state -> renderPlaylist(state)
+        viewModel.getLiveDataPlaylist().observe(viewLifecycleOwner)  {
+            state ->
+            run {
+                renderPlaylist(state)
+                viewModel.getTracksForPlaylist(getTracklist(state))
+            }
+
         }
 
-        //Задаем BottomSheet и отображаем в нем треки
-        val bottomSheetContainer = binding.bottomSheet
-        val bottomSheetBehaivor = BottomSheetBehavior.from(bottomSheetContainer)
-        bottomSheetBehaivor.state = BottomSheetBehavior.STATE_COLLAPSED
-
-        val trackClick = object : TrackClick {
-            override fun getTrack(track: Track) {
-                val intent = Intent(requireContext(), PlayerActivity::class.java)
-                intent.putExtra("trackObject", Gson().toJson(track))
-                startActivity(intent)
-            }
-            override fun removeTrack(track: Int) {
-                val mutableListTrack : MutableList<Int> = trackList.toMutableList()
-                Log.i("Список до удаления", "$mutableListTrack")
-                mutableListTrack.remove(track)
-                tracklistAfterRemove = mutableListTrack.joinToString()
-                trackForDelete = track
-                confirmDialog.show()
-            }
-        }
-
-        adapter = PlaylistItemAdapter(trackClick)
-        adapter.submitList(listOf())
-
-
-        viewModel.getTracksForPlaylist(trackList)
         viewModel.getLiveDataTracklist().observe(viewLifecycleOwner) {
             if(it.status !=1) {
                 myTrackList = it.tracklist
@@ -119,6 +95,35 @@ class PlaylistItemFragment : Fragment() {
             binding.playlists.adapter = adapter
             binding.playlists.layoutManager = LinearLayoutManager(requireContext())
         }
+
+        val trackClick = object : TrackClick {
+            override fun getTrack(track: Track) {
+                val intent = Intent(requireContext(), PlayerActivity::class.java)
+                intent.putExtra("trackObject", Gson().toJson(track))
+                startActivity(intent)
+            }
+            override fun removeTrack(track: Int) {
+                Log.i("Список листов", "$playlistList")
+                val mutableListTrack  = convertFormat(playlistList).toMutableList()
+                mutableListTrack.remove(track)
+                tracklistAfterRemove = mutableListTrack.joinToString() + ", "
+                Log.i("До записи в базу", "$tracklistAfterRemove")
+                trackForDelete = track
+                confirmDialog.show()
+            }
+        }
+
+        adapter = PlaylistItemAdapter(trackClick)
+        adapter.submitList(listOf())
+
+        //Задаем BottomSheet и отображаем в нем треки
+        val bottomSheetContainer = binding.bottomSheet
+        val bottomSheetBehaivor = BottomSheetBehavior.from(bottomSheetContainer)
+        bottomSheetBehaivor.state = BottomSheetBehavior.STATE_COLLAPSED
+
+
+
+
 
         //Открываем наш диалог с подтверждением удаления
         confirmDialog = MaterialAlertDialogBuilder(requireContext())
@@ -192,17 +197,25 @@ class PlaylistItemFragment : Fragment() {
 
     //Отображаем контент
     @SuppressLint("SetTextI18n")
-    private fun renderPlaylist(playlist : LiveDataForPlaylist)  {
+    private fun renderPlaylist(playlist : LiveDataForPlaylist)   {
         showDataPlaylist(playlist.playlist)
     }
+    private fun getTracklist(playlist: LiveDataForPlaylist) : List<Int> {
+        val string = playlist.playlist.playlistList
+        return convertFormat(string)
+    }
 
-
+    private fun convertFormat(string : String?) : List<Int> {
+        return string?.split(", ")?.mapNotNull { it.toIntOrNull() } ?: listOf()
+    }
 
     private fun showDataPlaylist(playlist : Playlist) {
         playlistName = playlist.playlistName
         playlistDescription = playlist.playlistDescription
         playlistCount = playlist.playlistCount
         playlistImage = playlist.plailistImage
+        playlistList = playlist.playlistList
+        Log.i("Список треков на время загрузки экрана", "$playlistList")
         val placeholder = R.drawable.placeholder
 
         binding.playlistName.text = playlistName
@@ -214,12 +227,8 @@ class PlaylistItemFragment : Fragment() {
         playlistMethods.setImage(requireContext(), playlistImage, binding.posterBottom, placeholder, 8)
     }
 
-    private fun convertFormat(tracks : String?) : List<Int> {
-        return tracks?.split(", ")?.mapNotNull { it.toIntOrNull() } ?: listOf()
-    }
-
     private fun deleteTrack(playlistId : Int) {
-        Log.i("Строка в диалоге", "$tracklistAfterRemove")
+        Log.i("Строка, которая запишется в базу после удаления", "$tracklistAfterRemove")
         //1. Обновить список треков у плейлиста
         viewModel.updatePlaylist(
             Playlist(
@@ -232,6 +241,7 @@ class PlaylistItemFragment : Fragment() {
             ), convertFormat(tracklistAfterRemove)
         )
 
+
         //2. Проверить, есть ли данный трек хотя бы в одном плейлисте
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.checkTrackAllPlaylists(trackForDelete)
@@ -243,17 +253,6 @@ class PlaylistItemFragment : Fragment() {
             findNavController().popBackStack()
     }
 
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            viewLifecycleOwner.lifecycleScope.launch {
-                delay(DELAY)
-                isClickAllowed = true
-            }
 
-        }
-        return current
-    }
 
 }
