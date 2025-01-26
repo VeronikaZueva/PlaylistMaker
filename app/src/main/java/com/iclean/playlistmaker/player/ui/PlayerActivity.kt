@@ -2,20 +2,20 @@ package com.iclean.playlistmaker.player.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.create.domain.models.Playlist
-import com.iclean.playlistmaker.create.ui.CreatePlaylistActivity
 import com.iclean.playlistmaker.databinding.ActivityPlayerBinding
 import com.iclean.playlistmaker.general.TrackMethods
+import com.iclean.playlistmaker.main.ui.RootActivity
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.domain.api.ClickPlaylist
@@ -188,7 +188,8 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         binding.newButton.setOnClickListener {
-            val intent = Intent(this, CreatePlaylistActivity::class.java)
+            val intent = Intent(this, RootActivity::class.java)
+            intent.putExtra("destination", "to_create_playlist")
             startActivity(intent)
             bottomSheetBehaivor.state = BottomSheetBehavior.STATE_HIDDEN
         }
@@ -250,8 +251,8 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.stopTimer()
     }
 
-private fun setImages(isFavorite : Boolean) {
-    //Проверяем, если ли трек в избранном, и выводим соответствующую кнопку
+    private fun setImages(isFavorite : Boolean) {
+        //Проверяем, если ли трек в избранном, и выводим соответствующую кнопку
         if(isFavorite) {
             binding.buttonHeart.setImageResource(R.drawable.button_red)
 
@@ -260,7 +261,7 @@ private fun setImages(isFavorite : Boolean) {
 
         }
 
-}
+    }
 
     //Задержка действий по клику
     private fun clickDebounce(): Boolean {

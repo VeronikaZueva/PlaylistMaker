@@ -7,7 +7,7 @@ import com.iclean.playlistmaker.create.domain.models.Playlist
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class CreatePlaylistViewModel(private val createPlaylistInteractor: CreatePlaylistInteractor)
+open class CreatePlaylistViewModel(private val createPlaylistInteractor: CreatePlaylistInteractor)
     : ViewModel() {
 
         //Сохранить файл в хранилище приложения
