@@ -46,7 +46,8 @@
             android:theme="@style/Theme.TextPlaylistMaker"
             />
 
-        <TextView android:text="@string/new_playlist"
+        <TextView android:id="@+id/title_screen"
+            android:text="@string/new_playlist"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="@dimen/base"

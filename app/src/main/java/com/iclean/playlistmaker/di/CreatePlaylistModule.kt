@@ -19,7 +19,7 @@ val createPlaylistModule = module {
             CreatePlaylistViewModel(createPlaylistInteractor = get())
         }
         viewModel<EditPlaylistViewModel> {
-             EditPlaylistViewModel(createPlaylistInteractor = get())
+             EditPlaylistViewModel(createPlaylistInteractor = get(), playlistItemInteractor = get(), playlistInteractor = get())
         }
         factory<CreatePlaylistInteractor> {
             CreatePlaylistInteractorImpl(createPlaylistRepository = get(), context = get())

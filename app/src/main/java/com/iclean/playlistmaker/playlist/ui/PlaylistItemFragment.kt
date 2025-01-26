@@ -18,6 +18,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.create.domain.models.Playlist
+import com.iclean.playlistmaker.create.ui.EditPlaylistFragment
 import com.iclean.playlistmaker.databinding.FragmentPlaylistItemBinding
 import com.iclean.playlistmaker.general.PlaylistMethods
 import com.iclean.playlistmaker.player.ui.PlayerActivity
@@ -25,6 +26,8 @@ import com.iclean.playlistmaker.playlist.presentation.LiveDataForPlaylist
 import com.iclean.playlistmaker.playlist.presentation.PlaylistItemViewModel
 import com.iclean.playlistmaker.playlist.domain.api.TrackClick
 import com.iclean.playlistmaker.search.domain.models.Track
+import com.iclean.playlistmaker.search.ui.SearchFragment.Companion.DELAY
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -33,9 +36,11 @@ class PlaylistItemFragment : Fragment() {
     companion object {
         private const val PLAYLIST = "playlist"
         private const val TRACKLIST = "tracklist"
+        private const val DELAY = 1000L
         fun getArguments(key: Int?, list : String?) : Bundle = bundleOf(PLAYLIST to key, TRACKLIST to list)
     }
 
+    private var isClickAllowed = true
     private lateinit var binding : FragmentPlaylistItemBinding
     private val viewModel by viewModel<PlaylistItemViewModel>()
     private val playlistMethods = PlaylistMethods()
@@ -179,7 +184,9 @@ class PlaylistItemFragment : Fragment() {
             confirmDialogMenu.show()
         }
         binding.editPlaylist.setOnClickListener {
-            //Редактирование плейлиста
+
+   findNavController().navigate(R.id.to_edit_playlist, EditPlaylistFragment.getArgs(playlistId))
+
         }
     }
 
@@ -234,6 +241,19 @@ class PlaylistItemFragment : Fragment() {
     private fun deletePlaylist(playlistId: Int) {
             viewModel.deletePlaylist(playlistId)
             findNavController().popBackStack()
+    }
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(DELAY)
+                isClickAllowed = true
+            }
+
+        }
+        return current
     }
 
 }

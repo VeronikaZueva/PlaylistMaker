@@ -26,14 +26,14 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 open class CreatePlaylistFragment : Fragment() {
 
-    private lateinit var binding: FragmentCreatePlaylistBinding
+    open lateinit var binding: FragmentCreatePlaylistBinding
     open val viewModel by viewModel<CreatePlaylistViewModel>()
-    private lateinit var confirmDialog : MaterialAlertDialogBuilder
+    open lateinit var confirmDialog : MaterialAlertDialogBuilder
 
     //Выставляем изначальные поля пустыми
-    private var playlistName : String? = null
-    private var playlistDescription : String? = null
-    private var playlistUri : Uri? = null
+    open var playlistName : String? = null
+    open var playlistDescription : String? = null
+    open var playlistUri : Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,

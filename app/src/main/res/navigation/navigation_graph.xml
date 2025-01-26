@@ -27,12 +27,16 @@
         android:id="@+id/playlist_item"
         android:name="com.iclean.playlistmaker.playlist.ui.PlaylistItemFragment"
         android:label="PlaylistItemFragment">
-        <action android:id="@+id/to_create_playlist"
-            app:destination="@id/createPlaylist"/>
+        <action android:id="@+id/to_edit_playlist"
+            app:destination="@id/editPlaylist"/>
     </fragment>
    <fragment android:id="@+id/createPlaylist"
         android:name="com.iclean.playlistmaker.create.ui.CreatePlaylistFragment"
         android:label="CreatePlaylist">
+    </fragment>
+    <fragment android:id="@+id/editPlaylist"
+        android:name="com.iclean.playlistmaker.create.ui.EditPlaylistFragment"
+        android:label="EditPlaylist">
     </fragment>
     <activity android:id="@+id/mediaPlayer"
         android:name="com.iclean.playlistmaker.player.ui.PlayerActivity"
