@@ -89,10 +89,10 @@ class PlaylistItemFragment : Fragment() {
                 myTrackList = it.tracklist
                 adapter.submitList(it.tracklist)
                 val time = playlistMethods.dateFormatTrack(it.time)
-                binding.playlistDuration.text = time
-
+                    binding.playlistDuration.text = time
             } else {
                 adapter.submitList(listOf())
+                binding.playlistDuration.text = getString(R.string.null_time_duration)
             }
             binding.playlists.adapter = adapter
             binding.playlists.layoutManager = LinearLayoutManager(requireContext())
@@ -126,7 +126,7 @@ class PlaylistItemFragment : Fragment() {
 
 
         //Открываем наш диалог с подтверждением удаления
-        confirmDialog = MaterialAlertDialogBuilder(requireContext())
+        confirmDialog = MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialog)
             .setTitle(getString(R.string.remove_track))
             .setNeutralButton(getString(R.string.cancel_button)) {_, _ ->}
             .setNegativeButton(getString(R.string.delete)) { _, _ ->
@@ -141,14 +141,22 @@ class PlaylistItemFragment : Fragment() {
         bottomSheetBehaivorMenu.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when(newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> binding.overlay.visibility = View.GONE
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.overlay.visibility = View.GONE
+                        binding.bottomSheet.visibility = View.VISIBLE
+                    }
                     BottomSheetBehavior.STATE_EXPANDED -> {
                         binding.overlay.visibility = View.VISIBLE
+                        binding.bottomSheet.visibility = View.GONE
                     }
                     BottomSheetBehavior.STATE_COLLAPSED -> {
                         binding.overlay.visibility = View.VISIBLE
+                        binding.bottomSheet.visibility = View.GONE
                     }
-                    else -> binding.overlay.visibility = View.GONE
+                    else -> {
+                        binding.overlay.visibility = View.GONE
+                        binding.bottomSheet.visibility = View.VISIBLE
+                    }
                 }
             }
 
@@ -157,7 +165,7 @@ class PlaylistItemFragment : Fragment() {
             }
         })
 
-        confirmDialogMenu = MaterialAlertDialogBuilder(requireContext())
+        confirmDialogMenu = MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialog)
             .setTitle(getString(R.string.want_delete_playlist))
             .setNeutralButton(getString(R.string.no)) {_, _ ->}
             .setNegativeButton(getString(R.string.yes)) { _, _ ->

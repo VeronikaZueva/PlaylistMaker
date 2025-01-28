@@ -35,10 +35,12 @@ class RootActivity : AppCompatActivity() {
         //Скрыввем панель навигации для экранов Плейлист и Редактирование плейлиста
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when(destination.id) {
-                R.id.playlist_item, R.id.create_playlist -> {
+                R.id.playlist_item, R.id.createPlaylist, R.id.editPlaylist -> {
                     binding.bottomNavigationView.visibility = View.GONE
+                    binding.divider.visibility = View.GONE
                 } else -> {
                     binding.bottomNavigationView.visibility = View.VISIBLE
+                    binding.divider.visibility = View.VISIBLE
                 }
             }
         }

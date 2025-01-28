@@ -107,7 +107,7 @@
             android:backgroundTint="@android:color/transparent"
             android:contentDescription="@string/share_text"
             android:src="@drawable/share"
-            app:layout_constraintStart_toStartOf="@+id/left_border"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/playlist_duration"
             app:tint="@color/dark"
             tools:ignore="TouchTargetSizeCheck,DuplicateSpeakableTextCheck,ImageContrastCheck" />
@@ -149,7 +149,8 @@
             android:id="@+id/playlists"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/min_padding" />
+            android:padding="@dimen/base"
+            android:paddingEnd="@dimen/portion"/>
 
     </LinearLayout>
 

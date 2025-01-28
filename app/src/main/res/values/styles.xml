@@ -139,4 +139,21 @@
         <item name="android:textSize">@dimen/status_text</item>
         <item name="android:ellipsize">end</item>
     </style>
+    <style name="AlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/blue</item>
+        <item name="android:background">@color/accent</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialogText</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialDialogTextBody</item>
+    </style>
+    <style name="MaterialAlertDialogText" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/dark</item>
+        <item name="android:layout_weight">500</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+    </style>
+    <style name="MaterialDialogTextBody" parent="@style/MaterialAlertDialog.Material3.Body.Text">
+        <item name="android:textColor">@color/dark</item>
+        <item name="android:layout_weight">400</item>
+        <item name="android:textSize">@dimen/setting_text</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+    </style>
 </resources>

@@ -167,7 +167,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="@dimen/twelve_padding"
-        android:layout_marginVertical="@dimen/base"
+        android:layout_marginTop="@dimen/base"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 </LinearLayout>

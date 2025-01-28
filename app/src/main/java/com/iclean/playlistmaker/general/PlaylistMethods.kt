@@ -40,7 +40,10 @@ class PlaylistMethods {
             "mm",
             Locale.getDefault())
             .format(model)
-        return if(time.toInt() % 10 == 1) {"$time минута"}
+        return if(time.toInt() == 1) {"${time.substring(1)} минута"}
+        else if((time.toInt() == 2) or (time.toInt() == 3) or (time.toInt() == 4)) {"${time.substring(1)} минуты"}
+        else if((time.toInt() == 5) or (time.toInt() == 6) or (time.toInt() == 7) or (time.toInt() == 8) or (time.toInt() == 9)) {"${time.substring(1)} минут"}
+        else if(time.toInt() % 10 == 1) {"$time минута"}
         else if((time.toInt() % 10 == 2) or (time.toInt() % 10 == 3) or (time.toInt() % 10 == 4)){"$time минуты"}
         else if((time.toInt() == 11) or (time.toInt() == 12) or (time.toInt() == 13) or (time.toInt() == 14)) {
             "$time минут"

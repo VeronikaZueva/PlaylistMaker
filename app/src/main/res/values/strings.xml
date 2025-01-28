@@ -59,4 +59,5 @@
     <string name="no">Нет</string>
     <string name="edit_title">Редактировать информацию</string>
     <string name="save_button">Сохранить</string>
+    <string name="null_time_duration">0 минут</string>
 </resources>

@@ -15,29 +15,33 @@
     android:name="androidx.navigation.fragment.NavHostFragment"
     app:navGraph="@navigation/navigation_graph"
     app:defaultNavHost="true"
-    app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+    app:layout_constraintBottom_toTopOf="@+id/divider"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"/>
 
-<com.google.android.material.divider.MaterialDivider
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/one"
-    app:dividerColor="@color/border"
-    app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
-    app:layout_constraintTop_toBottomOf="@+id/rootFragmentContainerView"/>
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/one"
+        android:layout_marginTop="@dimen/zero"
+        app:dividerColor="@color/border"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintTop_toBottomOf="@+id/rootFragmentContainerView"/>
 
-<com.google.android.material.bottomnavigation.BottomNavigationView
-    android:id="@+id/bottomNavigationView"
-    android:layout_width="@dimen/zero"
-    android:layout_height="wrap_content"
-    android:background="@color/new_color"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:menu="@menu/navigation_items"
-    app:itemTextColor="@drawable/selector"
-    app:itemIconTint="@drawable/selector"
-    />
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="@dimen/zero"
+        android:layout_height="@dimen/header_stroke"
+        android:background="@color/new_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/navigation_items"
+        app:itemTextColor="@drawable/selector"
+        app:itemIconTint="@drawable/selector"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

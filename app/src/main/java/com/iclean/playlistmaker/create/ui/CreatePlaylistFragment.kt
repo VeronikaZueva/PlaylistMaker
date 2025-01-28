@@ -50,7 +50,7 @@ open class CreatePlaylistFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //Открываем наш диалог
-        confirmDialog = MaterialAlertDialogBuilder(requireContext())
+        confirmDialog = MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialog)
             .setTitle(getString(R.string.end_create_playlist))
             .setMessage(getString(R.string.message_dialog))
             .setNeutralButton(getString(R.string.cancel_button)) {_, _ ->}
