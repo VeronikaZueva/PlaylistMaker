@@ -72,7 +72,7 @@ class PlayerActivity : AppCompatActivity() {
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                binding.overlay.alpha = slideOffset
+
             }
         })
 
