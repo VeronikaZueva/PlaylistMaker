@@ -34,7 +34,8 @@ class PlaylistItemViewModel(
 
     fun getTracksForPlaylist(trackList: List<Int>?)  {
             viewModelScope.launch {
-                playlistItemInteractor.getTracksForPlaylist(trackList)
+                val newlist = trackList?.reversed()
+                playlistItemInteractor.getTracksForPlaylist(newlist)
                     .collect {
                         results -> renderResult(results)
                     }

@@ -183,6 +183,7 @@ class PlaylistItemFragment : Fragment() {
                 if (playlistCount > 0) {
                     viewModel.share(playlistName, playlistDescription, playlistCount, myTrackList)
                 } else {
+                    bottomSheetBehaivorMenu.state = BottomSheetBehavior.STATE_HIDDEN
                     Toast.makeText(requireContext(), R.string.no_share, Toast.LENGTH_SHORT).show()
                 }
             }
