@@ -18,8 +18,8 @@ class PlaylistItemInteractorImpl(private val playlistItemRepository: PlaylistIte
         return playlistItemRepository.getTracksForPlaylist(tracksList)
     }
 
-    override suspend fun checkTrackAllPlaylists(track: Int) {
-        playlistItemRepository.checkTrackAllPlaylist(track)
+    override suspend fun checkTrackAllPlaylists(track: Int, playlistId : Int) {
+        playlistItemRepository.checkTrackAllPlaylist(track, playlistId)
     }
 
     override fun sharePlaylist(playlistName : String, playlistDescription : String?, playlistCount : Int, trackList : List<Track>) {

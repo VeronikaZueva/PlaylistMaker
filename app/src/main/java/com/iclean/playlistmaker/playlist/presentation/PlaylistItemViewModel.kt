@@ -58,8 +58,8 @@ class PlaylistItemViewModel(
         }
         getTracksForPlaylist(tracklists)
     }
-    suspend fun checkTrackAllPlaylists(track : Int) {
-        playlistItemInteractor.checkTrackAllPlaylists(track)
+    suspend fun checkTrackAllPlaylists(track : Int, playlistId : Int) {
+        playlistItemInteractor.checkTrackAllPlaylists(track, playlistId)
     }
 
     fun share(playlistName : String, playlistDescription : String?, playlistCount : Int, trackList : List<Track>) {

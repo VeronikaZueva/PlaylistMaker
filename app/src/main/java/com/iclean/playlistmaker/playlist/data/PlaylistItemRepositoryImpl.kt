@@ -30,12 +30,11 @@ class PlaylistItemRepositoryImpl(
     }
 
 
-    override suspend fun checkTrackAllPlaylist(track: Int) {
+    override suspend fun checkTrackAllPlaylist(track: Int, playlistId : Int) {
         val playlists = appDataBase.playlistDao().getPlaylists().map(dbConvertor::map)
-        val tracklists = playlists.map{
-            playlist -> playlist.playlistList!!.contains(track.toString())
-        }
-        if(tracklists.contains(false)) {
+        val newPlaylist = playlists.filter{it.id != playlistId}
+        val trackList = newPlaylist.filter{playlist -> playlist.playlistList!!.contains(track.toString())}
+        if(trackList.isEmpty()) {
             removeTrack(track)
         }
     }
