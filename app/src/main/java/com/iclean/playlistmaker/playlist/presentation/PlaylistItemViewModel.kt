@@ -35,7 +35,7 @@ class PlaylistItemViewModel(
     fun getTracksForPlaylist(trackList: String)  {
             viewModelScope.launch {
                 val results = playlistItemInteractor.getTracksForPlaylist(trackList)
-                renderResult(results.reversed())
+                renderResult(results)
                 }
         }
 

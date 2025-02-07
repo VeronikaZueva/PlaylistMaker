@@ -5,8 +5,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.iclean.playlistmaker.create.domain.CreatePlaylistInteractor
 import com.iclean.playlistmaker.create.domain.models.Playlist
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 open class CreatePlaylistViewModel(private val createPlaylistInteractor: CreatePlaylistInteractor)
     : ViewModel() {
