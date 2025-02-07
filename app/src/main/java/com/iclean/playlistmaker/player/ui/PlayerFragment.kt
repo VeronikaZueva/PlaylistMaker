@@ -1,20 +1,23 @@
 package com.iclean.playlistmaker.player.ui
 
-import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.gson.Gson
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.create.domain.models.Playlist
-import com.iclean.playlistmaker.databinding.ActivityPlayerBinding
+import com.iclean.playlistmaker.databinding.FragmentPlayerBinding
 import com.iclean.playlistmaker.general.TrackMethods
-import com.iclean.playlistmaker.main.ui.RootActivity
+import com.iclean.playlistmaker.main.ui.StorageTrack
 import com.iclean.playlistmaker.player.domain.OnCompletionListener
 import com.iclean.playlistmaker.player.domain.OnPreparedListener
 import com.iclean.playlistmaker.player.domain.api.ClickPlaylist
@@ -27,15 +30,16 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerFragment : Fragment() {
 
     //Создаем ViewModel, Adapter и Binding
     private val viewModel by viewModel<PlayerViewModel>()
-    private lateinit var binding : ActivityPlayerBinding
+    private lateinit var binding : FragmentPlayerBinding
     private lateinit var adapter: PlaylistForPlayerAdapter
 
     //Задаем переменную трека и состояния избранного
     private lateinit var track : Track
+    private var currentTrack : String = ""
 
     //Подключаем нужные обработчики к Activity
     private val trackMethods = TrackMethods()
@@ -44,15 +48,42 @@ class PlayerActivity : AppCompatActivity() {
     private var timeFormat : String? = ""
     private var isClickAllowed = true
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentPlayerBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        binding = ActivityPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         //Определяем "нулевое время"
         val nullTime = resources.getString(R.string.null_time)
+        //Получаем текущий трек из Activity
+        currentTrack = (requireActivity() as StorageTrack).getCurrentTrack()
+        val gson = Gson().fromJson(currentTrack, Track::class.java)
+
+        //Прописываем методы подготовки плеера
+        viewModel.preparePlayer(gson.previewUrl)
+
+        viewModel.setOnPreparedListener(object : OnPreparedListener {
+            override fun onPrepared() {
+                binding.buttonPlay.isEnabled = true
+            }
+        })
+
+        viewModel.setOnCompletionListener(object : OnCompletionListener {
+            override fun onCompletion() {
+                viewModel.setPreparedState()
+                setImagePlay()
+                stopTimer()
+                binding.timer.text = nullTime
+            }
+        })
+
+
 
         //Задаем BottomSheet
         val bottomSheetContainer = binding.bottomSheet
@@ -82,7 +113,7 @@ class PlayerActivity : AppCompatActivity() {
                 if(clickDebounce()) {
                     if(playlist.playlistList?.contains(track.trackId)!!) {
                         Toast.makeText(
-                            this@PlayerActivity,
+                            requireContext(),
                             "Трек уже добавлен в плейлист ${playlist.playlistName}",
                             Toast.LENGTH_LONG
                         ).show()
@@ -96,10 +127,11 @@ class PlayerActivity : AppCompatActivity() {
                                 playlist.playlistList + track.trackId + ", ",
                                 playlist.playlistCount + 1)
                         )
+
                         viewModel.insertTrackInPlaylist(track)
                         bottomSheetBehaivor.state = BottomSheetBehavior.STATE_HIDDEN
                         Toast.makeText(
-                            this@PlayerActivity,
+                            requireContext(),
                             "Добавлено в плейлист ${playlist.playlistName}",
                             Toast.LENGTH_LONG
                         ).show()
@@ -119,17 +151,17 @@ class PlayerActivity : AppCompatActivity() {
                 adapter.submitList(listOf())
             }
             binding.playlists.adapter = adapter
-            binding.playlists.layoutManager = LinearLayoutManager(this)
+            binding.playlists.layoutManager = LinearLayoutManager(requireContext())
         }
 
         //Возвращаемся домой
         binding.backButton.setOnClickListener {
-            finish()
+            findNavController().popBackStack()
         }
 
 
         //Работаем с наблюдателями - УСТАНАВЛИВАЕМ ДАННЫЕ В ПЛЕЕР
-        viewModel.getTrack(intent).observe(this) {
+        viewModel.getTrack(currentTrack).observe(viewLifecycleOwner) {
             //Достаем основные переменные - подготавливаем время в нужном формате
             val timeNoFormat = it.time.toString()
             timeFormat = trackMethods.dateFormatTrack(timeNoFormat)
@@ -149,27 +181,8 @@ class PlayerActivity : AppCompatActivity() {
             //Выводим альбом, только если информация передана
             showCollection(track.collectionName)
             //Определяем добавлерн ли трек в избранное
-
-
         }
 
-        //Прописываем методы подготовки плеера
-        viewModel.preparePlayer()
-
-        viewModel.setOnPreparedListener(object: OnPreparedListener {
-            override fun onPrepared() {
-                binding.buttonPlay.isEnabled = true
-            }
-        })
-
-        viewModel.setOnCompletionListener(object : OnCompletionListener {
-            override fun onCompletion() {
-                viewModel.setPreparedState()
-                setImagePlay()
-                stopTimer()
-                binding.timer.text = nullTime
-            }
-        })
 
 
 
@@ -187,9 +200,7 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         binding.newButton.setOnClickListener {
-            val intent = Intent(this, RootActivity::class.java)
-            intent.putExtra("destination", "to_create_playlist")
-            startActivity(intent)
+            findNavController().navigate(R.id.to_create_playlist)
             bottomSheetBehaivor.state = BottomSheetBehavior.STATE_HIDDEN
         }
     }
@@ -222,7 +233,7 @@ class PlayerActivity : AppCompatActivity() {
     //Устанавливаем обложку
     private fun setPoster(url : String){
         trackMethods.setImage(
-            applicationContext,
+            requireActivity().applicationContext,
             url.replaceAfterLast('/', "512x512bb.jpg"),
             binding.poster,
             R.drawable.album,
@@ -279,8 +290,8 @@ class PlayerActivity : AppCompatActivity() {
 
 
     //Переопределяем системные методы
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         viewModel.release()
         stopTimer()
     }

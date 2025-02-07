@@ -1,8 +1,7 @@
 package com.iclean.playlistmaker.search.ui
 
-import android.content.Intent
-import android.os.Bundle
 
+import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -12,17 +11,16 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ProgressBar
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
+import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.databinding.FragmentSearchBinding
-import com.iclean.playlistmaker.player.ui.PlayerActivity
+import com.iclean.playlistmaker.main.ui.StorageTrack
 import com.iclean.playlistmaker.search.domain.api.TrackClick
 import com.iclean.playlistmaker.search.domain.models.Track
 import com.iclean.playlistmaker.search.presentation.SearchViewModel
 import com.iclean.playlistmaker.search.ui.models.Status
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -34,7 +32,6 @@ class SearchFragment : Fragment() {
         const val DELAY = 2000L
     }
 
-    private var isClickAllowed = true
     private var searchText: String = SEARCH_DEF
     private lateinit var progressBar: ProgressBar
 
@@ -63,17 +60,13 @@ class SearchFragment : Fragment() {
         val trackClick = object : TrackClick {
             override fun getTrack(track: Track) {
                 checkStatus.showStatus(Status.NONE)
-                if (clickDebounce()) {
 
                     //Сохраняем трек в историю и проверяем, есть ли он в избранном
                     viewModel.save(track)
-
-                    //Сохранили трек и переходим к нему через Intent
-                    val intent = Intent(requireContext(), PlayerActivity::class.java)
-                    intent.putExtra("trackObject", Gson().toJson(track))
-                    startActivity(intent)
+                    (requireActivity() as StorageTrack).setCurrentTrack(Gson().toJson(track))
+                    findNavController().navigate(R.id.to_mediaPlayer)
                 }
-            }
+
         }
 
 
@@ -209,18 +202,6 @@ class SearchFragment : Fragment() {
 
 
     //Задержки действий
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            viewLifecycleOwner.lifecycleScope.launch {
-                delay(DELAY)
-                isClickAllowed = true
-            }
-
-        }
-        return current
-    }
 
     private fun searchDebounce() {
         checkStatus.showStatus(Status.NONE)

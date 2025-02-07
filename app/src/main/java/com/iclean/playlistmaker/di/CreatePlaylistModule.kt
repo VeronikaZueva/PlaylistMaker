@@ -22,10 +22,10 @@ val createPlaylistModule = module {
              EditPlaylistViewModel(createPlaylistInteractor = get(), playlistItemInteractor = get(), playlistInteractor = get())
         }
         factory<CreatePlaylistInteractor> {
-            CreatePlaylistInteractorImpl(createPlaylistRepository = get(), context = get())
+            CreatePlaylistInteractorImpl(createPlaylistRepository = get())
         }
         single<CreatePlaylistRepository> {
-            CreatePlaylistRepositoryImpl(appDataBase = get(), dbConvertor = get())
+            CreatePlaylistRepositoryImpl(appDataBase = get(), dbConvertor = get(), context = androidContext())
         }
         single {
             Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")

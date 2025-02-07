@@ -7,24 +7,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.iclean.playlistmaker.R
-import com.iclean.playlistmaker.create.ui.CreatePlaylistFragment
 import com.iclean.playlistmaker.databinding.ActivityRootBinding
 
-class RootActivity : AppCompatActivity() {
+class RootActivity : AppCompatActivity(), StorageTrack {
     private lateinit var binding : ActivityRootBinding
+    private var trackBundle : String = ""
+    override fun getCurrentTrack() : String {
+        return trackBundle
+    }
+    override fun setCurrentTrack(track : String) {
+        trackBundle = track
+    }
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRootBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val intent = intent
-        val destination = intent.getStringExtra("destination")
-        if(destination == "to_create_playlist") {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.rootFragmentContainerView, CreatePlaylistFragment())
-                .commit()
-        }
-
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.rootFragmentContainerView) as NavHostFragment
 
@@ -37,10 +34,10 @@ class RootActivity : AppCompatActivity() {
             when(destination.id) {
                 R.id.playlist_item, R.id.createPlaylist, R.id.editPlaylist -> {
                     binding.bottomNavigationView.visibility = View.GONE
-                    binding.divider.visibility = View.GONE
+                    //binding.divider.visibility = View.GONE
                 } else -> {
                     binding.bottomNavigationView.visibility = View.VISIBLE
-                    binding.divider.visibility = View.VISIBLE
+                    //binding.divider.visibility = View.VISIBLE
                 }
             }
         }

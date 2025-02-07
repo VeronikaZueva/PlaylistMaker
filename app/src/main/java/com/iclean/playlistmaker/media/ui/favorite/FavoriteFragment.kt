@@ -1,23 +1,21 @@
 package com.iclean.playlistmaker.media.ui.favorite
 
-import android.content.Intent
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
+import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.databinding.FavoriteFragmentBinding
+import com.iclean.playlistmaker.main.ui.StorageTrack
 import com.iclean.playlistmaker.media.presentation.favorite.FavoriteFragmentViewModel
-import com.iclean.playlistmaker.player.ui.PlayerActivity
 import com.iclean.playlistmaker.search.domain.api.TrackClick
 import com.iclean.playlistmaker.search.domain.models.Track
-import com.iclean.playlistmaker.search.ui.SearchFragment.Companion.DELAY
 import com.iclean.playlistmaker.search.ui.TrackAdapter
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FavoriteFragment : Fragment() {
@@ -28,7 +26,6 @@ class FavoriteFragment : Fragment() {
     private val viewModel by viewModel<FavoriteFragmentViewModel>()
 
     //Необходимые переменные для списка треков
-    private var isClickAllowed = true
     private lateinit var trackAdapter: TrackAdapter
 
     //Методы жизненного цикла Fragment
@@ -43,14 +40,10 @@ class FavoriteFragment : Fragment() {
         //Объект списка
         val trackClick = object : TrackClick {
             override fun getTrack(track: Track) {
-
-                if (clickDebounce()) {
                     //Переходим к нему через Intent
-                    val intent = Intent(requireContext(), PlayerActivity::class.java)
-                    intent.putExtra("trackObject", Gson().toJson(track))
-                    startActivity(intent)
+                    (requireActivity() as StorageTrack).setCurrentTrack(Gson().toJson(track))
+                    findNavController().navigate(R.id.to_mediaPlayer)
                 }
-            }
         }
 
         //Задаем сам список
@@ -82,18 +75,6 @@ class FavoriteFragment : Fragment() {
     }
 
 //Функции внутри фрагмента
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            viewLifecycleOwner.lifecycleScope.launch {
-                delay(DELAY)
-                isClickAllowed = true
-            }
-
-        }
-        return current
-    }
 
     private fun renderScreen(isEmpty : Boolean) {
         if(isEmpty) {

@@ -1,9 +1,7 @@
 package com.iclean.playlistmaker.playlist.ui
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +19,7 @@ import com.iclean.playlistmaker.create.domain.models.Playlist
 import com.iclean.playlistmaker.create.ui.EditPlaylistFragment
 import com.iclean.playlistmaker.databinding.FragmentPlaylistItemBinding
 import com.iclean.playlistmaker.general.PlaylistMethods
-import com.iclean.playlistmaker.player.ui.PlayerActivity
+import com.iclean.playlistmaker.main.ui.StorageTrack
 import com.iclean.playlistmaker.playlist.presentation.LiveDataForPlaylist
 import com.iclean.playlistmaker.playlist.presentation.PlaylistItemViewModel
 import com.iclean.playlistmaker.playlist.domain.api.TrackClick
@@ -80,7 +78,8 @@ class PlaylistItemFragment : Fragment() {
             state ->
             run {
                 renderPlaylist(state)
-                viewModel.getTracksForPlaylist(getTracklist(state))
+                    //Получаем треки для отображения
+                viewModel.getTracksForPlaylist(playlistList!!)
             }
 
         }
@@ -88,12 +87,14 @@ class PlaylistItemFragment : Fragment() {
         viewModel.getLiveDataTracklist().observe(viewLifecycleOwner) {
             if(it.status !=1) {
                 myTrackList = it.tracklist
-                adapter.submitList(it.tracklist)
+                adapter.submitList(myTrackList)
                 val time = playlistMethods.dateFormatTrack(it.time)
                     binding.playlistDuration.text = time
+                    binding.emptyTracks.visibility = View.GONE
             } else {
                 adapter.submitList(listOf())
                 binding.playlistDuration.text = getString(R.string.null_time_duration)
+                binding.emptyTracks.visibility = View.VISIBLE
             }
             binding.playlists.adapter = adapter
             binding.playlists.layoutManager = LinearLayoutManager(requireContext())
@@ -101,9 +102,8 @@ class PlaylistItemFragment : Fragment() {
 
         val trackClick = object : TrackClick {
             override fun getTrack(track: Track) {
-                val intent = Intent(requireContext(), PlayerActivity::class.java)
-                intent.putExtra("trackObject", Gson().toJson(track))
-                startActivity(intent)
+                (requireActivity() as StorageTrack).setCurrentTrack(Gson().toJson(track))
+                findNavController().navigate(R.id.to_mediaPlayer)
             }
             override fun removeTrack(track: Int) {
                 val mutableListTrack  = convertFormat(playlistList).toMutableList()
@@ -190,6 +190,7 @@ class PlaylistItemFragment : Fragment() {
         binding.shareBottomMenu.setOnClickListener {
             if(clickDebounce()) {
                 if (playlistCount > 0) {
+                    bottomSheetBehaivorMenu.state = BottomSheetBehavior.STATE_HIDDEN
                     viewModel.share(playlistName, playlistDescription, playlistCount, myTrackList)
                 } else {
                     bottomSheetBehaivorMenu.state = BottomSheetBehavior.STATE_HIDDEN
@@ -198,9 +199,9 @@ class PlaylistItemFragment : Fragment() {
             }
         }
         binding.deletePlaylist.setOnClickListener {
-            if(clickDebounce()) {
+
                 confirmDialogMenu.show()
-            }
+
         }
         binding.editPlaylist.setOnClickListener {
             if(clickDebounce()) {
@@ -217,10 +218,7 @@ class PlaylistItemFragment : Fragment() {
     private fun renderPlaylist(playlist : LiveDataForPlaylist)   {
         showDataPlaylist(playlist.playlist)
     }
-    private fun getTracklist(playlist: LiveDataForPlaylist) : List<Int> {
-        val string = playlist.playlist.playlistList
-        return convertFormat(string)
-    }
+
 
     private fun convertFormat(string : String?) : List<Int> {
         return string?.split(", ")?.mapNotNull { it.toIntOrNull() } ?: listOf()
@@ -253,7 +251,7 @@ class PlaylistItemFragment : Fragment() {
                 playlistImage,
                 tracklistAfterRemove,
                 playlistCount-1
-            ), convertFormat(tracklistAfterRemove)
+            ), tracklistAfterRemove!!
         )
 
 

@@ -3,11 +3,12 @@ package com.iclean.playlistmaker.create.ui
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.doOnTextChanged
@@ -104,15 +105,16 @@ open class CreatePlaylistFragment : Fragment() {
                 findNavController().popBackStack()
             }
         }
-        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if((playlistUri != null) or (playlistName?.isNotEmpty() == true) or (playlistDescription?.isNotEmpty() == true )) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+
+                if ((playlistUri != null) or (playlistName?.isNotEmpty() == true) or (playlistDescription?.isNotEmpty() == true)) {
                     confirmDialog.show()
                 } else {
                     findNavController().popBackStack()
                 }
-            }
-        })
+
+        }
+
 
 
         //Кнопка "Создать" неактивна
@@ -122,9 +124,11 @@ open class CreatePlaylistFragment : Fragment() {
                 if(playlistUri!=null) {
                     lifecycleScope.launch {
                         playlistUri = viewModel.saveImage(playlistUri!!, playlistName!!)
+                        Log.i("URI - Fragment", playlistUri.toString())
                     }
                     lifecycleScope.launch {
                         viewModel.insertPlaylist(playlistName!!, playlistDescription, playlistUri.toString())
+                        Log.i("URI при сохранении в базу данных", playlistUri.toString())
                     }
                 }
                 else {

@@ -6,6 +6,7 @@
     android:paddingTop="@dimen/zero"
     android:paddingLeft="@dimen/zero"
     android:paddingRight="@dimen/zero"
+    android:paddingBottom="@dimen/zero"
     android:layout_height="match_parent"
     tools:context=".search.ui.SearchFragment"
     tools:ignore="Overdraw">

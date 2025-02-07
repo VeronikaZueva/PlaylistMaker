@@ -32,27 +32,27 @@ class PlaylistItemViewModel(
         }
 
 
-    fun getTracksForPlaylist(trackList: List<Int>?)  {
+    fun getTracksForPlaylist(trackList: String)  {
             viewModelScope.launch {
-                val newlist = trackList?.reversed()
-                playlistItemInteractor.getTracksForPlaylist(newlist)
-                    .collect {
-                        results -> renderResult(results)
-                    }
-            }
+                val results = playlistItemInteractor.getTracksForPlaylist(trackList)
+                renderResult(results.reversed())
+                }
         }
 
     private fun renderResult(result : List<Track>) {
         if(result.isEmpty()) {
             liveDataForTracklist.postValue(LivaDataForTracklist(emptyList(), 1, 0))
         } else {
-            val timeList = result.map { track -> track.trackTimeMillis.toInt() }
+            val timeList = result.map { track ->
+                track.trackTimeMillis.toInt()
+            }
             val sum = timeList.sum()
-            liveDataForTracklist.postValue(LivaDataForTracklist(result, null, sum))
+
+            liveDataForTracklist.postValue(LivaDataForTracklist(result.reversed(), null, sum))
         }
     }
 
-    fun updatePlaylist(playlist : Playlist, tracklists : List<Int>) {
+    fun updatePlaylist(playlist : Playlist, tracklists : String) {
         viewModelScope.launch(Dispatchers.IO) {
             playlistInteractor.updatePlaylist(playlist)
         }
