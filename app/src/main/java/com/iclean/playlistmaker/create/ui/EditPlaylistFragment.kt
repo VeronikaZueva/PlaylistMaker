@@ -3,7 +3,6 @@ package com.iclean.playlistmaker.create.ui
 
 import android.os.Bundle
 import android.view.View
-import androidx.activity.OnBackPressedCallback
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
@@ -56,11 +55,7 @@ class EditPlaylistFragment : CreatePlaylistFragment()  {
         binding.backButton.setOnClickListener {
             findNavController().popBackStack()
         }
-        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-            findNavController().popBackStack()
-            }
-        })
+
 
         //Обновляем плейлист
         binding.createPlaylistButton.setOnClickListener {

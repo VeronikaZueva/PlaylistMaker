@@ -3,7 +3,6 @@ package com.iclean.playlistmaker.create.ui
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -124,12 +123,10 @@ open class CreatePlaylistFragment : Fragment() {
                 if(playlistUri!=null) {
                     lifecycleScope.launch {
                         playlistUri = viewModel.saveImage(playlistUri!!, playlistName!!)
-                        Log.i("URI - Fragment", playlistUri.toString())
-                    }
-                    lifecycleScope.launch {
                         viewModel.insertPlaylist(playlistName!!, playlistDescription, playlistUri.toString())
-                        Log.i("URI при сохранении в базу данных", playlistUri.toString())
                     }
+
+
                 }
                 else {
                     lifecycleScope.launch {

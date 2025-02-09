@@ -11,9 +11,9 @@ import androidx.room.PrimaryKey
         val trackName : String,
         val artistName : String,
         val collectionName : String,
-        val releaseDate : String,
+        val releaseDate : String?,
         val primaryGenreName : String,
         val country : String,
         val trackTimeMillis : String,
-        val previewUrl : String
+        val previewUrl : String?
     )

@@ -66,7 +66,7 @@ class PlayerFragment : Fragment() {
         val gson = Gson().fromJson(currentTrack, Track::class.java)
 
         //Прописываем методы подготовки плеера
-        viewModel.preparePlayer(gson.previewUrl)
+        viewModel.preparePlayer(gson.previewUrl!!)
 
         viewModel.setOnPreparedListener(object : OnPreparedListener {
             override fun onPrepared() {
@@ -212,7 +212,7 @@ class PlayerFragment : Fragment() {
     private fun setDataForView(track : Track) {
         binding.titleTrack.text = track.trackName
         binding.artistName.text = track.artistName
-        binding.year.text = track.releaseDate.substring(0, 4)
+        binding.year.text = track.releaseDate?.substring(0, 4)
         binding.genre.text = track.primaryGenreName
         binding.country.text = track.country
         binding.timer.text = timeFormat

@@ -33,6 +33,7 @@ class SearchFragment : Fragment() {
     }
 
     private var searchText: String = SEARCH_DEF
+
     private lateinit var progressBar: ProgressBar
 
     //Создаем ViewModel и Binding
@@ -59,8 +60,7 @@ class SearchFragment : Fragment() {
         //Кликнуть на трек - добавляем трек в историю и переходим на его просмотр
         val trackClick = object : TrackClick {
             override fun getTrack(track: Track) {
-                checkStatus.showStatus(Status.NONE)
-
+                    checkStatus.showStatus(Status.NONE)
                     //Сохраняем трек в историю и проверяем, есть ли он в избранном
                     viewModel.save(track)
                     (requireActivity() as StorageTrack).setCurrentTrack(Gson().toJson(track))
@@ -103,11 +103,14 @@ class SearchFragment : Fragment() {
             if ((it.code != -2) and binding.searchInput.text.isNotEmpty()) {
                 binding.reciclerViewTrack.adapter = trackAdapter
                 setCodeResponse(it.code)
-                if ((it.trackList.isNullOrEmpty()) and (it.code != -1)) {
+                if(it.code == -1) {
+                    checkStatus.showStatus((Status.INTERNET))
+                }
+                else if (it.trackList.isNullOrEmpty()) {
                     //Показываем ничего не нашлось
                     checkStatus.showStatus(Status.SEARCH)
                     binding.reciclerViewTrack.isVisible = false
-                } else {
+                }  else {
                     checkStatus.showStatus(Status.NONE)
                     binding.reciclerViewTrack.isVisible = true
                 }
@@ -146,6 +149,7 @@ class SearchFragment : Fragment() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (binding.searchInput.text.isNotEmpty()) {
                     searchDebounce()
+                    sendRequest()
                 } else {
                     viewModel.load()
                 }

@@ -150,14 +150,8 @@ class PlaylistItemFragment : Fragment() {
                         binding.overlay.visibility = View.VISIBLE
                         binding.bottomSheet.visibility = View.GONE
                     }
-                    BottomSheetBehavior.STATE_COLLAPSED -> {
-                        binding.overlay.visibility = View.VISIBLE
-                        binding.bottomSheet.visibility = View.GONE
-                    }
-                    else -> {
-                        binding.overlay.visibility = View.GONE
-                        binding.bottomSheet.visibility = View.VISIBLE
-                    }
+                    else -> {}
+
                 }
             }
 

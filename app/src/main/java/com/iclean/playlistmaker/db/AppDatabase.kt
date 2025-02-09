@@ -9,7 +9,7 @@ import com.iclean.playlistmaker.db.entity.PlaylistEntity
 import com.iclean.playlistmaker.db.entity.TrackEntity
 import com.iclean.playlistmaker.db.entity.TrackInPlaylistEntity
 
-@Database(version = 7 , entities = [TrackEntity::class, PlaylistEntity::class, TrackInPlaylistEntity::class])
+@Database(version = 8 , entities = [TrackEntity::class, PlaylistEntity::class, TrackInPlaylistEntity::class])
 abstract class AppDatabase : RoomDatabase() {
     abstract fun trackDao() : TrackDao
     abstract fun playlistDao() : PlaylistDao

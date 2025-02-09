@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.core.net.toUri
 import com.iclean.playlistmaker.create.domain.CreatePlaylistRepository
 import com.iclean.playlistmaker.create.domain.models.Playlist
@@ -38,6 +39,7 @@ class CreatePlaylistRepositoryImpl(
         }
         BitmapFactory.decodeStream(inputStream).compress(Bitmap.CompressFormat.JPEG, 30, outStream)
         val fileResult = file.toUri()
+
         return fileResult
     }
 
