@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.iclean.playlistmaker.di.createPlaylistModule
 import com.iclean.playlistmaker.di.mediaModule
 import com.iclean.playlistmaker.di.playerModule
+import com.iclean.playlistmaker.di.playlistItemModule
 import com.iclean.playlistmaker.di.searchModule
 import com.iclean.playlistmaker.di.settingsModule
 import com.iclean.playlistmaker.di.sharingModule
@@ -22,7 +23,14 @@ class App : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@App)
-            modules(searchModule, playerModule, settingsModule, sharingModule, mediaModule, createPlaylistModule)
+            modules(
+                searchModule,
+                playerModule,
+                settingsModule,
+                sharingModule,
+                mediaModule,
+                createPlaylistModule,
+                playlistItemModule)
         }
         val themeRepository by inject<SettingsRepository>()
         val darkTheme = themeRepository.getTheme().darkTheme

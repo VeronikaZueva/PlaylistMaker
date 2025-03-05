@@ -10,8 +10,11 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.iclean.playlistmaker.R
+import com.iclean.playlistmaker.create.domain.models.Playlist
 import com.iclean.playlistmaker.databinding.PlaylistFragmentBinding
+import com.iclean.playlistmaker.media.domain.api.ClickPlaylistItem
 import com.iclean.playlistmaker.media.presentation.playlists.PlaylistFragmentViewModel
+import com.iclean.playlistmaker.playlist.ui.PlaylistItemFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistFragment : Fragment() {
@@ -23,19 +26,30 @@ class PlaylistFragment : Fragment() {
     private lateinit var binding : PlaylistFragmentBinding
     private val viewModel by viewModel<PlaylistFragmentViewModel>()
     private lateinit var adapter : PlaylistsAdapter
+    private lateinit  var contentView : View
 
 
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) : View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) : View {
+        if (!::contentView.isInitialized) {
             binding = PlaylistFragmentBinding.inflate(inflater, container, false)
             return binding.root
         }
+        return contentView
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         //Получаем плейлисты
-        adapter = PlaylistsAdapter()
-        adapter.submitList(listOf())
+        val playlistItemClick = object : ClickPlaylistItem {
+            override fun goToPlaylist(playlist: Playlist) {
+
+            findNavController().navigate(R.id.to_playlist_item, PlaylistItemFragment.getArguments(playlist.id))
+
+            }
+        }
+        adapter = PlaylistsAdapter(playlistItemClick)
 
         viewModel.returnPlaylists()
 
@@ -56,6 +70,7 @@ class PlaylistFragment : Fragment() {
         //Переход на новый плейлист
         binding.newButton.setOnClickListener {
             findNavController().navigate(R.id.to_create_playlist)
+
         }
     }
 
@@ -78,4 +93,5 @@ class PlaylistFragment : Fragment() {
         super.onResume()
         viewModel.returnPlaylists()
     }
+
 }

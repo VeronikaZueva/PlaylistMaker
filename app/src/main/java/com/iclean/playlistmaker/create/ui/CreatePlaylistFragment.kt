@@ -3,52 +3,59 @@ package com.iclean.playlistmaker.create.ui
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.iclean.playlistmaker.R
 import com.iclean.playlistmaker.create.presentation.CreatePlaylistViewModel
-import com.iclean.playlistmaker.databinding.ActivityCreatePlaylistBinding
+import com.iclean.playlistmaker.databinding.FragmentCreatePlaylistBinding
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class CreatePlaylistActivity : AppCompatActivity() {
+open class CreatePlaylistFragment : Fragment() {
 
-    private val viewModel by viewModel<CreatePlaylistViewModel>()
-    private lateinit var binding : ActivityCreatePlaylistBinding
-    private lateinit var confirmDialog : MaterialAlertDialogBuilder
+    open lateinit var binding: FragmentCreatePlaylistBinding
+    open val viewModel by viewModel<CreatePlaylistViewModel>()
+    open lateinit var confirmDialog : MaterialAlertDialogBuilder
 
     //Выставляем изначальные поля пустыми
-    private var playlistName : String? = null
-    private var playlistDescription : String? = null
-    private var playlistUri : Uri? = null
+    open var playlistName : String? = null
+    open var playlistDescription : String? = null
+    open var playlistUri : Uri? = null
 
-
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentCreatePlaylistBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
 
     @SuppressLint("DiscouragedApi")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_playlist)
-
-        binding = ActivityCreatePlaylistBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         //Открываем наш диалог
-        confirmDialog = MaterialAlertDialogBuilder(this)
+        confirmDialog = MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialog)
             .setTitle(getString(R.string.end_create_playlist))
             .setMessage(getString(R.string.message_dialog))
             .setNeutralButton(getString(R.string.cancel_button)) {_, _ ->}
             .setNegativeButton(getString(R.string.finish_button)) { _, _ ->
-                finish()
+                findNavController().popBackStack()
             }
 
         //Регистрируем событие, которое вызывает PhotoPicker и запускаем photopicker по нажатию
@@ -73,11 +80,11 @@ class CreatePlaylistActivity : AppCompatActivity() {
             if(playlistName?.isNotEmpty() == true) {
                 //Меняем цвет кнопки
                 @Suppress("DEPRECATION")
-                binding.createPlaylistButton.setBackgroundColor(getResources().getColor(R.color.blue))
+                binding.createPlaylistButton.setBackgroundColor(resources.getColor(R.color.blue))
             } else {
                 //Меняем цвет кнопки
                 @Suppress("DEPRECATION")
-                binding.createPlaylistButton.setBackgroundColor(getResources().getColor(R.color.gray))
+                binding.createPlaylistButton.setBackgroundColor(resources.getColor(R.color.gray))
             }
         }
 
@@ -94,18 +101,19 @@ class CreatePlaylistActivity : AppCompatActivity() {
             if((playlistUri != null) or (playlistName?.isNotEmpty() == true) or (playlistDescription?.isNotEmpty() == true )) {
                 confirmDialog.show()
             } else {
-                finish()
+                findNavController().popBackStack()
             }
         }
-        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if((playlistUri != null) or (playlistName?.isNotEmpty() == true) or (playlistDescription?.isNotEmpty() == true )) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+
+                if ((playlistUri != null) or (playlistName?.isNotEmpty() == true) or (playlistDescription?.isNotEmpty() == true)) {
                     confirmDialog.show()
                 } else {
-                    finish()
+                    findNavController().popBackStack()
                 }
-            }
-        })
+
+        }
+
 
 
         //Кнопка "Создать" неактивна
@@ -118,6 +126,7 @@ class CreatePlaylistActivity : AppCompatActivity() {
                         viewModel.insertPlaylist(playlistName!!, playlistDescription, playlistUri.toString())
                     }
 
+
                 }
                 else {
                     lifecycleScope.launch {
@@ -128,8 +137,8 @@ class CreatePlaylistActivity : AppCompatActivity() {
                         )
                     }
                 }
-                Toast.makeText(this, "Плейлист $playlistName создан", Toast.LENGTH_SHORT).show()
-                finish()
+                Toast.makeText(requireContext(), "Плейлист $playlistName создан", Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
 
             }
         }

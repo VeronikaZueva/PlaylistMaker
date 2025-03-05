@@ -1,6 +1,7 @@
 <resources>
     <style name="Base.Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/accent</item>
+        <item name="colorPrimary">@color/blue</item>
     </style>
     <style name="Theme.MainPlaylistMaker" parent="Base.Theme.PlaylistMaker">
         <item name="android:windowBackground">@color/accent</item>
@@ -20,4 +21,5 @@
         <item name="trackTint">@color/light</item>
         <item name="thumbTint">@color/gray</item>
     </style>
+
 </resources>

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/create_playlist"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context="create.ui.CreatePlaylistActivity">
+    tools:context="create.ui.CreatePlaylistFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -44,7 +46,8 @@
             android:theme="@style/Theme.TextPlaylistMaker"
             />
 
-        <TextView android:text="@string/new_playlist"
+        <TextView android:id="@+id/title_screen"
+            android:text="@string/new_playlist"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="@dimen/base"
@@ -86,6 +89,7 @@
             android:id="@+id/hint_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:colorControlActivated="@color/blue"
             tools:ignore="VisualLintTextFieldSize,TextContrastCheck"/>
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -100,6 +104,7 @@
             app:layout_constraintTop_toBottomOf="@+id/playlist_name"
             android:layout_marginTop="@dimen/base"
             android:hint="@string/playlist_description"
+            android:colorControlActivated="@color/blue"
             style="@style/FieldInputPlaylistCreate"
             tools:ignore="VisualLintBounds">
 

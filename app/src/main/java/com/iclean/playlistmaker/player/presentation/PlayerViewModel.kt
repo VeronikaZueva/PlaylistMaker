@@ -1,7 +1,6 @@
 package com.iclean.playlistmaker.player.presentation
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -68,7 +67,8 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
 
 
     //Методы управления воспроизведением музыки
-    fun preparePlayer() {playerInteractor.preparePlayer(gson.previewUrl)}
+    fun preparePlayer(previewUrl : String) {playerInteractor.preparePlayer(previewUrl)}
+
     fun setOnPreparedListener(listener: OnPreparedListener) {
         playerInteractor.setOnPreparedListener(listener)
         playerState = MediaPlayerState.STATE_PREPARED
@@ -86,8 +86,8 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,
     fun release() {playerInteractor.release()}
 
 
-    fun getTrack(intent: Intent): LiveData<LiveDataPlayer> {
-        gson = Gson().fromJson(intent.extras?.getString("trackObject"), Track::class.java)
+    fun getTrack(trackBundle: String): LiveData<LiveDataPlayer> {
+        gson = Gson().fromJson(trackBundle, Track::class.java)
 
         liveData.value = LiveDataPlayer(gson, 0)
         return liveData
